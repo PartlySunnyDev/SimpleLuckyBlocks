@@ -120,6 +120,9 @@ public final class Util {
         if (a > b) {
             throw new IllegalArgumentException("a must be higher than b");
         }
+        if (a == b) {
+            return a;
+        }
         return RAND.nextInt(b - a) + a;
     }
 
