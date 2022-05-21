@@ -1,0 +1,4 @@
+name: V1_16_R3
+version: '${project.version}'
+main: me.partlysunny.NMSHandler
+api-version: 1.16

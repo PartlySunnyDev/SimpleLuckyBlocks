@@ -1,0 +1,4 @@
+name: API
+version: '${project.version}'
+main: me.partlysunny.api.API
+api-version: 1.18

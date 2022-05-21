@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>me.partlysunny</groupId>
+    <artifactId>SimpleLuckyBlocks</artifactId>
+    <version>1.0</version>
+    <packaging>pom</packaging>
+
+    <name>SimpleLuckyBlocks</name>
+
+    <description>Simple and customisable lucky blocks plugin!</description>
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+    </properties>
+
+    <modules>
+        <module>API</module>
+        <module>v1_17_R1</module>
+        <module>v1_16_R3</module>
+        <module>v1_18_R2</module>
+        <module>Plugin</module>
+    </modules>
+
+    <!-- Define the repo here since multiple modules will be using it -->
+    <repositories>
+        <repository>
+            <id>codemc-repo</id>
+            <url>https://repo.codemc.org/repository/maven-public/</url>
+            <layout>default</layout>
+        </repository>
+    </repositories>
+</project>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>me.partlysunny</groupId>
+    <artifactId>v1_16_R3</artifactId>
+    <version>v1_16_R3</version>
+    <packaging>jar</packaging>
+
+    <name>V1_16_R3</name>
+
+    <properties>
+        <java.version>1.8</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <parent>
+        <groupId>me.partlysunny</groupId>
+        <artifactId>SimpleLuckyBlocks</artifactId>
+        <version>1.0</version>
+    </parent>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.destroystokyo.paper</groupId>
+            <artifactId>paper-api</artifactId>
+            <version>1.16.5-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>me.partlysunny</groupId>
+            <artifactId>API</artifactId> <!-- Depend on the API! -->
+            <version>API</version>
+            <type>jar</type>
+        </dependency>
+    </dependencies>
+</project>

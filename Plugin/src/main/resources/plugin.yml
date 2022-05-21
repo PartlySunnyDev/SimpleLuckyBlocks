@@ -1,0 +1,13 @@
+name: SimpleLuckyBlocksCore
+version: '${project.version}'
+main: me.partlysunny.SimpleLuckyBlocksCore
+api-version: 1.16
+commands:
+  slb:
+    aliases: [ simpleluckyblocks, slb ]
+    description: SimpleLuckyBlocks base command for ops
+
+permissions:
+  slb.admin:
+    default: op
+    description: Admin commands (from /slb)
