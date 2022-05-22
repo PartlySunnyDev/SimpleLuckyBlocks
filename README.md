@@ -3,6 +3,7 @@
 ## SimpleLuckyBlocks plugin, the new fully customisable lucky blocks plugin
 
 ### Current features include
+
 - Custom lucky blocks
 - Custom loot
 - Particle effects

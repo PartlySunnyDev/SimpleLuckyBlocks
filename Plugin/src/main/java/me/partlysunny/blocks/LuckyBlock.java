@@ -1,6 +1,7 @@
 package me.partlysunny.blocks;
 
 import me.partlysunny.SimpleLuckyBlocksCore;
+import me.partlysunny.blocks.loot.LootTableManager;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
@@ -40,7 +41,7 @@ public class LuckyBlock {
     }
 
     public void dropLoot() {
-        type.lootTable().dropTableAt(b.getLocation());
+        LootTableManager.getTable(type.lootTable()).dropTableAt(b.getLocation());
     }
 
     public void killStand() {

@@ -6,21 +6,24 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ItemBuilder {
-
-    public static ItemBuilder builder(Material m) {
-        return new ItemBuilder(m);
-    }
 
     private final Material m;
     private final ItemMeta meta;
     private final ItemStack s;
+    private final Map<Enchantment, Integer> enchants = new HashMap<>();
 
     public ItemBuilder(Material m) {
         this.m = m;
         this.s = new ItemStack(m);
         this.meta = s.getItemMeta();
+    }
+
+    public static ItemBuilder builder(Material m) {
+        return new ItemBuilder(m);
     }
 
     public ItemBuilder setName(String name) {
@@ -34,7 +37,7 @@ public class ItemBuilder {
     }
 
     public ItemBuilder addEnchantment(Enchantment e, int level) {
-        s.addUnsafeEnchantment(e, level);
+        enchants.put(e, level);
         return this;
     }
 
@@ -45,6 +48,9 @@ public class ItemBuilder {
 
     public ItemStack build() {
         s.setItemMeta(meta);
+        for (Enchantment m : enchants.keySet()) {
+            s.addUnsafeEnchantment(m, enchants.get(m));
+        }
         return s;
     }
 

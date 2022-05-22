@@ -89,6 +89,9 @@
                 <directory>src/main/resources</directory>
                 <includes>
                     <include>plugin.yml</include>
+                    <include>blocks/*</include>
+                    <include>lootTables/*</include>
+                    <include>lootEntries/*</include>
                 </includes>
             </resource>
         </resources>

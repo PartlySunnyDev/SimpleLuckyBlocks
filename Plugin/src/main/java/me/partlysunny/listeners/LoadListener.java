@@ -5,7 +5,6 @@ import de.tr7zw.nbtapi.NBTCompound;
 import me.partlysunny.SimpleLuckyBlocksCore;
 import me.partlysunny.blocks.LuckyBlockManager;
 import me.partlysunny.blocks.LuckyBlockType;
-import me.partlysunny.util.Util;
 import org.bukkit.Chunk;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;

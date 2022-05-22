@@ -15,9 +15,9 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.Random;
 import java.util.UUID;
 
@@ -159,6 +159,12 @@ public final class Util {
             return c.getCompound(key).hasKey("luckyType");
         }
         return false;
+    }
+
+    public static void copy(InputStream source, File destination) throws IOException {
+        if (!destination.exists()) {
+            Files.copy(source, destination.toPath());
+        }
     }
 
     /**

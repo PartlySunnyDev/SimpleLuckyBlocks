@@ -2,8 +2,6 @@ package me.partlysunny;
 
 import me.partlysunny.blocks.LuckyBlockType;
 import me.partlysunny.blocks.StandManager;
-import me.partlysunny.blocks.loot.CustomLootTable;
-import me.partlysunny.blocks.loot.LootTableEntry;
 import me.partlysunny.commands.SLBCommand;
 import me.partlysunny.commands.SLBTabCompleter;
 import me.partlysunny.commands.subcommands.GiveSubCommand;
@@ -11,18 +9,21 @@ import me.partlysunny.commands.subcommands.HelpSubCommand;
 import me.partlysunny.listeners.BreakListener;
 import me.partlysunny.listeners.LoadListener;
 import me.partlysunny.listeners.PlaceListener;
-import me.partlysunny.particle.BlockParticleEffect;
-import me.partlysunny.particle.EffectType;
 import me.partlysunny.util.Util;
-import me.partlysunny.util.classes.ItemBuilder;
-import me.partlysunny.util.classes.Pair;
 import me.partlysunny.version.Version;
 import me.partlysunny.version.VersionManager;
-import org.bukkit.Material;
-import org.bukkit.Particle;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.security.CodeSource;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
+import static me.partlysunny.blocks.loot.LootTableManager.loadLootTables;
+import static me.partlysunny.blocks.loot.entry.LootEntryManager.loadEntries;
 
 public final class SimpleLuckyBlocksCore extends JavaPlugin {
 
@@ -48,14 +49,23 @@ public final class SimpleLuckyBlocksCore extends JavaPlugin {
             return;
         }
         manager.enable();
-        //Load saved lucky block types
-        LuckyBlockType.loadTypes();
+        //Copy in default files if not existent
+        try {
+            initDefaults();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         //Create particle effect ticker
         new Ticker();
         //Register subcommands
         registerCommands();
         registerListeners();
-        initDefaults();
+        //Load loot table entries
+        loadEntries();
+        //Load loot tables (combinations of these entries)
+        loadLootTables();
+        //Load saved lucky block types
+        LuckyBlockType.loadTypes();
         ConsoleLogger.console("Enabled SimpleLuckyBlocks on version " + v.get());
     }
 
@@ -74,20 +84,61 @@ public final class SimpleLuckyBlocksCore extends JavaPlugin {
         getCommand("slb").setTabCompleter(new SLBTabCompleter());
     }
 
-    private void initDefaults() {
-        LuckyBlockType.registerType(new LuckyBlockType(
-                "basic",
-                Material.YELLOW_STAINED_GLASS,
-                Util.convert(Util.HeadType.BASE64, "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjM4YzBkMmYxZWMyNjc1NGRjYTNjN2NkYWUzMWYxZjE2NDg4M2Q0NTNlNjg4NjQzZGEwNDc1NjhlN2ZhNWNjOSJ9fX0="),
-                new CustomLootTable(
-                        "basic",
-                        3,
-                        new Pair<>(new LootTableEntry(new ItemStack(Material.IRON_INGOT), 1, 3), 2),
-                        new Pair<>(new LootTableEntry(ItemBuilder.builder(Material.STICK).setName("KB stick").addEnchantment(Enchantment.KNOCKBACK, 1).build(), 1, 1), 1),
-                        new Pair<>(new LootTableEntry(new ItemStack(Material.OAK_PLANKS), 4, 7), 6),
-                        new Pair<>(new LootTableEntry(new ItemStack(Material.COBBLESTONE), 3, 5), 4)),
-                new BlockParticleEffect(Particle.GLOW, 3, EffectType.AURA)
-        ));
+    private void initDefaults() throws IOException {
+        if (!getDataFolder().exists()) {
+            getDataFolder().mkdir();
+        }
+        process("blocks");
+        process("lootEntries");
+        process("lootTables");
+        copyFileWithName("READ.txt");
+        copyFileWithName("config.yml");
+    }
+
+    private void copyFileWithName(String key) throws IOException {
+        File f = getDataFolder();
+        if (!f.exists()) {
+            f.mkdir();
+        }
+        CodeSource src = SimpleLuckyBlocksCore.class.getProtectionDomain().getCodeSource();
+        if (src != null) {
+            URL jar = src.getLocation();
+            ZipInputStream zip = new ZipInputStream(jar.openStream());
+            while(true) {
+                ZipEntry e = zip.getNextEntry();
+                if (e == null)
+                    break;
+                String name = e.getName();
+                if (name.equals(key)) {
+                    File destination = new File(f + "/" + name.substring(key.length() + 1));
+                    InputStream from = SimpleLuckyBlocksCore.class.getClassLoader().getResourceAsStream(name);
+                    Util.copy(from, destination);
+                }
+            }
+        }
+    }
+
+    private void process(String key) throws IOException {
+        File f = new File(getDataFolder(), key);
+        if (!f.exists()) {
+            f.mkdir();
+        }
+        CodeSource src = SimpleLuckyBlocksCore.class.getProtectionDomain().getCodeSource();
+        if (src != null) {
+            URL jar = src.getLocation();
+            ZipInputStream zip = new ZipInputStream(jar.openStream());
+            while(true) {
+                ZipEntry e = zip.getNextEntry();
+                if (e == null)
+                    break;
+                String name = e.getName();
+                if (name.startsWith(key + "/") && !name.equals(key + "/")) {
+                    File destination = new File(f + "/" + name.substring(key.length() + 1));
+                    InputStream from = SimpleLuckyBlocksCore.class.getClassLoader().getResourceAsStream(name);
+                    Util.copy(from, destination);
+                }
+            }
+        }
     }
 
     private void registerListeners() {
