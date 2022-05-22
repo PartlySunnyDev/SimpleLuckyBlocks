@@ -1,4 +1,4 @@
-package me.partlysunny.blocks.loot.entry;
+package me.partlysunny.blocks.loot.entry.mob;
 
 import org.bukkit.Location;
 

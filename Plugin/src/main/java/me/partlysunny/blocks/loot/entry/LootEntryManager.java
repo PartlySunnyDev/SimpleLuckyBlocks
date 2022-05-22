@@ -2,6 +2,11 @@ package me.partlysunny.blocks.loot.entry;
 
 import me.partlysunny.ConsoleLogger;
 import me.partlysunny.SimpleLuckyBlocksCore;
+import me.partlysunny.blocks.loot.entry.item.ItemEntry;
+import me.partlysunny.blocks.loot.entry.item.wand.WandEntry;
+import me.partlysunny.blocks.loot.entry.mob.MobEntry;
+import me.partlysunny.blocks.loot.entry.mob.SpawnEffect;
+import me.partlysunny.blocks.loot.entry.potion.PotionEntry;
 import me.partlysunny.util.classes.ItemBuilder;
 import me.partlysunny.util.classes.Pair;
 import org.bukkit.Material;
@@ -19,6 +24,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static me.partlysunny.util.Util.processText;
+import static me.partlysunny.util.Util.processTexts;
 
 public class LootEntryManager {
 
@@ -72,10 +80,10 @@ public class LootEntryManager {
                 //Build the item
                 ItemBuilder b = ItemBuilder.builder(material);
                 if (name.contains("name")) {
-                    b.setName(name.getString("name"));
+                    b.setName(processText(name.getString("name")));
                 }
                 if (name.contains("lore")) {
-                    b.setLore(name.getStringList("lore").toArray(new String[0]));
+                    b.setLore(processTexts(name.getStringList("lore")).toArray(new String[0]));
                 }
                 for (Pair<Enchantment, Integer> p : enchants) {
                     b.addEnchantment(p.a(), p.b());
@@ -174,6 +182,14 @@ public class LootEntryManager {
                     theEffects.add(new Pair<>(t, new Pair<>(duration, lvl)));
                 }
                 registerEntry(realName, new PotionEntry(theEffects));
+            }
+            case "wand" -> {
+                String wand = name.getString("wand");
+                int minPower = name.getInt("minPower");
+                int maxPower = name.getInt("maxPower");
+                String displayName = processText(name.getString("name"));
+                List<String> lore = processTexts(name.getStringList("lore"));
+                registerEntry(realName, new WandEntry(displayName, lore, minPower, maxPower, wand));
             }
             default -> {
                 ConsoleLogger.error("Invalid entry type found in " + name.getName());

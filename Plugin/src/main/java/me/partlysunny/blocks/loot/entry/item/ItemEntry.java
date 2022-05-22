@@ -1,5 +1,6 @@
-package me.partlysunny.blocks.loot.entry;
+package me.partlysunny.blocks.loot.entry.item;
 
+import me.partlysunny.blocks.loot.entry.IEntry;
 import me.partlysunny.util.Util;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;

@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static me.partlysunny.util.Util.processText;
+
 public record LuckyBlockType(String id, String displayName, Material blockType, @Nullable ItemStack innerItem, String lootTable,
                              BlockParticleEffect e, @Nullable ShapedRecipe r) {
 
@@ -90,11 +92,11 @@ public record LuckyBlockType(String id, String displayName, Material blockType, 
             }
             ItemStack block;
             if (innerItem == null) {
-                block = ItemBuilder.builder(mat).setName(displayName).build();
+                block = ItemBuilder.builder(mat).setName(processText(displayName)).build();
             } else {
                 block = innerItem.clone();
                 ItemMeta itemMeta = block.getItemMeta();
-                itemMeta.setDisplayName(displayName);
+                itemMeta.setDisplayName(processText(displayName));
                 block.setItemMeta(itemMeta);
             }
             NBTItem nbti = new NBTItem(block);

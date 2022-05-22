@@ -9,6 +9,7 @@ import me.partlysunny.commands.subcommands.HelpSubCommand;
 import me.partlysunny.listeners.BreakListener;
 import me.partlysunny.listeners.LoadListener;
 import me.partlysunny.listeners.PlaceListener;
+import me.partlysunny.listeners.WandListener;
 import me.partlysunny.util.Util;
 import me.partlysunny.version.Version;
 import me.partlysunny.version.VersionManager;
@@ -24,6 +25,7 @@ import java.util.zip.ZipInputStream;
 
 import static me.partlysunny.blocks.loot.LootTableManager.loadLootTables;
 import static me.partlysunny.blocks.loot.entry.LootEntryManager.loadEntries;
+import static me.partlysunny.blocks.loot.entry.item.wand.WandManager.loadWands;
 
 public final class SimpleLuckyBlocksCore extends JavaPlugin {
 
@@ -60,6 +62,7 @@ public final class SimpleLuckyBlocksCore extends JavaPlugin {
         //Register subcommands
         registerCommands();
         registerListeners();
+        loadWands();
         //Load loot table entries
         loadEntries();
         //Load loot tables (combinations of these entries)
@@ -93,6 +96,7 @@ public final class SimpleLuckyBlocksCore extends JavaPlugin {
         process("blocks");
         process("lootEntries");
         process("lootTables");
+        process("wands");
         copyFileWithName("READ.txt");
         copyFileWithName("config.yml");
     }
@@ -147,5 +151,6 @@ public final class SimpleLuckyBlocksCore extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new LoadListener(), this);
         getServer().getPluginManager().registerEvents(new PlaceListener(), this);
         getServer().getPluginManager().registerEvents(new BreakListener(), this);
+        getServer().getPluginManager().registerEvents(new WandListener(), this);
     }
 }

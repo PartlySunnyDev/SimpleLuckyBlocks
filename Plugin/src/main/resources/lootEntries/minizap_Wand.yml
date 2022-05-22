@@ -1,0 +1,8 @@
+entryType: wand
+name: "&6Zap Wand"
+lore:
+  - "&7Insane zapping potential"
+  - "&7Zip zap zoop"
+wand: zap_wand
+minPower: 1
+maxPower: 3

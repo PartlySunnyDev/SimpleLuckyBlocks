@@ -11,6 +11,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import static me.partlysunny.util.Util.processText;
+
 public class GiveSubCommand implements SLBSubCommand {
     @Override
     public String getId() {
@@ -54,11 +56,11 @@ public class GiveSubCommand implements SLBSubCommand {
                     ItemStack itemStack = type.innerItem();
                     ItemStack block;
                     if (itemStack == null) {
-                        block = ItemBuilder.builder(type.blockType()).setName(type.displayName()).build();
+                        block = ItemBuilder.builder(type.blockType()).setName(processText(type.displayName())).build();
                     } else {
                         block = itemStack.clone();
                         ItemMeta itemMeta = block.getItemMeta();
-                        itemMeta.setDisplayName(type.displayName());
+                        itemMeta.setDisplayName(processText(type.displayName()));
                         block.setItemMeta(itemMeta);
                     }
                     NBTItem nbti = new NBTItem(block);

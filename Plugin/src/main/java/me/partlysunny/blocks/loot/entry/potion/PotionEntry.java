@@ -1,5 +1,6 @@
-package me.partlysunny.blocks.loot.entry;
+package me.partlysunny.blocks.loot.entry.potion;
 
+import me.partlysunny.blocks.loot.entry.IEntry;
 import me.partlysunny.util.classes.Pair;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;

@@ -6,6 +6,7 @@ import de.tr7zw.nbtapi.NBTBlock;
 import de.tr7zw.nbtapi.NBTChunk;
 import de.tr7zw.nbtapi.NBTCompound;
 import me.partlysunny.util.reflection.JavaAccessor;
+import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -18,6 +19,8 @@ import org.json.simple.parser.JSONParser;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
@@ -123,6 +126,12 @@ public final class Util {
         if (a == b) {
             return a;
         }
+        if (a < 0 && b < 0) {
+            return -getRandomBetween(-b, -a);
+        }
+        if (a < 0) {
+            return getRandomBetween(0, - a + b) - a;
+        }
         return RAND.nextInt(b - a) + a;
     }
 
@@ -134,6 +143,21 @@ public final class Util {
     public static void setToLuckyBlockType(Block b, String t) {
         NBTBlock nbtb = new NBTBlock(b);
         nbtb.getData().setString("luckyType", t);
+    }
+
+    public static String processText(String text) {
+        if (text == null) {
+            return "";
+        }
+        return text.replace('&', ChatColor.COLOR_CHAR);
+    }
+
+    public static List<String> processTexts(List<String> texts) {
+        List<String> result = new ArrayList<>();
+        texts.forEach(n -> {
+            result.add(processText(n));
+        });
+        return result;
     }
 
     public static String getLuckyBlockType(Block b) {
