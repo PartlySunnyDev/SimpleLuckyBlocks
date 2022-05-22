@@ -110,7 +110,7 @@ public final class SimpleLuckyBlocksCore extends JavaPlugin {
                     break;
                 String name = e.getName();
                 if (name.equals(key)) {
-                    File destination = new File(f + "/" + name.substring(key.length() + 1));
+                    File destination = new File(f + "/" + key);
                     InputStream from = SimpleLuckyBlocksCore.class.getClassLoader().getResourceAsStream(name);
                     Util.copy(from, destination);
                 }
