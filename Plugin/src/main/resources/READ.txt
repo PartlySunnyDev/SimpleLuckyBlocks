@@ -4,6 +4,7 @@ Before modifying configuration for blocks make note of the following
 - If the section asks for an "entityType", use values from https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/entity/EntityType.html
 - If the section asks for a "type" in a "blockParticleEffect", use values from https://github.com/steveyxz/SimpleLuckyBlocks/blob/master/Plugin/src/main/java/me/partlysunny/particle/EffectType.java
 - If the section asks for a "id" in an "enchantments" section, use values from https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/enchantments/Enchantment.html
+- If the section asks for a "id" in a "effects" section, use values from https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/potion/PotionEffectType.html
 
 INVALID VALUES WILL MOST LIKELY CAUSE FATAL ERRORS
 If a valid value is not working contact the developer :)

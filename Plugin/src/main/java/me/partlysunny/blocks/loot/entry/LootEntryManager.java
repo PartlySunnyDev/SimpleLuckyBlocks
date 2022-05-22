@@ -12,6 +12,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffectType;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -53,6 +54,7 @@ public class LootEntryManager {
             return;
         }
         String entryType = name.getString("entryType");
+        String realName = childName.substring(0, childName.length() - 4);
         switch (entryType) {
             case "item" -> {
                 Material material = Material.valueOf(name.getString("material"));
@@ -79,7 +81,7 @@ public class LootEntryManager {
                     b.addEnchantment(p.a(), p.b());
                 }
                 //Register the entry
-                registerEntry(childName.substring(0, childName.length() - 4), new ItemEntry(b.build(), min, max));
+                registerEntry(realName, new ItemEntry(b.build(), min, max));
             }
             case "mob" -> {
                 EntityType t = EntityType.valueOf(name.getString("entityType"));
@@ -159,7 +161,19 @@ public class LootEntryManager {
                     }
                     itemOnHand = b.build();
                 }
-                registerEntry(childName.substring(0, childName.length() - 4), new MobEntry(t, min, max, armorPieces, itemOnHand, health, speedMultiplier, customName, e, dropH, dropC, dropL, dropB, dropM));
+                registerEntry(realName, new MobEntry(t, min, max, armorPieces, itemOnHand, health, speedMultiplier, customName, e, dropH, dropC, dropL, dropB, dropM));
+            }
+            case "potion" -> {
+                ConfigurationSection effects = name.getConfigurationSection("effects");
+                List<Pair<PotionEffectType, Pair<Integer, Integer>>> theEffects = new ArrayList<>();
+                for (String effect : effects.getKeys(false)) {
+                    ConfigurationSection effectInfo = effects.getConfigurationSection(effect);
+                    PotionEffectType t = PotionEffectType.getByKey(NamespacedKey.minecraft(effectInfo.getString("id").toLowerCase()));
+                    int duration = effectInfo.getInt("duration");
+                    int lvl = effectInfo.getInt("lvl");
+                    theEffects.add(new Pair<>(t, new Pair<>(duration, lvl)));
+                }
+                registerEntry(realName, new PotionEntry(theEffects));
             }
             default -> {
                 ConsoleLogger.error("Invalid entry type found in " + name.getName());

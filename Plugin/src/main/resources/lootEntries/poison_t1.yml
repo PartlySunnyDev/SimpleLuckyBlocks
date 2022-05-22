@@ -1,0 +1,6 @@
+entryType: potion
+effects:
+  poison:
+    id: POISON
+    lvl: 1
+    duration: 100

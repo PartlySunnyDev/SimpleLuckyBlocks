@@ -71,7 +71,9 @@ public final class SimpleLuckyBlocksCore extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        manager.disable();
+        if (manager != null) {
+            manager.disable();
+        }
         //Kill all armor stands
         StandManager.killAll();
         ConsoleLogger.console("Disabling SimpleLuckyBlocks...");

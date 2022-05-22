@@ -17,7 +17,7 @@ public class BreakListener implements Listener {
         Block block = e.getBlock();
         Location location = block.getLocation();
         cancelIfLuckyBlock(block, e);
-        LuckyBlockManager.breakLuckyBlock(location);
+        LuckyBlockManager.breakLuckyBlock(e.getPlayer(), location);
         block.getWorld().playSound(location, Sound.BLOCK_STONE_BREAK, 1, 1);
         block.getWorld().setBlockData(location, Material.AIR.createBlockData());
     }

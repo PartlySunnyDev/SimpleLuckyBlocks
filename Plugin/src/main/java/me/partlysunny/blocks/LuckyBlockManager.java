@@ -4,6 +4,7 @@ import de.tr7zw.nbtapi.NBTBlock;
 import me.partlysunny.util.Util;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -21,12 +22,12 @@ public class LuckyBlockManager {
         return blocks.containsKey(l);
     }
 
-    public static void breakLuckyBlock(Location l) {
+    public static void breakLuckyBlock(Player p, Location l) {
         if (blocks.containsKey(l)) {
             LuckyBlock b = blocks.get(l);
             new NBTBlock(b.b()).getData().removeKey("luckyType");
             b.killStand();
-            b.dropLoot();
+            b.dropLoot(p);
             blocks.remove(l);
         }
     }

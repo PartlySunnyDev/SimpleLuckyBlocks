@@ -5,6 +5,7 @@ import me.partlysunny.blocks.loot.entry.LootEntryManager;
 import me.partlysunny.util.classes.Pair;
 import me.partlysunny.util.classes.RandomList;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 
@@ -22,9 +23,9 @@ public class CustomLootTable {
         this.rolls = rolls;
     }
 
-    public void dropTableAt(Location l) {
+    public void dropTableAt(Location l, Player p) {
         for (int i = 0; i < rolls; i++) {
-            entries.raffle().execute(l);
+            entries.raffle().execute(l, p);
         }
     }
 

@@ -6,6 +6,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -40,8 +41,8 @@ public class LuckyBlock {
         return type;
     }
 
-    public void dropLoot() {
-        LootTableManager.getTable(type.lootTable()).dropTableAt(b.getLocation());
+    public void dropLoot(Player p) {
+        LootTableManager.getTable(type.lootTable()).dropTableAt(b.getLocation(), p);
     }
 
     public void killStand() {

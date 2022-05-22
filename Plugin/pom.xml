@@ -55,6 +55,14 @@
             <optional>true</optional>
         </dependency>
         <dependency>
+            <groupId>me.partlysunny</groupId>
+            <artifactId>v1_18_R1</artifactId>
+            <version>v1_18_R1</version>
+            <type>jar</type>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
             <version>1.18.2-R0.1-SNAPSHOT</version>

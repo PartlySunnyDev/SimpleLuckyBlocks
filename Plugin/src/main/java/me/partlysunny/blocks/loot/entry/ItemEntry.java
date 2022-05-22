@@ -2,6 +2,7 @@ package me.partlysunny.blocks.loot.entry;
 
 import me.partlysunny.util.Util;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class ItemEntry implements IEntry {
@@ -23,7 +24,7 @@ public class ItemEntry implements IEntry {
     }
 
     @Override
-    public void execute(Location l) {
+    public void execute(Location l, Player p) {
         if (l.getWorld() == null) {
             return;
         }

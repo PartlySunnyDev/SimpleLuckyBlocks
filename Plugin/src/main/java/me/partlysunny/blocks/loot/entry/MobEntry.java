@@ -8,6 +8,7 @@ import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 
@@ -54,7 +55,7 @@ public class MobEntry implements IEntry {
     }
 
     @Override
-    public void execute(Location l) {
+    public void execute(Location l, Player p) {
         World world = l.getWorld();
         if (world == null) {
             return;
