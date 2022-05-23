@@ -2,14 +2,12 @@ package me.partlysunny;
 
 import me.partlysunny.blocks.LuckyBlockType;
 import me.partlysunny.blocks.StandManager;
+import me.partlysunny.blocks.triggers.TriggerManager;
 import me.partlysunny.commands.SLBCommand;
 import me.partlysunny.commands.SLBTabCompleter;
 import me.partlysunny.commands.subcommands.GiveSubCommand;
 import me.partlysunny.commands.subcommands.HelpSubCommand;
-import me.partlysunny.listeners.BreakListener;
-import me.partlysunny.listeners.LoadListener;
-import me.partlysunny.listeners.PlaceListener;
-import me.partlysunny.listeners.WandListener;
+import me.partlysunny.listeners.*;
 import me.partlysunny.util.Util;
 import me.partlysunny.version.Version;
 import me.partlysunny.version.VersionManager;
@@ -69,6 +67,8 @@ public final class SimpleLuckyBlocksCore extends JavaPlugin {
         loadLootTables();
         //Load saved lucky block types
         LuckyBlockType.loadTypes();
+        TriggerManager.loadTriggers();
+        LoadListener.load(getServer());
         ConsoleLogger.console("Enabled SimpleLuckyBlocks on version " + v.get());
     }
 
@@ -97,6 +97,7 @@ public final class SimpleLuckyBlocksCore extends JavaPlugin {
         process("lootEntries");
         process("lootTables");
         process("wands");
+        process("triggers");
         copyFileWithName("READ.txt");
         copyFileWithName("config.yml");
     }
@@ -110,7 +111,7 @@ public final class SimpleLuckyBlocksCore extends JavaPlugin {
         if (src != null) {
             URL jar = src.getLocation();
             ZipInputStream zip = new ZipInputStream(jar.openStream());
-            while(true) {
+            while (true) {
                 ZipEntry e = zip.getNextEntry();
                 if (e == null)
                     break;
@@ -133,7 +134,7 @@ public final class SimpleLuckyBlocksCore extends JavaPlugin {
         if (src != null) {
             URL jar = src.getLocation();
             ZipInputStream zip = new ZipInputStream(jar.openStream());
-            while(true) {
+            while (true) {
                 ZipEntry e = zip.getNextEntry();
                 if (e == null)
                     break;
@@ -152,5 +153,6 @@ public final class SimpleLuckyBlocksCore extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlaceListener(), this);
         getServer().getPluginManager().registerEvents(new BreakListener(), this);
         getServer().getPluginManager().registerEvents(new WandListener(), this);
+        getServer().getPluginManager().registerEvents(new TriggerListener(), this);
     }
 }

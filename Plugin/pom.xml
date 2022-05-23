@@ -101,6 +101,7 @@
                     <include>lootTables/*</include>
                     <include>lootEntries/*</include>
                     <include>wands/*</include>
+                    <include>triggers/*</include>
                     <include>config.yml</include>
                     <include>READ.txt</include>
                 </includes>

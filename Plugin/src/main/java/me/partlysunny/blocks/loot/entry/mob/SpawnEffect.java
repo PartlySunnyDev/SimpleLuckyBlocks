@@ -7,7 +7,8 @@ import java.util.function.Consumer;
 public enum SpawnEffect {
 
     LIGHTNING(l -> l.getWorld().strikeLightningEffect(l)),
-    NONE(l -> {}),
+    NONE(l -> {
+    }),
     ;
 
     private final Consumer<Location> effect;

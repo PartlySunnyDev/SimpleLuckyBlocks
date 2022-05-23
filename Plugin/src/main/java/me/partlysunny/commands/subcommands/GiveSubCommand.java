@@ -1,17 +1,13 @@
 package me.partlysunny.commands.subcommands;
 
-import de.tr7zw.nbtapi.NBTItem;
 import me.partlysunny.blocks.LuckyBlockType;
 import me.partlysunny.util.CommandUtils;
-import me.partlysunny.util.classes.ItemBuilder;
+import me.partlysunny.util.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
-import static me.partlysunny.util.Util.processText;
 
 public class GiveSubCommand implements SLBSubCommand {
     @Override
@@ -53,19 +49,7 @@ public class GiveSubCommand implements SLBSubCommand {
             }
             for (Entity e : selected) {
                 if (e instanceof Player player) {
-                    ItemStack itemStack = type.innerItem();
-                    ItemStack block;
-                    if (itemStack == null) {
-                        block = ItemBuilder.builder(type.blockType()).setName(processText(type.displayName())).build();
-                    } else {
-                        block = itemStack.clone();
-                        ItemMeta itemMeta = block.getItemMeta();
-                        itemMeta.setDisplayName(processText(type.displayName()));
-                        block.setItemMeta(itemMeta);
-                    }
-                    NBTItem nbti = new NBTItem(block);
-                    nbti.setString("luckyType", typeId);
-                    nbti.applyNBT(block);
+                    ItemStack block = Util.produceLuckyBlock(type);
                     block.setAmount(amount);
                     player.getInventory().addItem(block);
                 }

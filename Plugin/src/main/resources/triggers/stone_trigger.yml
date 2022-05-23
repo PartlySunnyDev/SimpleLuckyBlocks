@@ -1,0 +1,8 @@
+triggerType: block
+material: STONE
+chance: 0.3
+message: "You found Basic Lucky Blocks in the stone!"
+reward:
+  luckyBlockType: basic
+  min: 1
+  max: 2

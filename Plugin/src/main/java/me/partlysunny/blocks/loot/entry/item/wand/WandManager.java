@@ -8,11 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import static me.partlysunny.util.Util.processText;
-import static me.partlysunny.util.Util.processTexts;
 
 public class WandManager {
 

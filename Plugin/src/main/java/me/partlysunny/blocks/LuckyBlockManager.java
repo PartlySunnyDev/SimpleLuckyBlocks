@@ -6,6 +6,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,11 +19,15 @@ public class LuckyBlockManager {
         blocks.put(b.getLocation(), new LuckyBlock(b, type));
     }
 
+    public static void unloadBlock(Location l) {
+        blocks.remove(l);
+    }
+
     public static boolean isLuckyBlock(Location l) {
         return blocks.containsKey(l);
     }
 
-    public static void breakLuckyBlock(Player p, Location l) {
+    public static void breakLuckyBlock(@Nullable Player p, Location l) {
         if (blocks.containsKey(l)) {
             LuckyBlock b = blocks.get(l);
             new NBTBlock(b.b()).getData().removeKey("luckyType");

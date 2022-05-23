@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Wand {
 
@@ -33,6 +34,7 @@ public class Wand {
         nbti.setInteger("uses", uses);
         nbti.setInteger("maxUses", uses);
         nbti.setString("wandType", type.toString());
+        nbti.setUUID("random", UUID.randomUUID());
         nbti.applyNBT(wand);
         return wand;
     }

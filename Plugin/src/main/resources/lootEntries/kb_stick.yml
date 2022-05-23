@@ -11,3 +11,6 @@ enchantments:
   knockback:
     id: KNOCKBACK
     lvl: 1
+  sharpness:
+    id: SHARPNESS
+    lvl: 2

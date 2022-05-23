@@ -5,13 +5,22 @@ import com.mojang.authlib.properties.Property;
 import de.tr7zw.nbtapi.NBTBlock;
 import de.tr7zw.nbtapi.NBTChunk;
 import de.tr7zw.nbtapi.NBTCompound;
+import de.tr7zw.nbtapi.NBTItem;
+import me.partlysunny.SimpleLuckyBlocksCore;
+import me.partlysunny.blocks.LuckyBlockType;
+import me.partlysunny.util.classes.ItemBuilder;
 import me.partlysunny.util.reflection.JavaAccessor;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -130,7 +139,7 @@ public final class Util {
             return -getRandomBetween(-b, -a);
         }
         if (a < 0) {
-            return getRandomBetween(0, - a + b) - a;
+            return getRandomBetween(0, -a + b) - a;
         }
         return RAND.nextInt(b - a) + a;
     }
@@ -150,6 +159,13 @@ public final class Util {
             return "";
         }
         return text.replace('&', ChatColor.COLOR_CHAR);
+    }
+
+    public static void scheduleRepeatingCancelTask(Runnable r, long delay, long repeat, long stopAfter) {
+        BukkitScheduler scheduler = Bukkit.getScheduler();
+        JavaPlugin p = JavaPlugin.getPlugin(SimpleLuckyBlocksCore.class);
+        BukkitTask t = scheduler.runTaskTimer(p, r, delay, repeat);
+        scheduler.runTaskLater(p, t::cancel, stopAfter);
     }
 
     public static List<String> processTexts(List<String> texts) {
@@ -173,6 +189,23 @@ public final class Util {
             return c.getCompound(key).hasKey("luckyType");
         }
         return false;
+    }
+
+    public static ItemStack produceLuckyBlock(LuckyBlockType type) {
+        ItemStack itemStack = type.innerItem();
+        ItemStack block;
+        if (itemStack == null) {
+            block = ItemBuilder.builder(type.blockType()).setName(processText(type.displayName())).build();
+        } else {
+            block = itemStack.clone();
+            ItemMeta itemMeta = block.getItemMeta();
+            itemMeta.setDisplayName(processText(type.displayName()));
+            block.setItemMeta(itemMeta);
+        }
+        NBTItem nbti = new NBTItem(block);
+        nbti.setString("luckyType", type.id());
+        nbti.applyNBT(block);
+        return block;
     }
 
     public static boolean isLuckyBlock(int x, int y, int z, Chunk r) {

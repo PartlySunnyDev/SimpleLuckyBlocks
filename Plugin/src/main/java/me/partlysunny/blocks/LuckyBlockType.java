@@ -19,17 +19,36 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import javax.annotation.Nullable;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static me.partlysunny.util.Util.processText;
 
-public record LuckyBlockType(String id, String displayName, Material blockType, @Nullable ItemStack innerItem, String lootTable,
-                             BlockParticleEffect e, @Nullable ShapedRecipe r) {
+public final class LuckyBlockType {
 
     private static final Map<String, LuckyBlockType> types = new HashMap<>();
+    private final String id;
+    private final String displayName;
+    private final Material blockType;
+    @Nullable
+    private final ItemStack innerItem;
+    private final String lootTable;
+    private final BlockParticleEffect e;
+    @Nullable
+    private final ShapedRecipe r;
+
+    public LuckyBlockType(String id, String displayName, Material blockType, @Nullable ItemStack innerItem, String lootTable,
+                          BlockParticleEffect e, @Nullable ShapedRecipe r) {
+        this.id = id;
+        this.displayName = displayName;
+        this.blockType = blockType;
+        this.innerItem = innerItem;
+        this.lootTable = lootTable;
+        this.e = e;
+        this.r = r;
+    }
 
     public static void registerType(LuckyBlockType type) {
         types.put(type.id, type);
@@ -111,5 +130,67 @@ public record LuckyBlockType(String id, String displayName, Material blockType, 
         }
         registerType(new LuckyBlockType(substring, displayName, mat, innerItem, lootTable, e, sr));
     }
+
+    public String id() {
+        return id;
+    }
+
+    public String displayName() {
+        return displayName;
+    }
+
+    public Material blockType() {
+        return blockType;
+    }
+
+    @Nullable
+    public ItemStack innerItem() {
+        return innerItem;
+    }
+
+    public String lootTable() {
+        return lootTable;
+    }
+
+    public BlockParticleEffect e() {
+        return e;
+    }
+
+    @Nullable
+    public ShapedRecipe r() {
+        return r;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj == null || obj.getClass() != this.getClass()) return false;
+        var that = (LuckyBlockType) obj;
+        return Objects.equals(this.id, that.id) &&
+                Objects.equals(this.displayName, that.displayName) &&
+                Objects.equals(this.blockType, that.blockType) &&
+                Objects.equals(this.innerItem, that.innerItem) &&
+                Objects.equals(this.lootTable, that.lootTable) &&
+                Objects.equals(this.e, that.e) &&
+                Objects.equals(this.r, that.r);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, displayName, blockType, innerItem, lootTable, e, r);
+    }
+
+    @Override
+    public String toString() {
+        return "LuckyBlockType[" +
+                "id=" + id + ", " +
+                "displayName=" + displayName + ", " +
+                "blockType=" + blockType + ", " +
+                "innerItem=" + innerItem + ", " +
+                "lootTable=" + lootTable + ", " +
+                "e=" + e + ", " +
+                "r=" + r + ']';
+    }
+
 
 }

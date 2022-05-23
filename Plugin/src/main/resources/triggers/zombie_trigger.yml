@@ -1,0 +1,8 @@
+triggerType: entity
+type: ZOMBIE
+chance: 0.3
+message: "The zombie dropped Basic Lucky Blocks!"
+reward:
+  luckyBlockType: basic
+  min: 2
+  max: 4

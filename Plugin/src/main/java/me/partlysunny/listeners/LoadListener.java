@@ -6,19 +6,48 @@ import me.partlysunny.ConsoleLogger;
 import me.partlysunny.SimpleLuckyBlocksCore;
 import me.partlysunny.blocks.LuckyBlockManager;
 import me.partlysunny.blocks.LuckyBlockType;
-import org.bukkit.Chunk;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
-import org.bukkit.event.world.ChunkPopulateEvent;
+import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.event.world.WorldLoadEvent;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class LoadListener implements Listener {
+
+    public static void load(Server s) {
+        for (World w : s.getWorlds()) {
+            for (Chunk c : w.getLoadedChunks()) {
+                processChunk(c);
+            }
+        }
+    }
+
+    private static void processChunk(Chunk c) {
+        NBTChunk nbtc = new NBTChunk(c);
+        NBTCompound blocks = nbtc.getPersistentDataContainer().getOrCreateCompound("blocks");
+        for (Entity en : c.getEntities()) {
+            PersistentDataContainer persistentDataContainer = en.getPersistentDataContainer();
+            Byte special = persistentDataContainer.get(new NamespacedKey(JavaPlugin.getPlugin(SimpleLuckyBlocksCore.class), "special"), PersistentDataType.BYTE);
+            if (special != null && special == (byte) 1) {
+                en.remove();
+            }
+        }
+        for (String s : blocks.getKeys()) {
+            NBTCompound nbt = blocks.getCompound(s);
+            if (nbt.hasKey("luckyType")) {
+                String[] pos = s.split("_");
+                Block block = c.getWorld().getBlockAt(Integer.parseInt(pos[0]), Integer.parseInt(pos[1]), Integer.parseInt(pos[2]));
+                LuckyBlockManager.loadAsLuckyBlock(block, LuckyBlockType.getType(nbt.getString("luckyType")));
+            }
+        }
+
+    }
 
     @EventHandler
     public void onWorldLoad(WorldLoadEvent e) {
@@ -32,25 +61,18 @@ public class LoadListener implements Listener {
         processChunk(e.getChunk());
     }
 
-    private void processChunk(Chunk c) {
-        NBTChunk nbtc = new NBTChunk(c);
+    @EventHandler
+    public void onChunkUnload(ChunkUnloadEvent e) {
+        NBTChunk nbtc = new NBTChunk(e.getChunk());
         NBTCompound blocks = nbtc.getPersistentDataContainer().getOrCreateCompound("blocks");
         for (String s : blocks.getKeys()) {
             NBTCompound nbt = blocks.getCompound(s);
             if (nbt.hasKey("luckyType")) {
                 ConsoleLogger.console(s);
                 String[] pos = s.split("_");
-                Block block = c.getBlock(Math.abs(Integer.parseInt(pos[0])) % 16, Integer.parseInt(pos[1]), Math.abs(Integer.parseInt(pos[2])) % 16);
-                LuckyBlockManager.loadAsLuckyBlock(block, LuckyBlockType.getType(nbt.getString("luckyType")));
+                LuckyBlockManager.unloadBlock(new Location(e.getWorld(), Integer.parseInt(pos[0]), Integer.parseInt(pos[1]), Integer.parseInt(pos[2])));
             }
         }
-        for (Entity en : c.getEntities()) {
-            if (en.getPersistentDataContainer().get(new NamespacedKey(JavaPlugin.getPlugin(SimpleLuckyBlocksCore.class), "special"), PersistentDataType.BYTE) == (byte) 1) {
-                ConsoleLogger.console("Removed special armorStand!");
-                en.remove();
-            }
-        }
-
     }
 
 }

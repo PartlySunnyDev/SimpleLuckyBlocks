@@ -1,9 +1,18 @@
 rolls: 3
 entries:
-  iron_t1: 2
-  cobblestone_t1: 4
-  oak_planks_t1: 6
-  tank_zombie_t1: 1
-  kb_stick: 2
-  poison_t1: 2
-  minizap_Wand: 1
+  iron_t1:
+    weight: 2
+  cobblestone_t1:
+    weight: 4
+  oak_planks_t1:
+    weight: 6
+  tank_zombie_t1:
+    weight: 1
+    message: "&4A Tank Zombie appeared!"
+  kb_stick:
+    weight: 2
+  poison_t1:
+    weight: 2
+    message: "&aOw ow ow"
+  minizap_Wand:
+    weight: 1

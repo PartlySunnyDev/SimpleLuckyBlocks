@@ -43,10 +43,15 @@ public class LootTableManager {
 
     private static void loadTable(String childName, YamlConfiguration name) {
         int rolls = name.getInt("rolls");
-        List<Pair<String, Integer>> entryInfos = new ArrayList<>();
+        List<Pair<String, Pair<String, Integer>>> entryInfos = new ArrayList<>();
         ConfigurationSection entries = name.getConfigurationSection("entries");
         for (String entry : entries.getKeys(false)) {
-            entryInfos.add(new Pair<>(entry, entries.getInt(entry)));
+            ConfigurationSection entryInfo = entries.getConfigurationSection(entry);
+            String message = "";
+            if (entryInfo.contains("message")) {
+                message = entryInfo.getString("message");
+            }
+            entryInfos.add(new Pair<>(entry, new Pair<>(message, entryInfo.getInt("weight"))));
         }
         registerTable(childName.substring(0, childName.length() - 4), new CustomLootTable(rolls, entryInfos));
     }

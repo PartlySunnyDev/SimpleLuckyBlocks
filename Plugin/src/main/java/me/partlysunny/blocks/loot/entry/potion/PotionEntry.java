@@ -24,6 +24,9 @@ public class PotionEntry implements IEntry {
 
     @Override
     public void execute(Location l, Player p) {
+        if (p == null) {
+            return;
+        }
         for (PotionEffectType effect : effects.keySet()) {
             p.addPotionEffect(new PotionEffect(effect, effects.get(effect).a(), effects.get(effect).b()));
         }

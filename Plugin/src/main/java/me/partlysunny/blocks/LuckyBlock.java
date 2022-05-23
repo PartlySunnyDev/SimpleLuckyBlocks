@@ -11,6 +11,8 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import javax.annotation.Nullable;
+
 public class LuckyBlock {
 
     private final Block b;
@@ -41,7 +43,7 @@ public class LuckyBlock {
         return type;
     }
 
-    public void dropLoot(Player p) {
+    public void dropLoot(@Nullable Player p) {
         LootTableManager.getTable(type.lootTable()).dropTableAt(b.getLocation(), p);
     }
 
