@@ -78,7 +78,7 @@ public class MobEntry implements IEntry {
                 }
                 if (speedMultiplier != -1) {
                     AttributeInstance attribute = le.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
-                    attribute.setBaseValue(attribute.getBaseValue() * 2);
+                    attribute.setBaseValue(attribute.getBaseValue() * speedMultiplier);
                 }
                 if (!name.equals("")) {
                     le.setCustomName(name);
