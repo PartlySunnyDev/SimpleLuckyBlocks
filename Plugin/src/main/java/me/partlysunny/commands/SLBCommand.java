@@ -32,7 +32,11 @@ public class SLBCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        if (strings.length > 0 && commandSender instanceof Player p) {
+        if (commandSender instanceof Player p) {
+            if (strings.length == 0) {
+                executeSubCommand("help", commandSender, new String[] {});
+                return true;
+            }
             String subCommand = strings[0];
             ArrayList<String> newArgs = new ArrayList<>(Arrays.asList(strings));
             newArgs.remove(0);

@@ -21,6 +21,11 @@ public class GiveSubCommand implements SLBSubCommand {
     }
 
     @Override
+    public String getUsage() {
+        return " <selector> <blockType> <amount>";
+    }
+
+    @Override
     public void execute(CommandSender executor, String[] args) {
         if (executor instanceof Player p) {
             if (args.length < 2) {

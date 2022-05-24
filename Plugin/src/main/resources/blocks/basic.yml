@@ -10,6 +10,6 @@ recipe:
     a: GOLD_INGOT
     b: FURNACE
 blockParticleEffect:
-  type: aura
+  type: ring
   particle: GLOW
   frequency: 3

@@ -21,4 +21,4 @@ armorPieces:
     dropChance: 1
 mainHand:
   material: IRON_SWORD
-spawnEffect: LIGHTNING
+spawnEffect: EXPLOSION_EFFECT

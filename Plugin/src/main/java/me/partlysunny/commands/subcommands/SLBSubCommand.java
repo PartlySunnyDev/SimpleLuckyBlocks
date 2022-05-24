@@ -8,6 +8,8 @@ public interface SLBSubCommand {
 
     String getDescription();
 
+    String getUsage();
+
     void execute(CommandSender executor, String[] args);
 
 }

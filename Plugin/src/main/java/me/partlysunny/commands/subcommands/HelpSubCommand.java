@@ -18,11 +18,16 @@ public class HelpSubCommand implements SLBSubCommand {
     }
 
     @Override
+    public String getUsage() {
+        return "";
+    }
+
+    @Override
     public void execute(CommandSender executor, String[] args) {
         Collection<SLBSubCommand> commands = SLBCommand.subCommands.values();
-        executor.sendMessage(ChatColor.GRAY + "List of commands (run with /sbl <command>):");
+        executor.sendMessage(ChatColor.YELLOW + "List of commands (run with /sbl <command>):");
         for (SLBSubCommand c : commands) {
-            executor.sendMessage(ChatColor.WHITE + c.getId() + ": " + c.getDescription());
+            executor.sendMessage(ChatColor.WHITE + c.getId() + c.getUsage() + ": " + c.getDescription());
         }
     }
 }
