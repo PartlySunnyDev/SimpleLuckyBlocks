@@ -164,7 +164,7 @@ public class LootEntryManager {
                         ConfigurationSection enchantments = mainHandInfo.getConfigurationSection("enchantments");
                         for (String z : enchantments.getKeys(false)) {
                             ConfigurationSection info = enchantments.getConfigurationSection(z);
-                            b.addEnchantment(Enchantment.getByKey(new NamespacedKey(JavaPlugin.getPlugin(SimpleLuckyBlocksCore.class), info.getString("id").toUpperCase())), info.getInt("lvl"));
+                            b.addEnchantment(Enchantment.getByKey(NamespacedKey.minecraft(info.getString("id").toLowerCase())), info.getInt("lvl"));
                         }
                     }
                     itemOnHand = b.build();
