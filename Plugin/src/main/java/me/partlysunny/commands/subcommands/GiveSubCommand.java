@@ -57,6 +57,7 @@ public class GiveSubCommand implements SLBSubCommand {
                     ItemStack block = Util.produceLuckyBlock(type);
                     block.setAmount(amount);
                     player.getInventory().addItem(block);
+                    player.sendMessage(ChatColor.GREEN + "Given you " + amount + " lucky blocks of type " + type.displayName());
                 }
             }
         }
