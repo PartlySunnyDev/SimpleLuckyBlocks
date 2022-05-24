@@ -24,19 +24,19 @@ public enum WandType {
     FIRESTORM("firestorm", (power, player) -> {
         Location l = player.getLocation();
         Util.scheduleRepeatingCancelTask(() -> {
-            for (int i = -power; i < power; i++) {
-                for (int j = -power; j < power; j++) {
-                    for (int k = -power; k < power; k++) {
-                        player.getWorld().spawnParticle(Particle.FLAME, l.add(i, k, j), 1, 0.5, 0.5, 0.5);
+            for (int i = -(power * 2); i < (power * 2); i += 2) {
+                for (int j = -(power * 2); j < (power * 2); j += 2) {
+                    for (int k = 0; k < power; k += 2) {
+                        player.getWorld().spawnParticle(Particle.DRIP_LAVA, l.clone().add(i, k, j), 1, 0.5, 0.5, 0.5, 0);
                     }
                 }
             }
-            for (Entity e : l.getWorld().getNearbyEntities(l, power, power, power)) {
-                if (e instanceof LivingEntity le) {
-                    le.damage(power / 3d);
+            for (Entity e : l.getWorld().getNearbyEntities(l, (power * 2), (power * 2), (power * 2))) {
+                if (e instanceof LivingEntity le && !e.equals(player)) {
+                    le.damage((power * 2) / 3d);
                 }
             }
-        }, 0, 10, power * 20);
+        }, 0, 2, power * 20);
     }),
     HEAL("heal", (power, player) -> {
         double maxHealth = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
