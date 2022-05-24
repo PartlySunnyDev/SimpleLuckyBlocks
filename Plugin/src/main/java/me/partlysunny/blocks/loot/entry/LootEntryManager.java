@@ -2,6 +2,7 @@ package me.partlysunny.blocks.loot.entry;
 
 import me.partlysunny.ConsoleLogger;
 import me.partlysunny.SimpleLuckyBlocksCore;
+import me.partlysunny.blocks.loot.entry.command.CommandEntry;
 import me.partlysunny.blocks.loot.entry.item.ItemEntry;
 import me.partlysunny.blocks.loot.entry.item.wand.WandEntry;
 import me.partlysunny.blocks.loot.entry.mob.MobEntry;
@@ -190,6 +191,10 @@ public class LootEntryManager {
                 String displayName = processText(name.getString("name"));
                 List<String> lore = processTexts(name.getStringList("lore"));
                 registerEntry(realName, new WandEntry(displayName, lore, minPower, maxPower, wand));
+            }
+            case "command" -> {
+                List<String> commands = name.getStringList("commands");
+                registerEntry(realName, new CommandEntry(commands));
             }
             default -> {
                 ConsoleLogger.error("Invalid entry type found in " + name.getName());

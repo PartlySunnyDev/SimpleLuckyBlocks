@@ -7,6 +7,8 @@ Before modifying configuration for blocks make note of the following
 - If the section asks for a "id" in a "effects" section, use values from https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/potion/PotionEffectType.html
 - If a section asks for a "wandType", check out https://github.com/steveyxz/SimpleLuckyBlocks/blob/master/Plugin/src/main/java/me/partlysunny/blocks/loot/entry/item/wand/WandType.java
 
+In a command entry, you can use the placeholder <pos> to substitute for the position where the lucky block was broken. DO NOT USE @s or @p selectors
+
 INVALID VALUES WILL MOST LIKELY CAUSE FATAL ERRORS
 If the plugin is crashing on launch, try deleting the config folder and reloading
 If a valid value is not working contact the developer :)

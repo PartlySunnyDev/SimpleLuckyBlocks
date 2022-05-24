@@ -1,0 +1,3 @@
+entryType: command
+commands:
+  - execute positioned <pos> run effect give @e[type=minecraft:player,distance=1..5] minecraft:instant_damage

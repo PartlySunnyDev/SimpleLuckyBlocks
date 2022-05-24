@@ -16,3 +16,6 @@ entries:
     message: "&aOw ow ow"
   minizap_Wand:
     weight: 1
+  damage_nearby_players:
+    weight: 3
+    message: "&7Don't worry its not just you who was hit :D"
