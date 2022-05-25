@@ -19,3 +19,6 @@ entries:
   damage_nearby_players:
     weight: 3
     message: "&7Don't worry its not just you who was hit :D"
+  jungle_temple:
+    weight: 10
+    message: "Temple spawned"

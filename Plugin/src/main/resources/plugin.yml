@@ -1,6 +1,8 @@
 name: SimpleLuckyBlocksCore
 version: '${project.version}'
 main: me.partlysunny.SimpleLuckyBlocksCore
+softdepend:
+  - WorldEdit
 api-version: 1.16
 commands:
   slb:

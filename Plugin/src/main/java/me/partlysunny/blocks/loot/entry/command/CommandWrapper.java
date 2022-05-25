@@ -12,6 +12,6 @@ public class CommandWrapper {
     }
 
     public void execute(Server s, Location l) {
-        s.dispatchCommand(s.getConsoleSender(), command.replace("<pos>", String.format("%d %d %d", (int)l.getX(), (int)l.getY(), (int)l.getZ())));
+        s.dispatchCommand(s.getConsoleSender(), command.replace("<pos>", String.format("%d %d %d", (int) l.getX(), (int) l.getY(), (int) l.getZ())));
     }
 }

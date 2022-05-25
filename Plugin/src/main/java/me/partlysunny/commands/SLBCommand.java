@@ -33,8 +33,12 @@ public class SLBCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
         if (commandSender instanceof Player p) {
+            if (!p.hasPermission("slb.admin")) {
+                p.sendMessage(ChatColor.RED + "You cannot use this command!");
+                return true;
+            }
             if (strings.length == 0) {
-                executeSubCommand("help", commandSender, new String[] {});
+                executeSubCommand("help", commandSender, new String[]{});
                 return true;
             }
             String subCommand = strings[0];

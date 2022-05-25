@@ -331,9 +331,7 @@ public class CommandUtils {
             return true;
         if (hasTag(SelectorType.Y, arg))
             return true;
-        if (hasTag(SelectorType.Z, arg))
-            return true;
-        return false;
+        return hasTag(SelectorType.Z, arg);
     }
 
     private static String[] getTags(String arg) {
@@ -504,7 +502,7 @@ public class CommandUtils {
             return false;
         for (Team t : Bukkit.getScoreboardManager().getMainScoreboard().getTeams()) {
             if ((t.getName().equalsIgnoreCase(getTeam(arg)) != isInverted(arg))) {
-                if ((t.getEntries().contains(((Player) e).getName()) != isInverted(arg)))
+                if ((t.getEntries().contains(e.getName()) != isInverted(arg)))
                     return true;
             }
         }
@@ -570,7 +568,7 @@ public class CommandUtils {
             return false;
         for (Objective o : Bukkit.getScoreboardManager().getMainScoreboard().getObjectives()) {
             if (o.getName().equalsIgnoreCase(getScoreName(arg))) {
-                if ((o.getScore(((Player) e).getName()).getScore() <= getValueAsInteger(arg) != isInverted(arg)))
+                if ((o.getScore(e.getName()).getScore() <= getValueAsInteger(arg) != isInverted(arg)))
                     return true;
             }
         }
@@ -608,7 +606,7 @@ public class CommandUtils {
             return false;
         for (Objective o : Bukkit.getScoreboardManager().getMainScoreboard().getObjectives()) {
             if (o.getName().equalsIgnoreCase(getScoreMinName(arg))) {
-                if ((o.getScore(((Player) e).getName()).getScore() >= getValueAsInteger(arg) != isInverted(arg)))
+                if ((o.getScore(e.getName()).getScore() >= getValueAsInteger(arg) != isInverted(arg)))
                     return true;
             }
         }
@@ -674,8 +672,7 @@ public class CommandUtils {
         if (getM(arg) == null)
             return true;
         if (e instanceof HumanEntity) {
-            if ((isInverted(arg) != (getM(arg) == ((HumanEntity) e).getGameMode())))
-                return true;
+            return isInverted(arg) != (getM(arg) == ((HumanEntity) e).getGameMode());
         }
         return false;
     }
@@ -683,27 +680,21 @@ public class CommandUtils {
     private static boolean isW(String arg, Location loc, Entity e) {
         if (getW(arg) == null) {
             return true;
-        } else if ((isInverted(arg) != getAcceptedWorlds(arg).contains(getW(arg))))
-            return true;
-        return false;
+        } else return isInverted(arg) != getAcceptedWorlds(arg).contains(getW(arg));
     }
 
     private static boolean isName(String arg, Entity e) {
         if (getName(arg) == null)
             return true;
-        if ((isInverted(arg) != (e.getCustomName() != null) && isInverted(arg) != (getName(arg)
+        return isInverted(arg) == (e.getCustomName() == null) && isInverted(arg) != (getName(arg)
                 .equals(e.getCustomName().replace(" ", "_"))
-                || (e instanceof Player && ((Player) e).getName().replace(" ", "_").equalsIgnoreCase(getName(arg))))))
-            return true;
-        return false;
+                || (e instanceof Player && e.getName().replace(" ", "_").equalsIgnoreCase(getName(arg))));
     }
 
     private static boolean isType(String arg, Entity e) {
         boolean invert = isInverted(arg);
         String type = getType(arg);
-        if (invert != e.getType().name().equalsIgnoreCase(type))
-            return true;
-        return false;
+        return invert != e.getType().name().equalsIgnoreCase(type);
 
     }
 

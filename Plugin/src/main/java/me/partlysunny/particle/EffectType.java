@@ -1,6 +1,5 @@
 package me.partlysunny.particle;
 
-import net.minecraft.core.particles.ParticleType;
 import org.apache.logging.log4j.util.TriConsumer;
 import org.bukkit.Location;
 import org.bukkit.Particle;

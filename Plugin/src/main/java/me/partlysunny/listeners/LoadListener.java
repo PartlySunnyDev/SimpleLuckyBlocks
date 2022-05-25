@@ -2,7 +2,6 @@ package me.partlysunny.listeners;
 
 import de.tr7zw.nbtapi.NBTChunk;
 import de.tr7zw.nbtapi.NBTCompound;
-import me.partlysunny.ConsoleLogger;
 import me.partlysunny.SimpleLuckyBlocksCore;
 import me.partlysunny.blocks.LuckyBlockManager;
 import me.partlysunny.blocks.LuckyBlockType;
@@ -68,7 +67,6 @@ public class LoadListener implements Listener {
         for (String s : blocks.getKeys()) {
             NBTCompound nbt = blocks.getCompound(s);
             if (nbt.hasKey("luckyType")) {
-                ConsoleLogger.console(s);
                 String[] pos = s.split("_");
                 LuckyBlockManager.unloadBlock(new Location(e.getWorld(), Integer.parseInt(pos[0]), Integer.parseInt(pos[1]), Integer.parseInt(pos[2])));
             }

@@ -8,6 +8,7 @@ import me.partlysunny.blocks.loot.entry.item.wand.WandEntry;
 import me.partlysunny.blocks.loot.entry.mob.MobEntry;
 import me.partlysunny.blocks.loot.entry.mob.SpawnEffect;
 import me.partlysunny.blocks.loot.entry.potion.PotionEntry;
+import me.partlysunny.blocks.loot.entry.structure.StructureEntry;
 import me.partlysunny.util.classes.ItemBuilder;
 import me.partlysunny.util.classes.Pair;
 import org.bukkit.Material;
@@ -195,6 +196,23 @@ public class LootEntryManager {
             case "command" -> {
                 List<String> commands = name.getStringList("commands");
                 registerEntry(realName, new CommandEntry(commands));
+            }
+            case "structure" -> {
+                if (!SimpleLuckyBlocksCore.isWorldEdit) {
+                    return;
+                }
+                String structure = name.getString("structure");
+                double offsetX = 0, offsetY = 0, offsetZ = 0;
+                if (name.contains("offsetX")) {
+                    offsetX = name.getDouble("offsetX");
+                }
+                if (name.contains("offsetY")) {
+                    offsetY = name.getDouble("offsetY");
+                }
+                if (name.contains("offsetZ")) {
+                    offsetZ = name.getDouble("offsetZ");
+                }
+                registerEntry(realName, new StructureEntry(structure, offsetX, offsetY, offsetZ));
             }
             default -> {
                 ConsoleLogger.error("Invalid entry type found in " + name.getName());

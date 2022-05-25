@@ -17,7 +17,9 @@ public class BreakListener implements Listener {
     public void onPlayerBreakBlock(BlockBreakEvent e) {
         Block block = e.getBlock();
         Location location = block.getLocation();
-        cancelIfLuckyBlock(block, e);
+        if (!cancelIfLuckyBlock(block, e)) {
+            return;
+        }
         LuckyBlockManager.breakLuckyBlock(e.getPlayer(), location);
         block.getWorld().playSound(location, Sound.BLOCK_STONE_BREAK, 1, 1);
         block.getWorld().setBlockData(location, Material.AIR.createBlockData());
@@ -57,9 +59,11 @@ public class BreakListener implements Listener {
         cancelIfLuckyBlock(e.getBlock(), e);
     }
 
-    private void cancelIfLuckyBlock(Block b, Cancellable e) {
+    private boolean cancelIfLuckyBlock(Block b, Cancellable e) {
         if (LuckyBlockManager.isLuckyBlock(b.getLocation())) {
             e.setCancelled(true);
+            return true;
         }
+        return false;
     }
 }

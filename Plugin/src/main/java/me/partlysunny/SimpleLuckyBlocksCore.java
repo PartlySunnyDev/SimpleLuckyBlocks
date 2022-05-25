@@ -12,6 +12,7 @@ import me.partlysunny.listeners.*;
 import me.partlysunny.util.Util;
 import me.partlysunny.version.Version;
 import me.partlysunny.version.VersionManager;
+import me.partlysunny.worldedit.WorldEditHook;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -25,9 +26,11 @@ import java.util.zip.ZipInputStream;
 import static me.partlysunny.blocks.loot.LootTableManager.loadLootTables;
 import static me.partlysunny.blocks.loot.entry.LootEntryManager.loadEntries;
 import static me.partlysunny.blocks.loot.entry.item.wand.WandManager.loadWands;
+import static me.partlysunny.worldedit.StructureManager.loadStructures;
 
 public final class SimpleLuckyBlocksCore extends JavaPlugin {
 
+    public static boolean isWorldEdit = false;
     private static VersionManager manager;
 
     public static VersionManager manager() {
@@ -49,6 +52,7 @@ public final class SimpleLuckyBlocksCore extends JavaPlugin {
             setEnabled(false);
             return;
         }
+        isWorldEdit = WorldEditHook.init();
         manager.enable();
         //Copy in default files if not existent
         try {
@@ -61,6 +65,11 @@ public final class SimpleLuckyBlocksCore extends JavaPlugin {
         //Register subcommands
         registerCommands();
         registerListeners();
+        try {
+            loadStructures();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         loadWands();
         //Load loot table entries
         loadEntries();
@@ -100,6 +109,7 @@ public final class SimpleLuckyBlocksCore extends JavaPlugin {
         process("lootTables");
         process("wands");
         process("triggers");
+        process("structures");
         copyFileWithName("READ.txt");
         copyFileWithName("config.yml");
     }
