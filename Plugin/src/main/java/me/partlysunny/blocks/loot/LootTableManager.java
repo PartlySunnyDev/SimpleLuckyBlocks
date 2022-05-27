@@ -2,6 +2,7 @@ package me.partlysunny.blocks.loot;
 
 import me.partlysunny.ConsoleLogger;
 import me.partlysunny.SimpleLuckyBlocksCore;
+import me.partlysunny.util.Util;
 import me.partlysunny.util.classes.Pair;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -42,16 +43,13 @@ public class LootTableManager {
     }
 
     private static void loadTable(String childName, YamlConfiguration name) {
-        int rolls = name.getInt("rolls");
+        int rolls = Util.getOrError(name, "rolls");
         List<Pair<String, Pair<String, Integer>>> entryInfos = new ArrayList<>();
-        ConfigurationSection entries = name.getConfigurationSection("entries");
+        ConfigurationSection entries = Util.getOrError(name, "entries");
         for (String entry : entries.getKeys(false)) {
-            ConfigurationSection entryInfo = entries.getConfigurationSection(entry);
-            String message = "";
-            if (entryInfo.contains("message")) {
-                message = entryInfo.getString("message");
-            }
-            entryInfos.add(new Pair<>(entry, new Pair<>(message, entryInfo.getInt("weight"))));
+            ConfigurationSection entryInfo = Util.getOrError(entries, entry);
+            String message = Util.getOrDefault(entryInfo, "message", "");
+            entryInfos.add(new Pair<>(entry, new Pair<>(message, Util.getOrError(entryInfo, "weight"))));
         }
         registerTable(childName.substring(0, childName.length() - 4), new CustomLootTable(rolls, entryInfos));
     }

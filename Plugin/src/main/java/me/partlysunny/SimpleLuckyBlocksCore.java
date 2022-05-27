@@ -13,6 +13,7 @@ import me.partlysunny.util.Util;
 import me.partlysunny.version.Version;
 import me.partlysunny.version.VersionManager;
 import me.partlysunny.worldedit.WorldEditHook;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -20,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.security.CodeSource;
+import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -52,7 +54,11 @@ public final class SimpleLuckyBlocksCore extends JavaPlugin {
             setEnabled(false);
             return;
         }
-        isWorldEdit = WorldEditHook.init();
+        if (Bukkit.getPluginManager().isPluginEnabled("WorldEdit")) {
+            isWorldEdit = WorldEditHook.init();
+        } else {
+            isWorldEdit = false;
+        }
         manager.enable();
         //Copy in default files if not existent
         try {
@@ -130,14 +136,17 @@ public final class SimpleLuckyBlocksCore extends JavaPlugin {
                 String name = e.getName();
                 if (name.equals(key)) {
                     File destination = new File(f + "/" + key);
-                    InputStream from = SimpleLuckyBlocksCore.class.getClassLoader().getResourceAsStream(name);
-                    Util.copy(from, destination);
+                    Util.copy(name, destination, false);
                 }
             }
         }
     }
 
     private void process(String key) throws IOException {
+        process(key, false);
+    }
+
+    private void process(String key, boolean rezip) throws IOException {
         File f = new File(getDataFolder(), key);
         if (!f.exists()) {
             f.mkdir();
@@ -153,8 +162,7 @@ public final class SimpleLuckyBlocksCore extends JavaPlugin {
                 String name = e.getName();
                 if (name.startsWith(key + "/") && !name.equals(key + "/")) {
                     File destination = new File(f + "/" + name.substring(key.length() + 1));
-                    InputStream from = SimpleLuckyBlocksCore.class.getClassLoader().getResourceAsStream(name);
-                    Util.copy(from, destination);
+                    Util.copy(name, destination, rezip);
                 }
             }
         }

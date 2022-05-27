@@ -28,7 +28,8 @@ public class StructureManager {
 
     public static void loadStructures() throws IOException {
         if (!SimpleLuckyBlocksCore.isWorldEdit) {
-            ConsoleLogger.warn("WorldEdit was not found! Structures will still be loaded but will not work!");
+            ConsoleLogger.warn("WorldEdit was not found! Structures will not work!");
+            return;
         }
         File dir = new File(JavaPlugin.getPlugin(SimpleLuckyBlocksCore.class).getDataFolder().getAbsolutePath() + "/structures");
         File[] directoryListing = dir.listFiles();

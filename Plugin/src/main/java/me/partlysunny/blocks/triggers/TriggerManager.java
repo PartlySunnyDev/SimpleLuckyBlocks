@@ -2,6 +2,7 @@ package me.partlysunny.blocks.triggers;
 
 import me.partlysunny.ConsoleLogger;
 import me.partlysunny.SimpleLuckyBlocksCore;
+import me.partlysunny.util.Util;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -63,21 +64,18 @@ public class TriggerManager {
     }
 
     private static void loadType(String childName, YamlConfiguration name) {
-        String triggerType = name.getString("triggerType");
-        double chance = name.getDouble("chance");
-        String message = "";
-        if (name.contains("message")) {
-            message = name.getString("message");
-        }
-        ConfigurationSection reward = name.getConfigurationSection("reward");
-        TriggerReward r = new TriggerReward(reward.getString("luckyBlockType"), reward.getInt("min"), reward.getInt("max"));
+        String triggerType = Util.getOrError(name, "triggerType");
+        double chance = Util.getOrError(name, "chance");
+        String message = Util.getOrDefault(name, "message", "");
+        ConfigurationSection reward = Util.getOrError(name, "reward");
+        TriggerReward r = new TriggerReward(Util.getOrError(reward, "luckyBlockType"), Util.getOrError(reward, "min"), Util.getOrError(reward, "max"));
         String realName = childName.substring(0, childName.length() - 4);
         switch (triggerType) {
             case "block" -> {
-                registerBlockTrigger(realName, new BlockTrigger(Material.getMaterial(name.getString("material")), chance, r, message));
+                registerBlockTrigger(realName, new BlockTrigger(Material.getMaterial(Util.getOrError(name, "material")), chance, r, message));
             }
             case "entity" -> {
-                registerMobTrigger(realName, new MobTrigger(EntityType.valueOf(name.getString("type")), chance, r, message));
+                registerMobTrigger(realName, new MobTrigger(EntityType.valueOf(Util.getOrError(name, "type")), chance, r, message));
             }
         }
     }

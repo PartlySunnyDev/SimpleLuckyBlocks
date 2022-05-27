@@ -76,15 +76,12 @@ public final class LuckyBlockType {
     }
 
     private static void loadType(String childName, YamlConfiguration name) {
-        Material mat = Material.getMaterial(name.getString("blockType"));
-        String lootTable = name.getString("lootTable");
-        String displayName = "Lucky Block";
+        Material mat = Material.getMaterial(Util.getOrError(name, "blockType"));
+        String lootTable = Util.getOrError(name, "lootTable");
+        String displayName = Util.getOrDefault(name, "displayName", "Lucky Block");
         ItemStack innerItem = null;
         BlockParticleEffect e = null;
         ShapedRecipe sr = null;
-        if (name.contains("displayName")) {
-            displayName = name.getString("displayName");
-        }
         if (name.contains("innerItem")) {
             ConfigurationSection itemInfo = name.getConfigurationSection("innerItem");
             String type = itemInfo.getString("type");
@@ -102,12 +99,12 @@ public final class LuckyBlockType {
         }
         String substring = childName.substring(0, childName.length() - 4);
         if (name.contains("recipe")) {
-            ConfigurationSection recipeInfo = name.getConfigurationSection("recipe");
-            List<String> slots = recipeInfo.getStringList("slots");
+            ConfigurationSection recipeInfo = Util.getOrError(name, "recipe");
+            List<String> slots = Util.getOrError(recipeInfo, "slots");
             Map<Character, Material> keys = new HashMap<>();
-            ConfigurationSection keysSection = recipeInfo.getConfigurationSection("keys");
+            ConfigurationSection keysSection = Util.getOrError(recipeInfo, "keys");
             for (String c : keysSection.getKeys(true)) {
-                keys.put(c.charAt(0), Material.getMaterial(keysSection.getString(c)));
+                keys.put(c.charAt(0), Material.getMaterial(Util.getOrError(keysSection, c)));
             }
             ItemStack block;
             if (innerItem == null) {

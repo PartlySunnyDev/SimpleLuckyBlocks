@@ -15,6 +15,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -28,10 +29,12 @@ import org.json.simple.parser.JSONParser;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import java.util.zip.GZIPOutputStream;
 
 public final class Util {
 
@@ -191,6 +194,20 @@ public final class Util {
         return false;
     }
 
+    public static <T> T getOrDefault(ConfigurationSection y, String key, T def) {
+        if (y.contains(key)) {
+            return (T) y.get(key);
+        }
+        return def;
+    }
+
+    public static <T> T getOrError(ConfigurationSection y, String key) {
+        if (y.contains(key)) {
+            return (T) y.get(key);
+        }
+        throw new IllegalArgumentException("Key " + key + " inside " + y.getName() + " was not found!");
+    }
+
     public static ItemStack produceLuckyBlock(LuckyBlockType type) {
         ItemStack itemStack = type.innerItem();
         ItemStack block;
@@ -218,9 +235,10 @@ public final class Util {
         return false;
     }
 
-    public static void copy(InputStream source, File destination) throws IOException {
+    public static void copy(String source, File destination, boolean rezip) throws IOException {
+        InputStream stream = SimpleLuckyBlocksCore.class.getClassLoader().getResourceAsStream(source);
         if (!destination.exists()) {
-            Files.copy(source, destination.toPath());
+            Files.copy(stream, destination.toPath());
         }
     }
 

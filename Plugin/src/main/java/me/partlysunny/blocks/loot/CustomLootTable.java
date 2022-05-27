@@ -32,6 +32,9 @@ public class CustomLootTable {
         List<String> hasSaid = new ArrayList<>();
         for (int i = 0; i < rolls; i++) {
             Pair<String, IEntry> raffle = entries.raffle();
+            if (raffle.a() == null || raffle.b() == null) {
+                continue;
+            }
             raffle.b().execute(l, p);
             if (!hasSaid.contains(raffle.a()) && !raffle.a().equals("") && !(p == null)) {
                 hasSaid.add(raffle.a());

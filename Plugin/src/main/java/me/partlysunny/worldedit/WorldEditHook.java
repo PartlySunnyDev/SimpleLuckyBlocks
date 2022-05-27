@@ -7,10 +7,12 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
+import com.sk89q.worldedit.function.mask.SolidBlockMask;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.session.ClipboardHolder;
+import jline.internal.Nullable;
 import me.partlysunny.ConsoleLogger;
 import org.apache.commons.io.FilenameUtils;
 import org.bukkit.Bukkit;
@@ -66,6 +68,7 @@ public class WorldEditHook {
                     .copyEntities(true)
                     .copyBiomes(false)
                     .ignoreAirBlocks(true)
+                    .maskSource(new SolidBlockMask(es))
                     .build();
             Operations.complete(operation);
         } catch (WorldEditException e) {
