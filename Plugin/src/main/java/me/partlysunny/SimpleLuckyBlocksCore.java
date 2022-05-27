@@ -5,6 +5,7 @@ import me.partlysunny.blocks.StandManager;
 import me.partlysunny.blocks.triggers.TriggerManager;
 import me.partlysunny.commands.SLBCommand;
 import me.partlysunny.commands.SLBTabCompleter;
+import me.partlysunny.commands.subcommands.GenBlocksSubCommand;
 import me.partlysunny.commands.subcommands.GiveSubCommand;
 import me.partlysunny.commands.subcommands.GiveWandSubCommand;
 import me.partlysunny.commands.subcommands.HelpSubCommand;
@@ -102,6 +103,7 @@ public final class SimpleLuckyBlocksCore extends JavaPlugin {
         SLBCommand.registerSubCommand(new HelpSubCommand());
         SLBCommand.registerSubCommand(new GiveSubCommand());
         SLBCommand.registerSubCommand(new GiveWandSubCommand());
+        SLBCommand.registerSubCommand(new GenBlocksSubCommand());
         getCommand("slb").setExecutor(new SLBCommand());
         getCommand("slb").setTabCompleter(new SLBTabCompleter());
     }

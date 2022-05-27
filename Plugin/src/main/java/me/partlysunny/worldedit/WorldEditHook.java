@@ -1,6 +1,7 @@
 package me.partlysunny.worldedit;
 
 import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
@@ -11,13 +12,20 @@ import com.sk89q.worldedit.function.mask.SolidBlockMask;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.ClipboardHolder;
+import com.sk89q.worldedit.world.block.BlockType;
 import jline.internal.Nullable;
 import me.partlysunny.ConsoleLogger;
+import me.partlysunny.SimpleLuckyBlocksCore;
+import me.partlysunny.blocks.LuckyBlockManager;
+import me.partlysunny.blocks.LuckyBlockType;
+import me.partlysunny.util.Util;
 import org.apache.commons.io.FilenameUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -74,6 +82,51 @@ public class WorldEditHook {
         } catch (WorldEditException e) {
             ConsoleLogger.error("An internal WorldEdit related error occurred. Please contact the developer :)");
         }
+    }
+
+    public static void placeRandomLuckyBlocksInSelection(CommandSender executor, int blockCount, LuckyBlockType t) {
+        Region selection;
+        try {
+            selection = WorldEditHook.w().getSessionManager().get(BukkitAdapter.adapt(executor)).getSelection();
+        } catch (IncompleteRegionException e) {
+            executor.sendMessage(ChatColor.RED + "Please select a valid region (use //wand and select)");
+            return;
+        }
+        com.sk89q.worldedit.world.World world = selection.getWorld();
+        if (world == null) {
+            return;
+        }
+        org.bukkit.World bukkitWorld = BukkitAdapter.adapt(world);
+        int placed = 0;
+        for (BlockVector3 b : selection) {
+            long l = Util.RAND.nextLong((long) selection.getLength() * selection.getWidth());
+            if (l < blockCount && placed < blockCount) {
+                Block bukkitBlock = getHighestBlock(world, b, selection.getBoundingBox().getMaximumY(), selection.getBoundingBox().getMinimumY());
+                Location toSpawnLocation = bukkitBlock.getLocation().add(0, 1, 0);
+                if (toSpawnLocation.getY() > SimpleLuckyBlocksCore.manager().getWorldMaxHeight(bukkitWorld)) {
+                    continue;
+                }
+                bukkitWorld.setBlockData(toSpawnLocation, t.blockType().createBlockData());
+                Block blockAt = bukkitWorld.getBlockAt(toSpawnLocation);
+                Util.setToLuckyBlockType(blockAt, t.id());
+                LuckyBlockManager.loadAsLuckyBlock(blockAt, t);
+                placed++;
+            }
+        }
+    }
+
+    private static Block getHighestBlock(com.sk89q.worldedit.world.World w, BlockVector3 l, int maxY, int minY) {
+        int highest = Integer.MIN_VALUE;
+        for (int i = minY; i < maxY + 1; i++) {
+            if (BukkitAdapter.adapt(w.getBlock(BlockVector3.at(l.getX(), i + 1, l.getZ())).getBlockType()).isAir() && !BukkitAdapter.adapt(w.getBlock(BlockVector3.at(l.getX(), i, l.getZ())).getBlockType()).isAir()) {
+                highest = i;
+            }
+        }
+        return BukkitAdapter.adapt(w).getBlockAt(new Location(BukkitAdapter.adapt(w), l.getX(), highest, l.getZ()));
+    }
+
+    public static WorldEdit w() {
+        return w;
     }
 
 

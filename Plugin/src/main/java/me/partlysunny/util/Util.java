@@ -147,11 +147,6 @@ public final class Util {
         return RAND.nextInt(b - a) + a;
     }
 
-    public static void setToLuckyBlock(Block b) {
-        NBTBlock nbtb = new NBTBlock(b);
-        nbtb.getData().setBoolean("lucky", true);
-    }
-
     public static void setToLuckyBlockType(Block b, String t) {
         NBTBlock nbtb = new NBTBlock(b);
         nbtb.getData().setString("luckyType", t);
