@@ -9,6 +9,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import static me.partlysunny.util.Util.processText;
+
 public class GiveSubCommand implements SLBSubCommand {
     @Override
     public String getId() {
@@ -57,7 +59,7 @@ public class GiveSubCommand implements SLBSubCommand {
                     ItemStack block = Util.produceLuckyBlock(type);
                     block.setAmount(amount);
                     player.getInventory().addItem(block);
-                    player.sendMessage(ChatColor.GREEN + "Given you " + amount + " lucky blocks of type " + type.displayName());
+                    player.sendMessage(ChatColor.GREEN + "Given you " + amount + " lucky blocks of type " + processText(type.displayName()));
                 }
             }
         }

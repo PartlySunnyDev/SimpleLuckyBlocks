@@ -11,19 +11,26 @@ import java.util.Map;
 
 public class ItemBuilder {
 
-    private final Material m;
     private final ItemMeta meta;
     private final ItemStack s;
     private final Map<Enchantment, Integer> enchants = new HashMap<>();
 
     public ItemBuilder(Material m) {
-        this.m = m;
         this.s = new ItemStack(m);
+        this.meta = s.getItemMeta();
+    }
+
+    public ItemBuilder(ItemStack s) {
+        this.s = s;
         this.meta = s.getItemMeta();
     }
 
     public static ItemBuilder builder(Material m) {
         return new ItemBuilder(m);
+    }
+
+    public static ItemBuilder builder(ItemStack i) {
+        return new ItemBuilder(i);
     }
 
     public ItemBuilder setName(String name) {

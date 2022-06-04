@@ -5,24 +5,29 @@ import me.partlysunny.blocks.StandManager;
 import me.partlysunny.blocks.triggers.TriggerManager;
 import me.partlysunny.commands.SLBCommand;
 import me.partlysunny.commands.SLBTabCompleter;
-import me.partlysunny.commands.subcommands.GenBlocksSubCommand;
-import me.partlysunny.commands.subcommands.GiveSubCommand;
-import me.partlysunny.commands.subcommands.GiveWandSubCommand;
-import me.partlysunny.commands.subcommands.HelpSubCommand;
+import me.partlysunny.commands.subcommands.*;
+import me.partlysunny.gui.GuiManager;
+import me.partlysunny.gui.guis.MainGui;
+import me.partlysunny.gui.guis.common.ValueGuiManager;
+import me.partlysunny.gui.guis.loot.LootMenu;
+import me.partlysunny.gui.guis.loot.entry.EntryCreationGui;
+import me.partlysunny.gui.guis.loot.entry.EntryManagementGui;
+import me.partlysunny.gui.guis.loot.entry.creation.potion.PotionEntryCreateGui;
+import me.partlysunny.gui.textInput.ChatListener;
 import me.partlysunny.listeners.*;
 import me.partlysunny.util.Util;
 import me.partlysunny.version.Version;
 import me.partlysunny.version.VersionManager;
 import me.partlysunny.worldedit.WorldEditHook;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.security.CodeSource;
-import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -61,6 +66,7 @@ public final class SimpleLuckyBlocksCore extends JavaPlugin {
             isWorldEdit = false;
         }
         manager.enable();
+        Metrics metrics = new Metrics(this, 15259);
         //Copy in default files if not existent
         try {
             initDefaults();
@@ -86,6 +92,8 @@ public final class SimpleLuckyBlocksCore extends JavaPlugin {
         LuckyBlockType.loadTypes();
         TriggerManager.loadTriggers();
         LoadListener.load(getServer());
+        ValueGuiManager.init();
+        registerGuis();
         ConsoleLogger.console("Enabled SimpleLuckyBlocks on version " + v.get());
     }
 
@@ -99,11 +107,20 @@ public final class SimpleLuckyBlocksCore extends JavaPlugin {
         ConsoleLogger.console("Disabling SimpleLuckyBlocks...");
     }
 
+    private void registerGuis() {
+        GuiManager.registerGui("lootMenu", new LootMenu());
+        GuiManager.registerGui("mainPage", new MainGui());
+        GuiManager.registerGui("entryCreation", new EntryCreationGui());
+        GuiManager.registerGui("lootEntriesPage", new EntryManagementGui());
+        GuiManager.registerGui("potionEntryCreate", new PotionEntryCreateGui());
+    }
+
     private void registerCommands() {
         SLBCommand.registerSubCommand(new HelpSubCommand());
         SLBCommand.registerSubCommand(new GiveSubCommand());
         SLBCommand.registerSubCommand(new GiveWandSubCommand());
         SLBCommand.registerSubCommand(new GenBlocksSubCommand());
+        SLBCommand.registerSubCommand(new LuckyMenuSubCommand());
         getCommand("slb").setExecutor(new SLBCommand());
         getCommand("slb").setTabCompleter(new SLBTabCompleter());
     }
@@ -171,10 +188,12 @@ public final class SimpleLuckyBlocksCore extends JavaPlugin {
     }
 
     private void registerListeners() {
-        getServer().getPluginManager().registerEvents(new LoadListener(), this);
-        getServer().getPluginManager().registerEvents(new PlaceListener(), this);
-        getServer().getPluginManager().registerEvents(new BreakListener(), this);
-        getServer().getPluginManager().registerEvents(new WandListener(), this);
-        getServer().getPluginManager().registerEvents(new TriggerListener(), this);
+        PluginManager pluginManager = getServer().getPluginManager();
+        pluginManager.registerEvents(new LoadListener(), this);
+        pluginManager.registerEvents(new PlaceListener(), this);
+        pluginManager.registerEvents(new BreakListener(), this);
+        pluginManager.registerEvents(new WandListener(), this);
+        pluginManager.registerEvents(new TriggerListener(), this);
+        pluginManager.registerEvents(new ChatListener(), this);
     }
 }

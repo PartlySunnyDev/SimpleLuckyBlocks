@@ -1,0 +1,176 @@
+package me.partlysunny.blocks.loot.entry;
+
+import me.partlysunny.SimpleLuckyBlocksCore;
+import me.partlysunny.blocks.loot.entry.command.CommandEntry;
+import me.partlysunny.blocks.loot.entry.item.ItemEntry;
+import me.partlysunny.blocks.loot.entry.item.wand.WandEntry;
+import me.partlysunny.blocks.loot.entry.mob.MobEntry;
+import me.partlysunny.blocks.loot.entry.mob.SpawnEffect;
+import me.partlysunny.blocks.loot.entry.potion.PotionEntry;
+import me.partlysunny.blocks.loot.entry.structure.StructureEntry;
+import me.partlysunny.util.Util;
+import me.partlysunny.util.classes.ItemBuilder;
+import me.partlysunny.util.classes.Pair;
+import me.partlysunny.util.classes.PotionBuilder;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.EntityType;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.potion.PotionType;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
+
+import static me.partlysunny.blocks.loot.entry.LootEntryManager.loadItemSection;
+import static me.partlysunny.util.Util.*;
+
+public enum EntryType {
+
+    ITEM("item", ItemBuilder.builder(Material.COBBLESTONE).setName(ChatColor.GRAY + "Item").build(), (name) -> {
+        Material material = Material.valueOf(Util.getOrError(name, "material"));
+        int min = Util.getOrError(name, "min");
+        int max = Util.getOrError(name, "max");
+        //Enchants
+        List<Pair<Enchantment, Integer>> enchants = new ArrayList<>();
+        if (name.contains("enchantments")) {
+            ConfigurationSection enchantments = name.getConfigurationSection("enchantments");
+            for (String s : enchantments.getKeys(false)) {
+                ConfigurationSection info = enchantments.getConfigurationSection(s);
+                enchants.add(new Pair<>(Enchantment.getByKey(NamespacedKey.minecraft(info.getString("id").toLowerCase())), info.getInt("lvl")));
+            }
+        }
+        //Build the item
+        ItemBuilder b = ItemBuilder.builder(material);
+        if (name.contains("name")) {
+            b.setName(processText(Util.getOrError(name, "name")));
+        }
+        if (name.contains("lore")) {
+            b.setLore(processTexts(Util.getOrError(name, "lore")).toArray(new String[0]));
+        }
+        for (Pair<Enchantment, Integer> p : enchants) {
+            b.addEnchantment(p.a(), p.b());
+        }
+        //Register the entry
+        return new ItemEntry(b.build(), min, max);
+    }),
+    MOB("mob", ItemBuilder.builder(Util.convert(Util.HeadType.BASE64, "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmM3MzJhZmRkNTNmYTgwZGJmMjI0ZmE1ZjhkMDIyN2FiZTU1M2UwMWU4ODIwYjlmYjA1NGZhYmY0ZGEzYjUwNSJ9fX0=")).setName(ChatColor.GOLD + "Mob").build(), (name) -> {
+        EntityType t = EntityType.valueOf(Util.getOrError(name, "entityType"));
+        SpawnEffect e = SpawnEffect.valueOf(Util.getOrError(name, "spawnEffect"));
+        int min = Util.getOrError(name, "min");
+        int max = Util.getOrError(name, "max");
+        int health = Util.getOrDefault(name, "health", -1);
+        double speedMultiplier = Util.getOrDefault(name, "speedMultiplier", -1d);
+        ItemStack[] armorPieces = new ItemStack[4];
+        ItemStack itemOnHand = null;
+        float dropH = 0;
+        float dropC = 0;
+        float dropL = 0;
+        float dropB = 0;
+        float dropM = 0;
+        String customName = Util.getOrDefault(name, "name", "");
+        if (name.contains("armorPieces")) {
+            ConfigurationSection armor = Util.getOrError(name, "armorPieces");
+            for (String s : armor.getKeys(false)) {
+                ConfigurationSection pieceInfo = getOrError(armor, s);
+                ItemBuilder b = loadItemSection(pieceInfo);
+                switch (s) {
+                    case "helmet" -> {
+                        armorPieces[3] = b.build();
+                        dropH = getOrDefault(pieceInfo, "dropChance", 0);
+                    }
+                    case "boots" -> {
+                        armorPieces[0] = b.build();
+                        dropB = getOrDefault(pieceInfo, "dropChance", 0);
+                    }
+                    case "chestplate" -> {
+                        armorPieces[2] = b.build();
+                        dropC = getOrDefault(pieceInfo, "dropChance", 0);
+                    }
+                    case "leggings" -> {
+                        armorPieces[1] = b.build();
+                        dropL = getOrDefault(pieceInfo, "dropChance", 0);
+                    }
+                }
+            }
+        }
+        if (name.contains("mainHand")) {
+            ConfigurationSection mainHandInfo = Util.getOrError(name, "mainHand");
+            ItemBuilder b = loadItemSection(mainHandInfo);
+
+            itemOnHand = b.build();
+        }
+        return new MobEntry(t, min, max, armorPieces, itemOnHand, health, speedMultiplier, customName, e, dropH, dropC, dropL, dropB, dropM);
+    }),
+    POTION("potion", PotionBuilder.builder(PotionBuilder.PotionFormat.SPLASH).setName(ChatColor.BLUE + "Potion").setPotionData(PotionType.SPEED, null).setLore().build(), (name) -> {
+        ConfigurationSection effects = Util.getOrError(name, "effects");
+        List<Pair<PotionEffectType, Pair<Integer, Integer>>> theEffects = new ArrayList<>();
+        for (String effect : effects.getKeys(false)) {
+            ConfigurationSection effectInfo = Util.getOrError(effects, effect);
+            PotionEffectType t = PotionEffectType.getByKey(NamespacedKey.minecraft(Util.getOrError(effectInfo, "id").toString().toLowerCase()));
+            int duration = Util.getOrDefault(effectInfo, "duration", 20);
+            int lvl = Util.getOrDefault(effectInfo, "lvl", 1);
+            theEffects.add(new Pair<>(t, new Pair<>(duration, lvl)));
+        }
+        return new PotionEntry(theEffects);
+    }),
+    WAND("wand", ItemBuilder.builder(Material.STICK).setName(ChatColor.LIGHT_PURPLE + "Wand").build(), name -> {
+        String wand = Util.getOrError(name, "wand");
+        int minPower = Util.getOrError(name, "minPower");
+        int maxPower = Util.getOrError(name, "maxPower");
+        String displayName = processText(Util.getOrError(name, "name"));
+        List<String> lore = processTexts(Util.getOrError(name, "lore"));
+        return new WandEntry(displayName, lore, minPower, maxPower, wand);
+    }),
+    COMMAND("command", ItemBuilder.builder(Material.COMMAND_BLOCK).setName(ChatColor.RED + "Command").build(), name -> {
+        List<String> commands = Util.getOrError(name, "commands");
+        return new CommandEntry(commands);
+    }),
+    STRUCTURE("structure", ItemBuilder.builder(Material.IRON_PICKAXE).setName(ChatColor.DARK_GRAY + "Structure").build(), name -> {
+        if (!SimpleLuckyBlocksCore.isWorldEdit) {
+            return null;
+        }
+        String structure = Util.getOrError(name, "structure");
+        double offsetX = Util.getOrDefault(name, "offsetX", 0d), offsetY = Util.getOrDefault(name, "offsetY", 0d), offsetZ = Util.getOrDefault(name, "offsetZ", 0d);
+        return new StructureEntry(structure, offsetX, offsetY, offsetZ);
+    })
+
+    ;
+
+    private final String id;
+    private final ItemStack displayItem;
+    private final Function<YamlConfiguration, IEntry> processFunction;
+
+    EntryType(String id, ItemStack displayItem, Function<YamlConfiguration, IEntry> processFunction) {
+        this.id = id;
+        this.displayItem = displayItem;
+        this.processFunction = processFunction;
+    }
+
+    public String id() {
+        return id;
+    }
+
+    public ItemStack displayItem() {
+        return displayItem;
+    }
+
+    public Function<YamlConfiguration, IEntry> processFunction() {
+        return processFunction;
+    }
+
+    public static EntryType getByName(String id) {
+        for (EntryType t : values()) {
+            if (Objects.equals(t.id, id)) {
+                return t;
+            }
+        }
+        return null;
+    }
+}

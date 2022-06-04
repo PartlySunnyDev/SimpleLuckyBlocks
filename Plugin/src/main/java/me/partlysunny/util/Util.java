@@ -1,25 +1,38 @@
 package me.partlysunny.util;
 
+import com.github.stefvanschie.inventoryframework.gui.GuiItem;
+import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
+import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
+import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
+import com.github.stefvanschie.inventoryframework.pane.Pane;
+import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import de.tr7zw.nbtapi.NBTBlock;
 import de.tr7zw.nbtapi.NBTChunk;
 import de.tr7zw.nbtapi.NBTCompound;
 import de.tr7zw.nbtapi.NBTItem;
+import me.partlysunny.ConsoleLogger;
 import me.partlysunny.SimpleLuckyBlocksCore;
 import me.partlysunny.blocks.LuckyBlockType;
+import me.partlysunny.gui.GuiManager;
+import me.partlysunny.gui.guis.common.ValueGuiManager;
+import me.partlysunny.gui.guis.common.ValueReturnGui;
+import me.partlysunny.gui.textInput.ChatListener;
 import me.partlysunny.util.classes.ItemBuilder;
+import me.partlysunny.util.classes.Pair;
 import me.partlysunny.util.reflection.JavaAccessor;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Chunk;
-import org.bukkit.Material;
+import org.apache.commons.io.FilenameUtils;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.potion.PotionType;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 import org.json.simple.JSONArray;
@@ -29,12 +42,9 @@ import org.json.simple.parser.JSONParser;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
-import java.util.zip.GZIPOutputStream;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.regex.Pattern;
 
 public final class Util {
 
@@ -235,6 +245,259 @@ public final class Util {
         if (!destination.exists()) {
             Files.copy(stream, destination.toPath());
         }
+    }
+
+    public static void setClickSoundTo(Sound s, Gui gui) {
+        gui.setOnGlobalClick(event -> {
+            if (event.getWhoClicked() instanceof Player a) {
+                a.playSound(a.getLocation(), s, 1, 1);
+            }
+            event.setCancelled(true);
+        });
+    }
+
+    public static List<String> splitLoreForLine(String input, String linePrefix, String lineSuffix, int width) {
+        char[] array = input.toCharArray();
+        List<String> out = new ArrayList<>();
+        String currentColor = "";
+        String cachedColor = "";
+        boolean wasColorChar = false;
+        StringBuilder currentLine = new StringBuilder(linePrefix);
+        StringBuilder currentWord = new StringBuilder();
+        for (int i = 0; i < array.length; i++) {
+            char c = array[i];
+            if (wasColorChar) {
+                wasColorChar = false;
+                cachedColor = currentColor;
+                Pattern pattern = Pattern.compile("[0-9a-fkmolnr]");
+                if (pattern.matcher(c + "").matches()) {
+                    if (c == 'r') {
+                        currentColor = ChatColor.COLOR_CHAR + "r";
+                    } else {
+                        currentColor += ChatColor.COLOR_CHAR + "" + c;
+                    }
+                }
+                currentWord.append(ChatColor.COLOR_CHAR + "").append(c);
+                continue;
+            }
+            if (c == '\n') {
+                currentLine.append(currentWord);
+                currentWord = new StringBuilder();
+                out.add(currentLine + lineSuffix);
+                currentLine = new StringBuilder(linePrefix + cachedColor + currentWord);
+                cachedColor = currentColor;
+                continue;
+            }
+            if (c == ' ') {
+                if ((currentLine + currentWord.toString()).replaceAll("ยง[0-9a-fklmnor]", "").length() > width) {
+                    out.add(currentLine + lineSuffix);
+                    currentLine = new StringBuilder(linePrefix + cachedColor + currentWord + " ");
+                } else {
+                    currentLine.append(currentWord).append(" ");
+                }
+                cachedColor = currentColor;
+                currentWord = new StringBuilder();
+                continue;
+            }
+            if (c == ChatColor.COLOR_CHAR) {
+                wasColorChar = true;
+                continue;
+            }
+            currentWord.append(c);
+        }
+        currentLine.append(currentWord);
+        out.add(currentLine + lineSuffix);
+        return out;
+    }
+
+    public static List<String> splitLoreForLine(String input) {
+        return splitLoreForLine(input, String.valueOf(ChatColor.GRAY.getChar()), "", 30);
+    }
+
+    public static double[] linspace(double min, double max, int points) {
+        double[] d = new double[points];
+        for (int i = 0; i < points; i++) {
+            d[i] = min + i * (max - min) / (points - 1);
+        }
+        return d;
+    }
+
+    @SafeVarargs
+    public static ChestGui getGeneralSelectionMenu(String title, Player p, Pair<String, ItemStack>... items) {
+        if (items.length > 9) {
+            ConsoleLogger.error("Too many items! (Max supported 9)");
+        }
+        double[] linspace = linspace(0, 8, items.length);
+        ChestGui ui = new ChestGui(3, title);
+        StaticPane pane = new StaticPane(0, 0, 9, 3);
+        pane.fillWith(ItemBuilder.builder(Material.GRAY_STAINED_GLASS_PANE).build());
+        setClickSoundTo(Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_OFF, ui);
+        int count = 0;
+        for (double d : linspace) {
+            int finalCount = count;
+            pane.addItem(new GuiItem(
+                    items[count].b(),
+                    (item) -> {
+                        GuiManager.setInventory(p, items[finalCount].a());
+                    }
+            ), (int) Math.round(d), 1);
+            count++;
+        }
+        ui.addPane(pane);
+        return ui;
+    }
+
+    public static void addListPages(PaginatedPane pane, Player p, ValueReturnGui<?> from, int x, int y, int width, int height, String[] a, ChestGui gui) {
+        pane.setOnClick(event -> {
+            if (event.getWhoClicked() instanceof Player pp) {
+                pp.playSound(pp.getLocation(), Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_OFF, 1, 1);
+            }
+            event.setCancelled(true);
+        });
+        int displaySize = width * height;
+        if (displaySize < 1) {
+            return;
+        }
+        int numPages = (int) Math.ceil(a.length / (displaySize * 1f));
+        if (numPages == 0) {
+            numPages = 1;
+        }
+        int count = 0;
+        for (int i = 0; i < numPages; i++) {
+            StaticPane border = new StaticPane(0, 0, 9, 5, Pane.Priority.HIGH);
+            StaticPane items = new StaticPane(x, y, width, height, Pane.Priority.HIGHEST);
+            addPageNav(pane, numPages, i, border, gui);
+            items.fillWith(ItemBuilder.builder(Material.GRAY_STAINED_GLASS_PANE).setName("").build());
+            for (int j = count; j < count + displaySize; j++) {
+                if (j > a.length - 1) {
+                    break;
+                }
+                String itemName = a[j];
+                items.addItem(new GuiItem(ItemBuilder.builder(Material.PAPER).setName(ChatColor.GRAY + itemName).build(), item -> {
+                    from.update(p.getUniqueId(), itemName);
+                    from.returnTo(p);
+                }), (j - count) % width, (j - count) / width);
+            }
+            count += displaySize;
+            Util.addReturnButton(border, p, from.getReturnTo(p), 0, 4);
+            pane.addPane(i, border);
+            pane.addPane(i, items);
+        }
+    }
+
+    public static void addPageNav(PaginatedPane pane, int numPages, int i, StaticPane border, ChestGui gui) {
+        border.fillWith(ItemBuilder.builder(Material.BLACK_STAINED_GLASS_PANE).setName("").build());
+        if (i != 0) {
+            border.addItem(new GuiItem(ItemBuilder.builder(Material.ARROW).setName(ChatColor.GRAY + "Page Back").build(), item -> {
+                pane.setPage(pane.getPage() - 1);
+                gui.update();
+            }), 0, 2);
+        }
+        if (i != numPages - 1) {
+            border.addItem(new GuiItem(ItemBuilder.builder(Material.ARROW).setName(ChatColor.GRAY + "Page Forward").build(), item -> {
+                pane.setPage(pane.getPage() + 1);
+                gui.update();
+            }), 8, 2);
+        }
+    }
+
+    public static void invalid(String message, Player p) {
+        p.sendMessage(ChatColor.RED + message);
+        p.playSound(p.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1, 1);
+    }
+
+    public static <T, U> void flushNulls(Pair<T, U> pair, T repT, U repU) {
+        if (pair.a() == null) {
+            pair.setA(repT);
+        }
+        if (pair.b() == null) {
+            pair.setB(repU);
+        }
+    }
+
+    public static void addLoreLine(ItemStack s, String... lines) {
+        ItemMeta m = s.getItemMeta();
+        List<String> lore = m.getLore();
+        if (lore == null) {
+            lore = new ArrayList<>();
+        }
+        lore.addAll(List.of(lines));
+        m.setLore(lore);
+        s.setItemMeta(m);
+    }
+
+    public static void addSelectionLink(StaticPane pane, Player p, String currentGui, String selectionLink, ItemStack toShow, int x, int y) {
+        pane.addItem(new GuiItem(toShow, item -> {
+            ValueGuiManager.getValueGui(selectionLink.substring(0, selectionLink.length() - 6)).setReturnTo(p.getUniqueId(), currentGui);
+            p.closeInventory();
+            GuiManager.setInventory(p, selectionLink);
+        }), x, y);
+    }
+
+    public static void addTextInputLink(StaticPane pane, Player p, String currentGui, String message, ItemStack toShow, int x, int y, Consumer<Player> toDo) {
+        pane.addItem(new GuiItem(toShow, item -> {
+            ChatListener.startChatListen(p, currentGui, message, toDo);
+            p.closeInventory();
+        }), x, y);
+    }
+
+    public static void addReturnButton(StaticPane pane, Player p, String returnTo, int x, int y) {
+        pane.addItem(new GuiItem(ItemBuilder.builder(Material.ARROW).setName(ChatColor.GREEN + "Back").build(), item -> {
+            GuiManager.setInventory(p, returnTo);
+        }), x, y);
+    }
+
+    public static PotionType asType(PotionEffectType t) {
+        if (t == null) {
+            return PotionType.WATER;
+        }
+        PotionType asType = PotionType.WATER;
+        for (PotionType type : PotionType.values()) {
+            if (t.equals(type.getEffectType())) asType = type;
+        }
+        return asType;
+    }
+
+    public static ChestGui getConfigListMenu(Player p, String guiId, String title, String fileFolder, String createGui, String backButtonLink) {
+        JavaPlugin plugin = JavaPlugin.getPlugin(SimpleLuckyBlocksCore.class);
+        File f = new File(plugin.getDataFolder(), fileFolder);
+        if (!f.exists()) {
+            ConsoleLogger.error("An internal error occurred (DATA_FOLDER_NOT_FOUND). Please contact the developer!");
+            return null;
+        }
+        File[] files = f.listFiles();
+        if (files == null) {
+            ConsoleLogger.error("An internal error occurred (DATA_FOLDER_INVALID). Please contact the developer!");
+            return null;
+        }
+        ChestGui gui = new ChestGui(5, title);
+        PaginatedPane pane = new PaginatedPane(0, 0, 9, 5);
+        int numPages = (int) Math.ceil(files.length / 27f);
+        if (numPages == 0) {
+            numPages = 1;
+        }
+        int count = 0;
+        for (int i = 0; i < numPages; i++) {
+            StaticPane border = new StaticPane(0, 0, 9, 5);
+            StaticPane items = new StaticPane(1, 1, 7, 3);
+            addPageNav(pane, numPages, i, border, gui);
+            border.addItem(new GuiItem(ItemBuilder.builder(Material.GREEN_CONCRETE).setName(ChatColor.GREEN + "Add new").build(), item -> GuiManager.setInventory(p, createGui)), 1, 0);
+            border.addItem(new GuiItem(ItemBuilder.builder(Material.YELLOW_CONCRETE).setName(ChatColor.GOLD + "Reload").build(), item -> GuiManager.setInventory(p, guiId)), 2, 0);
+            items.fillWith(ItemBuilder.builder(Material.GRAY_STAINED_GLASS_PANE).setName("").build());
+            for (int j = count; j < count + 27; j++) {
+                if (j > files.length - 1) {
+                    break;
+                }
+                String fileName = FilenameUtils.getBaseName(files[j].getName());
+                items.addItem(new GuiItem(ItemBuilder.builder(Material.PAPER).setName(ChatColor.GRAY + fileName).build()), (j - count) % 9, (j - count) / 9);
+            }
+            count += 27;
+            Util.addReturnButton(border, p, backButtonLink, 0, 4);
+            pane.addPane(i, border);
+            pane.addPane(i, items);
+        }
+        gui.addPane(pane);
+        return gui;
     }
 
     /**
