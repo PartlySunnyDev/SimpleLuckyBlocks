@@ -330,12 +330,27 @@ public final class Util {
         return d;
     }
 
+    public static double[] fakeSpace(int points) {
+        return switch (points) {
+            case 0 -> new double[]{};
+            case 1 -> new double[]{4};
+            case 2 -> new double[]{3, 5};
+            case 3 -> new double[]{2, 4, 6};
+            case 4 -> new double[]{1, 3, 5, 7};
+            case 5 -> new double[]{2, 3, 4, 5, 6};
+            case 6 -> new double[]{1, 2, 3, 5, 6, 7};
+            case 7 -> new double[]{1, 2, 3, 4, 5, 6, 7};
+            case 8 -> new double[]{0, 1, 2, 3, 5, 6, 7, 8};
+            default -> new double[]{0, 1, 2, 3, 4, 5, 6, 7, 8};
+        };
+    }
+
     @SafeVarargs
     public static ChestGui getGeneralSelectionMenu(String title, Player p, Pair<String, ItemStack>... items) {
         if (items.length > 9) {
             ConsoleLogger.error("Too many items! (Max supported 9)");
         }
-        double[] linspace = linspace(0, 8, items.length);
+        double[] linspace = fakeSpace(items.length);
         ChestGui ui = new ChestGui(3, title);
         StaticPane pane = new StaticPane(0, 0, 9, 3);
         pane.fillWith(ItemBuilder.builder(Material.GRAY_STAINED_GLASS_PANE).build());
