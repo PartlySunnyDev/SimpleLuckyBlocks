@@ -31,6 +31,7 @@ public class LootEntryManager {
     }
 
     public static void loadEntries() {
+        entryTypes.clear();
         File dir = new File(JavaPlugin.getPlugin(SimpleLuckyBlocksCore.class).getDataFolder() + "/lootEntries");
         File[] directoryListing = dir.listFiles();
         if (directoryListing != null) {

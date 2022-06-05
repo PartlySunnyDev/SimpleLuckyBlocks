@@ -27,6 +27,7 @@ public class WandManager {
     }
 
     public static void loadWands() {
+        wandTypes.clear();
         File dir = new File(JavaPlugin.getPlugin(SimpleLuckyBlocksCore.class).getDataFolder() + "/wands");
         File[] directoryListing = dir.listFiles();
         if (directoryListing != null) {

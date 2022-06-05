@@ -121,6 +121,7 @@ public class ItemEntryCreateGui implements GuiInstance {
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
             GuiManager.openInventory(player, "entryManagement");
         }), 7, 1);
+        Util.addReturnButton(mainPane, player, "entryManagement", 0, 2);
         gui.addPane(mainPane);
         return gui;
     }

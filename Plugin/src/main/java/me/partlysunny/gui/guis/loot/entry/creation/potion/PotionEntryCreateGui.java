@@ -85,7 +85,7 @@ public class PotionEntryCreateGui implements GuiInstance {
                     potionSaves.get(pl.getUniqueId()).setName(input);
                 });
                 player.closeInventory();
-            }), 3, 1);
+            }), 3, 0);
             border.addItem(new GuiItem(ItemBuilder.builder(Material.BLUE_CONCRETE).setName(ChatColor.BLUE + "Create Effect").build(), item -> {
                 PotionEntryInfo save = potionSaves.get(player.getUniqueId());
                 if (save == null || save.getEffects().length < 1) {

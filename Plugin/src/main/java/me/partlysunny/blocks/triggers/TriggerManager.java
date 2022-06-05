@@ -52,6 +52,8 @@ public class TriggerManager {
     }
 
     public static void loadTriggers() {
+        blockTriggers.clear();
+        mobTriggers.clear();
         File dir = new File(JavaPlugin.getPlugin(SimpleLuckyBlocksCore.class).getDataFolder() + "/triggers");
         File[] directoryListing = dir.listFiles();
         if (directoryListing != null) {

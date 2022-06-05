@@ -31,6 +31,7 @@ public class LootTableManager {
     }
 
     public static void loadLootTables() {
+        tables.clear();
         File dir = new File(JavaPlugin.getPlugin(SimpleLuckyBlocksCore.class).getDataFolder() + "/lootTables");
         File[] directoryListing = dir.listFiles();
         if (directoryListing != null) {

@@ -10,6 +10,7 @@ import me.partlysunny.util.classes.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
+import org.bukkit.Server;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -52,7 +53,10 @@ public final class LuckyBlockType {
 
     public static void registerType(LuckyBlockType type) {
         types.put(type.id, type);
-        JavaPlugin.getPlugin(SimpleLuckyBlocksCore.class).getServer().addRecipe(type.r);
+        Server server = JavaPlugin.getPlugin(SimpleLuckyBlocksCore.class).getServer();
+        server.removeRecipe(type.r.getKey());
+        server.addRecipe(type.r);
+
     }
 
     public static void unregisterType(String id) {
@@ -64,6 +68,7 @@ public final class LuckyBlockType {
     }
 
     public static void loadTypes() {
+        types.clear();
         File dir = new File(JavaPlugin.getPlugin(SimpleLuckyBlocksCore.class).getDataFolder() + "/blocks");
         File[] directoryListing = dir.listFiles();
         if (directoryListing != null) {

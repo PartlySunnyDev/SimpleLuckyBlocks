@@ -12,6 +12,7 @@ import me.partlysunny.gui.guis.common.ValueGuiManager;
 import me.partlysunny.gui.guis.loot.LootMenuGui;
 import me.partlysunny.gui.guis.loot.entry.EntryCreationGui;
 import me.partlysunny.gui.guis.loot.entry.EntryManagementGui;
+import me.partlysunny.gui.guis.loot.entry.creation.command.CommandEntryCreateGui;
 import me.partlysunny.gui.guis.loot.entry.creation.item.ItemEntryCreateGui;
 import me.partlysunny.gui.guis.loot.entry.creation.potion.PotionEntryCreateGui;
 import me.partlysunny.gui.textInput.ChatListener;
@@ -79,21 +80,7 @@ public final class SimpleLuckyBlocksCore extends JavaPlugin {
         //Register subcommands
         registerCommands();
         registerListeners();
-        try {
-            loadStructures();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        loadWands();
-        //Load loot table entries
-        loadEntries();
-        //Load loot tables (combinations of these entries)
-        loadLootTables();
-        //Load saved lucky block types
-        LuckyBlockType.loadTypes();
-        TriggerManager.loadTriggers();
-        LoadListener.load(getServer());
-        ValueGuiManager.init();
+        reload();
         registerGuis();
         ConsoleLogger.console("Enabled SimpleLuckyBlocks on version " + v.get());
     }
@@ -108,6 +95,23 @@ public final class SimpleLuckyBlocksCore extends JavaPlugin {
         ConsoleLogger.console("Disabling SimpleLuckyBlocks...");
     }
 
+    public static void reload() {
+        try {
+            loadStructures();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        loadWands();
+        //Load loot table entries
+        loadEntries();
+        //Load loot tables (combinations of these entries)
+        loadLootTables();
+        //Load saved lucky block types
+        LuckyBlockType.loadTypes();
+        TriggerManager.loadTriggers();
+        LoadListener.load(JavaPlugin.getPlugin(SimpleLuckyBlocksCore.class).getServer());
+    }
+
     private void registerGuis() {
         GuiManager.registerGui("lootMenu", new LootMenuGui());
         GuiManager.registerGui("mainPage", new MainPageGui());
@@ -115,6 +119,8 @@ public final class SimpleLuckyBlocksCore extends JavaPlugin {
         GuiManager.registerGui("entryManagement", new EntryManagementGui());
         GuiManager.registerGui("potionEntryCreate", new PotionEntryCreateGui());
         GuiManager.registerGui("itemEntryCreate", new ItemEntryCreateGui());
+        GuiManager.registerGui("commandEntryCreate", new CommandEntryCreateGui());
+        ValueGuiManager.init();
     }
 
     private void registerCommands() {

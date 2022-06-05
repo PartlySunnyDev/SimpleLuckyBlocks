@@ -27,6 +27,7 @@ public class StructureManager {
     }
 
     public static void loadStructures() throws IOException {
+        structures.clear();
         if (!SimpleLuckyBlocksCore.isWorldEdit) {
             ConsoleLogger.warn("WorldEdit was not found! Structures will not work!");
             return;
