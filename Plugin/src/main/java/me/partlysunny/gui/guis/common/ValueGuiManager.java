@@ -1,9 +1,9 @@
 package me.partlysunny.gui.guis.common;
 
 import me.partlysunny.gui.GuiManager;
+import me.partlysunny.gui.guis.common.item.ItemMakerSelectGui;
 import me.partlysunny.gui.guis.common.item.enchant.EnchantCreationSelectGui;
 import me.partlysunny.gui.guis.common.item.enchant.EnchantModifierSelectGui;
-import me.partlysunny.gui.guis.common.item.ItemMakerSelectGui;
 import me.partlysunny.gui.guis.loot.entry.creation.potion.PotionEntrySectionSelectGui;
 
 import java.util.HashMap;

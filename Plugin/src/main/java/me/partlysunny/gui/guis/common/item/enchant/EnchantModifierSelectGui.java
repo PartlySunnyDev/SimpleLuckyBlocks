@@ -56,7 +56,7 @@ public class EnchantModifierSelectGui extends ValueReturnGui<ItemStack> {
                 player.sendMessage(ChatColor.GREEN + "Updated!");
                 player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
                 GuiManager.openInventory(player, getReturnTo(player));
-            }), 8, 1);
+            }), 8, 2);
             items.fillWith(ItemBuilder.builder(Material.GRAY_STAINED_GLASS_PANE).setName("").build());
             for (int j = count; j < count + displaySize; j++) {
                 if (j > a.size() - 1) {

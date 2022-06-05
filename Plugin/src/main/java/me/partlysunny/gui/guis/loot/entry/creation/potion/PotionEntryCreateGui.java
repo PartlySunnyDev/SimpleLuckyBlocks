@@ -101,7 +101,7 @@ public class PotionEntryCreateGui implements GuiInstance {
                 player.sendMessage(ChatColor.GREEN + "Successfully created potion entry with name " + save.name() + "!");
                 player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
                 GuiManager.openInventory(player, "entryManagement");
-            }), 8, 1);
+            }), 8, 2);
             items.fillWith(ItemBuilder.builder(Material.GRAY_STAINED_GLASS_PANE).setName("").build());
             for (int j = count; j < count + displaySize; j++) {
                 if (j > a.length - 1) {

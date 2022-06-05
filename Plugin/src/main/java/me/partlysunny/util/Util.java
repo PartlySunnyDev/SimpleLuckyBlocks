@@ -397,17 +397,17 @@ public final class Util {
         border.fillWith(ItemBuilder.builder(Material.BLACK_STAINED_GLASS_PANE).setName("").build());
         if (i != 0) {
             border.addItem(new GuiItem(ItemBuilder.builder(Material.ARROW).setName(ChatColor.GRAY + "Page Back").setLore(ChatColor.GREEN + "Right click for 5 pages", ChatColor.RED + "Shift Click for 15 pages").build(), item -> {
-                if (item.isLeftClick()) Util.changePage(pane, -1);
+                if (item.isShiftClick()) Util.changePage(pane, -15);
+                else if (item.isLeftClick()) Util.changePage(pane, -1);
                 else if (item.isRightClick()) Util.changePage(pane, -5);
-                else if (item.isShiftClick()) Util.changePage(pane, -15);
                 gui.update();
             }), 0, 2);
         }
         if (i != numPages - 1) {
             border.addItem(new GuiItem(ItemBuilder.builder(Material.ARROW).setName(ChatColor.GRAY + "Page Forward").setLore(ChatColor.GREEN + "Right click for 5 pages", ChatColor.RED + "Shift Click for 15 pages").build(), item -> {
-                if (item.isLeftClick()) Util.changePage(pane, 1);
+                if (item.isShiftClick()) Util.changePage(pane, 15);
+                else if (item.isLeftClick()) Util.changePage(pane, 1);
                 else if (item.isRightClick()) Util.changePage(pane, 5);
-                else if (item.isShiftClick()) Util.changePage(pane, 15);
                 gui.update();
             }), 8, 2);
         }
@@ -553,7 +553,7 @@ public final class Util {
         ConfigurationSection returned = new YamlConfiguration();
         for (Enchantment e : enchants.keySet()) {
             String key = e.getKey().getKey();
-            int lvl  = enchants.get(e);
+            int lvl = enchants.get(e);
             ConfigurationSection subSection = new YamlConfiguration();
             subSection.set("id", key);
             subSection.set("lvl", lvl);
