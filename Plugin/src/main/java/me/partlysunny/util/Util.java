@@ -26,6 +26,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -310,8 +312,14 @@ public final class Util {
         return out;
     }
 
+    public static String[] getAlphabetSorted(String[] values) {
+        List<String> strings = new ArrayList<>(List.of(values));
+        Collections.sort(strings);
+        return strings.toArray(new String[0]);
+    }
+
     public static List<String> splitLoreForLine(String input) {
-        return splitLoreForLine(input, String.valueOf(ChatColor.GRAY.getChar()), "", 30);
+        return splitLoreForLine(input, ChatColor.GRAY.toString(), "", 30);
     }
 
     public static double[] linspace(double min, double max, int points) {
@@ -338,7 +346,7 @@ public final class Util {
             pane.addItem(new GuiItem(
                     items[count].b(),
                     (item) -> {
-                        GuiManager.setInventory(p, items[finalCount].a());
+                        GuiManager.openInventory(p, items[finalCount].a());
                     }
             ), (int) Math.round(d), 1);
             count++;
@@ -388,14 +396,18 @@ public final class Util {
     public static void addPageNav(PaginatedPane pane, int numPages, int i, StaticPane border, ChestGui gui) {
         border.fillWith(ItemBuilder.builder(Material.BLACK_STAINED_GLASS_PANE).setName("").build());
         if (i != 0) {
-            border.addItem(new GuiItem(ItemBuilder.builder(Material.ARROW).setName(ChatColor.GRAY + "Page Back").build(), item -> {
-                pane.setPage(pane.getPage() - 1);
+            border.addItem(new GuiItem(ItemBuilder.builder(Material.ARROW).setName(ChatColor.GRAY + "Page Back").setLore(ChatColor.GREEN + "Right click for 5 pages", ChatColor.RED + "Shift Click for 15 pages").build(), item -> {
+                if (item.isLeftClick()) Util.changePage(pane, -1);
+                else if (item.isRightClick()) Util.changePage(pane, -5);
+                else if (item.isShiftClick()) Util.changePage(pane, -15);
                 gui.update();
             }), 0, 2);
         }
         if (i != numPages - 1) {
-            border.addItem(new GuiItem(ItemBuilder.builder(Material.ARROW).setName(ChatColor.GRAY + "Page Forward").build(), item -> {
-                pane.setPage(pane.getPage() + 1);
+            border.addItem(new GuiItem(ItemBuilder.builder(Material.ARROW).setName(ChatColor.GRAY + "Page Forward").setLore(ChatColor.GREEN + "Right click for 5 pages", ChatColor.RED + "Shift Click for 15 pages").build(), item -> {
+                if (item.isLeftClick()) Util.changePage(pane, 1);
+                else if (item.isRightClick()) Util.changePage(pane, 5);
+                else if (item.isShiftClick()) Util.changePage(pane, 15);
                 gui.update();
             }), 8, 2);
         }
@@ -430,7 +442,7 @@ public final class Util {
         pane.addItem(new GuiItem(toShow, item -> {
             ValueGuiManager.getValueGui(selectionLink.substring(0, selectionLink.length() - 6)).setReturnTo(p.getUniqueId(), currentGui);
             p.closeInventory();
-            GuiManager.setInventory(p, selectionLink);
+            GuiManager.openInventory(p, selectionLink);
         }), x, y);
     }
 
@@ -443,8 +455,45 @@ public final class Util {
 
     public static void addReturnButton(StaticPane pane, Player p, String returnTo, int x, int y) {
         pane.addItem(new GuiItem(ItemBuilder.builder(Material.ARROW).setName(ChatColor.GREEN + "Back").build(), item -> {
-            GuiManager.setInventory(p, returnTo);
+            GuiManager.openInventory(p, returnTo);
         }), x, y);
+    }
+
+    public static void setName(ItemStack i, String name) {
+        ItemMeta m = i.getItemMeta();
+        if (m == null) {
+            return;
+        }
+        m.setDisplayName(name);
+        i.setItemMeta(m);
+    }
+
+    public static Integer getTextInputAsInt(Player pl) {
+        String input = ChatListener.getCurrentInput(pl);
+        if (input.equals("cancel")) {
+            return null;
+        }
+        int currentInput;
+        try {
+            currentInput = Integer.parseInt(input);
+        } catch (NumberFormatException e) {
+            pl.sendMessage(ChatColor.RED + "Invalid number!");
+            return null;
+        }
+        if (currentInput < 1) {
+            pl.sendMessage("Must be greater than 1!");
+            return null;
+        }
+        return currentInput;
+    }
+
+    public static void setLore(ItemStack i, List<String> lore) {
+        ItemMeta m = i.getItemMeta();
+        if (m == null) {
+            return;
+        }
+        m.setLore(lore);
+        i.setItemMeta(m);
     }
 
     public static PotionType asType(PotionEffectType t) {
@@ -481,8 +530,8 @@ public final class Util {
             StaticPane border = new StaticPane(0, 0, 9, 5);
             StaticPane items = new StaticPane(1, 1, 7, 3);
             addPageNav(pane, numPages, i, border, gui);
-            border.addItem(new GuiItem(ItemBuilder.builder(Material.GREEN_CONCRETE).setName(ChatColor.GREEN + "Add new").build(), item -> GuiManager.setInventory(p, createGui)), 1, 0);
-            border.addItem(new GuiItem(ItemBuilder.builder(Material.YELLOW_CONCRETE).setName(ChatColor.GOLD + "Reload").build(), item -> GuiManager.setInventory(p, guiId)), 2, 0);
+            border.addItem(new GuiItem(ItemBuilder.builder(Material.GREEN_CONCRETE).setName(ChatColor.GREEN + "Add new").build(), item -> GuiManager.openInventory(p, createGui)), 1, 0);
+            border.addItem(new GuiItem(ItemBuilder.builder(Material.YELLOW_CONCRETE).setName(ChatColor.GOLD + "Reload").build(), item -> GuiManager.openInventory(p, guiId)), 2, 0);
             items.fillWith(ItemBuilder.builder(Material.GRAY_STAINED_GLASS_PANE).setName("").build());
             for (int j = count; j < count + 27; j++) {
                 if (j > files.length - 1) {
@@ -498,6 +547,26 @@ public final class Util {
         }
         gui.addPane(pane);
         return gui;
+    }
+
+    public static ConfigurationSection getEnchantSection(Map<Enchantment, Integer> enchants) {
+        ConfigurationSection returned = new YamlConfiguration();
+        for (Enchantment e : enchants.keySet()) {
+            String key = e.getKey().getKey();
+            int lvl  = enchants.get(e);
+            ConfigurationSection subSection = new YamlConfiguration();
+            subSection.set("id", key);
+            subSection.set("lvl", lvl);
+            returned.set(key, subSection);
+        }
+        return returned;
+    }
+
+    public static void changePage(PaginatedPane p, int amount) {
+        int current = p.getPage();
+        int newAmount = current + amount;
+        if (newAmount < 0) p.setPage(0);
+        else p.setPage(Math.min(newAmount, p.getPages() - 1));
     }
 
     /**

@@ -23,7 +23,7 @@ public class EntryCreationGui implements GuiInstance {
             count++;
         }
         ChestGui generalSelectionMenu = Util.getGeneralSelectionMenu(ChatColor.GRAY + "Select entry type!", player, a);
-        Util.addReturnButton((StaticPane) generalSelectionMenu.getPanes().get(0), player, "lootEntriesPage", 0, 2);
+        Util.addReturnButton((StaticPane) generalSelectionMenu.getPanes().get(0), player, "entryManagement", 0, 2);
         return generalSelectionMenu;
     }
 }

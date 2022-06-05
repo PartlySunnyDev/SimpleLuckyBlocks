@@ -22,7 +22,7 @@ public class EntityTypeSelectGui extends ValueReturnGui<EntityType> {
             entityList[count] = e.toString();
             count++;
         }
-        Util.addListPages(pane, player, this, 1, 1, 7, 3, entityList, gui);
+        Util.addListPages(pane, player, this, 1, 1, 7, 3, Util.getAlphabetSorted(entityList), gui);
         gui.addPane(pane);
         Util.setClickSoundTo(Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_OFF, gui);
         return gui;

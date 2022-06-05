@@ -23,7 +23,7 @@ public class EnchantmentSelectGui extends ValueReturnGui<Enchantment> {
             enchantList[count] = e.getKey().getKey();
             count++;
         }
-        Util.addListPages(pane, player, this, 1, 1, 7, 3, enchantList, gui);
+        Util.addListPages(pane, player, this, 1, 1, 7, 3, Util.getAlphabetSorted(enchantList), gui);
         gui.addPane(pane);
         Util.setClickSoundTo(Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_OFF, gui);
         return gui;

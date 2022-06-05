@@ -18,7 +18,7 @@ public abstract class ValueReturnGui<T> implements GuiInstance {
     }
 
     public void returnTo(Player player) {
-        GuiManager.setInventory(player, guiToReturn.get(player.getUniqueId()));
+        GuiManager.openInventory(player, guiToReturn.get(player.getUniqueId()));
     }
 
     public void resetValue(UUID player) {
@@ -37,5 +37,11 @@ public abstract class ValueReturnGui<T> implements GuiInstance {
         return guiToReturn.get(p.getUniqueId());
     }
 
+    public void openWithValue(Player p, T value, String name) {
+        this.values.put(p.getUniqueId(), value);
+        GuiManager.openInventory(p, name);
+    }
+
     protected abstract T getValueFromString(String s);
+
 }

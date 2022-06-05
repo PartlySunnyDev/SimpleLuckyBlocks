@@ -23,7 +23,7 @@ public class PotionEffectTypeSelectGui extends ValueReturnGui<PotionEffectType> 
             potionEffectList[count] = e.getKey().getKey();
             count++;
         }
-        Util.addListPages(pane, player, this, 1, 1, 7, 3, potionEffectList, gui);
+        Util.addListPages(pane, player, this, 1, 1, 7, 3, Util.getAlphabetSorted(potionEffectList), gui);
         gui.addPane(pane);
         Util.setClickSoundTo(Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_OFF, gui);
         return gui;

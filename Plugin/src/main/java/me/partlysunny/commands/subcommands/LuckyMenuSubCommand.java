@@ -23,6 +23,6 @@ public class LuckyMenuSubCommand implements SLBSubCommand {
     @Override
     public void execute(CommandSender executor, String[] args) {
         if (!(executor instanceof Player p)) return;
-        GuiManager.setInventory(p, "mainPage");
+        GuiManager.openInventory(p, "mainPage");
     }
 }

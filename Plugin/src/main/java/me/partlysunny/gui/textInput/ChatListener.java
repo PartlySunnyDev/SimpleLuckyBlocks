@@ -19,24 +19,6 @@ public class ChatListener implements Listener {
     private static final List<UUID> typing = new ArrayList<>();
     private static final Map<UUID, Consumer<Player>> todos = new HashMap<>();
 
-    @EventHandler
-    public void onChatMessage(AsyncPlayerChatEvent e) {
-        if (e.isAsynchronous()) {
-            UUID player = e.getPlayer().getUniqueId();
-            if (typing.contains(player)) {
-                e.setCancelled(true);
-                currentInput.put(player, e.getMessage());
-                Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(SimpleLuckyBlocksCore.class), () -> {
-                    GuiManager.setInventory(e.getPlayer(), lastGui.get(player));
-                    lastGui.remove(player);
-                }, 1);
-                todos.get(player).accept(e.getPlayer());
-                typing.remove(player);
-                todos.remove(player);
-            }
-        }
-    }
-
     public static void startChatListen(Player p, String redirectGui, String message, Consumer<Player> toDo) {
         p.sendMessage(message);
         typing.add(p.getUniqueId());
@@ -51,6 +33,23 @@ public class ChatListener implements Listener {
         return s;
     }
 
+    @EventHandler
+    public void onChatMessage(AsyncPlayerChatEvent e) {
+        if (e.isAsynchronous()) {
+            UUID player = e.getPlayer().getUniqueId();
+            if (typing.contains(player)) {
+                e.setCancelled(true);
+                currentInput.put(player, e.getMessage());
+                Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(SimpleLuckyBlocksCore.class), () -> {
+                    GuiManager.openInventory(e.getPlayer(), lastGui.get(player));
+                    lastGui.remove(player);
+                }, 1);
+                todos.get(player).accept(e.getPlayer());
+                typing.remove(player);
+                todos.remove(player);
+            }
+        }
+    }
 
 
 }

@@ -139,9 +139,7 @@ public enum EntryType {
         String structure = Util.getOrError(name, "structure");
         double offsetX = Util.getOrDefault(name, "offsetX", 0d), offsetY = Util.getOrDefault(name, "offsetY", 0d), offsetZ = Util.getOrDefault(name, "offsetZ", 0d);
         return new StructureEntry(structure, offsetX, offsetY, offsetZ);
-    })
-
-    ;
+    });
 
     private final String id;
     private final ItemStack displayItem;
@@ -151,6 +149,15 @@ public enum EntryType {
         this.id = id;
         this.displayItem = displayItem;
         this.processFunction = processFunction;
+    }
+
+    public static EntryType getByName(String id) {
+        for (EntryType t : values()) {
+            if (Objects.equals(t.id, id)) {
+                return t;
+            }
+        }
+        return null;
     }
 
     public String id() {
@@ -163,14 +170,5 @@ public enum EntryType {
 
     public Function<YamlConfiguration, IEntry> processFunction() {
         return processFunction;
-    }
-
-    public static EntryType getByName(String id) {
-        for (EntryType t : values()) {
-            if (Objects.equals(t.id, id)) {
-                return t;
-            }
-        }
-        return null;
     }
 }

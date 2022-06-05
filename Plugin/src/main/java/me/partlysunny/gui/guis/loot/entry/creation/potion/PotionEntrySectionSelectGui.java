@@ -7,7 +7,6 @@ import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import me.partlysunny.gui.GuiManager;
 import me.partlysunny.gui.guis.common.ValueGuiManager;
 import me.partlysunny.gui.guis.common.ValueReturnGui;
-import me.partlysunny.gui.textInput.ChatListener;
 import me.partlysunny.util.Util;
 import me.partlysunny.util.classes.ItemBuilder;
 import me.partlysunny.util.classes.Pair;
@@ -54,19 +53,9 @@ public class PotionEntrySectionSelectGui extends ValueReturnGui<Pair<PotionEffec
         ItemStack durationItem = ItemBuilder.builder(Material.PAPER).setName(ChatColor.BLUE + "Duration").setLore(ChatColor.GRAY + (current.b().a() == null ? "0" : current.b().a().toString())).build();
         Util.addTextInputLink(mainPane, player, "potionEntrySectionSelect", ChatColor.RED + "Enter duration or \"cancel\" to cancel", durationItem, 3, 1, pl -> {
             boolean hasValue = this.values.containsKey(pl.getUniqueId());
-            String input = ChatListener.getCurrentInput(pl);
-            if (input.equals("cancel")) {
-                return;
-            }
-            int currentInput;
-            try {
-                currentInput = Integer.parseInt(input);
-            } catch (NumberFormatException e) {
-                pl.sendMessage(ChatColor.RED + "Invalid number!");
-                return;
-            }
-            if (currentInput < 1) {
-                pl.sendMessage("Must be greater than 1!");
+            Integer currentInput = Util.getTextInputAsInt(pl);
+            if (currentInput == null) {
+                Util.invalid("Invalid value!", pl);
                 return;
             }
             if (hasValue) {
@@ -79,19 +68,9 @@ public class PotionEntrySectionSelectGui extends ValueReturnGui<Pair<PotionEffec
         ItemStack lvlItem = ItemBuilder.builder(Material.PAPER).setName(ChatColor.BLUE + "Amplifier").setLore(ChatColor.GRAY + (current.b().b() == null ? "0" : current.b().b().toString())).build();
         Util.addTextInputLink(mainPane, player, "potionEntrySectionSelect", ChatColor.RED + "Enter amplifier (lvl) or \"cancel\" to cancel", lvlItem, 5, 1, pl -> {
             boolean hasValue = this.values.containsKey(pl.getUniqueId());
-            String input = ChatListener.getCurrentInput(pl);
-            if (input.equals("cancel")) {
-                return;
-            }
-            int currentInput;
-            try {
-                currentInput = Integer.parseInt(input);
-            } catch (NumberFormatException e) {
-                pl.sendMessage(ChatColor.RED + "Invalid number!");
-                return;
-            }
-            if (currentInput < 1) {
-                pl.sendMessage("Must be greater than 1!");
+            Integer currentInput = Util.getTextInputAsInt(pl);
+            if (currentInput == null) {
+                Util.invalid("Invalid value!", pl);
                 return;
             }
             if (hasValue) {
@@ -109,7 +88,7 @@ public class PotionEntrySectionSelectGui extends ValueReturnGui<Pair<PotionEffec
                 return;
             }
             PotionEntryCreateGui.addPlayerEffect(player, getValue(player.getUniqueId()));
-            GuiManager.setInventory(player, "potionEntryCreate");
+            GuiManager.openInventory(player, "potionEntryCreate");
         }), 7, 1);
         Util.addReturnButton(mainPane, player, "potionEntryCreate", 0, 2);
         gui.addPane(mainPane);

@@ -13,7 +13,7 @@ public class GuiManager {
     private static final Map<UUID, String> previousGuis = new HashMap<>();
     private static final Map<UUID, String> currentGuis = new HashMap<>();
 
-    public static void setInventory(Player p, String id) {
+    public static void openInventory(Player p, String id) {
         GuiInstance guiInstance = guis.get(id);
         if (guiInstance == null) {
             return;

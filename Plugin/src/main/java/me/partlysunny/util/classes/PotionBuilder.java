@@ -13,16 +13,6 @@ import java.util.Arrays;
 
 public class PotionBuilder {
 
-    public enum PotionFormat {
-        SPLASH,
-        POTION,
-        LINGERING
-    }
-
-    public static PotionBuilder builder(PotionFormat f) {
-        return new PotionBuilder(f);
-    }
-
     private final ItemStack toReturn;
     private final PotionMeta meta;
 
@@ -34,6 +24,10 @@ public class PotionBuilder {
         }
         this.toReturn = new ItemStack(m);
         this.meta = (PotionMeta) toReturn.getItemMeta();
+    }
+
+    public static PotionBuilder builder(PotionFormat f) {
+        return new PotionBuilder(f);
     }
 
     public PotionBuilder setName(String name) {
@@ -61,10 +55,16 @@ public class PotionBuilder {
         return this;
     }
 
-
     public ItemStack build() {
         toReturn.setItemMeta(meta);
         return toReturn;
+    }
+
+
+    public enum PotionFormat {
+        SPLASH,
+        POTION,
+        LINGERING
     }
 
 }

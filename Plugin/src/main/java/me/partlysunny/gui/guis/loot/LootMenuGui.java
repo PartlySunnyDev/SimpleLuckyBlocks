@@ -12,12 +12,12 @@ import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 
-public class LootMenu implements GuiInstance {
+public class LootMenuGui implements GuiInstance {
     @Override
     public Gui getGui(HumanEntity p) {
         if (!(p instanceof Player player)) return new ChestGui(3, "");
         ChestGui generalSelectionMenu = Util.getGeneralSelectionMenu(ChatColor.GOLD + "Loot", player,
-                new Pair<>("lootEntriesPage", ItemBuilder.builder(Material.BOOK).setName(net.md_5.bungee.api.ChatColor.GOLD + "Loot Entries").setLore(net.md_5.bungee.api.ChatColor.GRAY + "Manage your loot entries!").build()),
+                new Pair<>("entryManagement", ItemBuilder.builder(Material.BOOK).setName(net.md_5.bungee.api.ChatColor.GOLD + "Loot Entries").setLore(net.md_5.bungee.api.ChatColor.GRAY + "Manage your loot entries!").build()),
                 new Pair<>("lootTablesPage", ItemBuilder.builder(Material.BOOKSHELF).setName(net.md_5.bungee.api.ChatColor.YELLOW + "Loot Tables").setLore(net.md_5.bungee.api.ChatColor.GRAY + "Manage your loot tables!").build())
         );
         Util.addReturnButton((StaticPane) generalSelectionMenu.getPanes().get(0), player, "mainPage", 0, 2);

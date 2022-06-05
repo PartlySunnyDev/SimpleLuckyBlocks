@@ -8,6 +8,8 @@ import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import me.partlysunny.SimpleLuckyBlocksCore;
 import me.partlysunny.gui.GuiInstance;
 import me.partlysunny.gui.GuiManager;
+import me.partlysunny.gui.guis.common.ValueGuiManager;
+import me.partlysunny.gui.guis.common.ValueReturnGui;
 import me.partlysunny.gui.textInput.ChatListener;
 import me.partlysunny.util.Util;
 import me.partlysunny.util.classes.ItemBuilder;
@@ -35,6 +37,14 @@ public class PotionEntryCreateGui implements GuiInstance {
 
     private static final Map<UUID, PotionEntryInfo> potionSaves = new HashMap<>();
 
+    public static void addPlayerEffect(Player p, Pair<PotionEffectType, Pair<Integer, Integer>> effect) {
+        if (potionSaves.containsKey(p.getUniqueId())) {
+            potionSaves.get(p.getUniqueId()).addEffect(effect.a(), effect.b().a(), effect.b().b());
+        } else {
+            potionSaves.put(p.getUniqueId(), new PotionEntryInfo(List.of(effect)));
+        }
+    }
+
     @Override
     public Gui getGui(HumanEntity p) {
         if (!(p instanceof Player player)) return new ChestGui(3, "");
@@ -60,13 +70,13 @@ public class PotionEntryCreateGui implements GuiInstance {
             StaticPane border = new StaticPane(0, 0, 9, 5);
             StaticPane items = new StaticPane(1, 1, 7, 3);
             Util.addPageNav(pane, numPages, i, border, gui);
-            border.addItem(new GuiItem(ItemBuilder.builder(Material.GREEN_CONCRETE).setName(ChatColor.GREEN + "Add new").build(), item -> GuiManager.setInventory(player, "potionEntrySectionSelect")), 1, 0);
-            border.addItem(new GuiItem(ItemBuilder.builder(Material.YELLOW_CONCRETE).setName(ChatColor.GOLD + "Reload").build(), item -> GuiManager.setInventory(player, "potionEntryCreate")), 2, 0);
-            border.addItem(new GuiItem(ItemBuilder.builder(Material.RED_CONCRETE).setName(ChatColor.RED + "Rename").setLore(ChatColor.GRAY + "Current name: " + potionEntry.name()).build(), item -> {
+            border.addItem(new GuiItem(ItemBuilder.builder(Material.GREEN_CONCRETE).setName(ChatColor.GREEN + "Add new").build(), item -> GuiManager.openInventory(player, "potionEntrySectionSelect")), 1, 0);
+            border.addItem(new GuiItem(ItemBuilder.builder(Material.YELLOW_CONCRETE).setName(ChatColor.GOLD + "Reload").build(), item -> GuiManager.openInventory(player, "potionEntryCreate")), 2, 0);
+            border.addItem(new GuiItem(ItemBuilder.builder(Material.ACACIA_SIGN).setName(ChatColor.RED + "Rename").setLore(ChatColor.GRAY + "Current name: " + potionEntry.name()).build(), item -> {
                 ChatListener.startChatListen(player, "potionEntryCreate", ChatColor.RED + "Enter new name!", pl -> {
                     String input = ChatListener.getCurrentInput(pl);
                     if (input.length() < 2 || input.length() > 30) {
-                        Util.invalid("Characters must be at lest 2 and at most 29!", pl);
+                        Util.invalid("Characters must be at least 2 and at most 29!", pl);
                         return;
                     }
                     if (!potionSaves.containsKey(pl.getUniqueId())) {
@@ -75,7 +85,7 @@ public class PotionEntryCreateGui implements GuiInstance {
                     potionSaves.get(pl.getUniqueId()).setName(input);
                 });
                 player.closeInventory();
-            }), 3, 0);
+            }), 3, 1);
             border.addItem(new GuiItem(ItemBuilder.builder(Material.BLUE_CONCRETE).setName(ChatColor.BLUE + "Create Effect").build(), item -> {
                 PotionEntryInfo save = potionSaves.get(player.getUniqueId());
                 if (save == null || save.getEffects().length < 1) {
@@ -90,8 +100,8 @@ public class PotionEntryCreateGui implements GuiInstance {
                 }
                 player.sendMessage(ChatColor.GREEN + "Successfully created potion entry with name " + save.name() + "!");
                 player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
-                GuiManager.setInventory(player, "lootEntriesPage");
-            }), 8, 2);
+                GuiManager.openInventory(player, "entryManagement");
+            }), 8, 1);
             items.fillWith(ItemBuilder.builder(Material.GRAY_STAINED_GLASS_PANE).setName("").build());
             for (int j = count; j < count + displaySize; j++) {
                 if (j > a.length - 1) {
@@ -100,10 +110,14 @@ public class PotionEntryCreateGui implements GuiInstance {
                 Pair<PotionEffectType, Pair<Integer, Integer>> potionInfo = a[j];
                 ItemStack potionAsItem = PotionBuilder.builder(PotionBuilder.PotionFormat.POTION).setName(potionInfo.a().getName()).addCustomEffect(new PotionEffect(potionInfo.a(), potionInfo.b().a(), potionInfo.b().b())).setPotionData(null, potionInfo.a().getColor()).build();
                 Util.addLoreLine(potionAsItem, ChatColor.RED + "Right click to delete!");
+                Util.addLoreLine(potionAsItem, ChatColor.GREEN + "Left click to edit!");
                 items.addItem(new GuiItem(potionAsItem, item -> {
                     if (item.isRightClick()) {
                         potionEntry.removeEffect(potionInfo.a());
-                        GuiManager.setInventory(player, "potionEntryCreate");
+                        GuiManager.openInventory(player, "potionEntryCreate");
+                    }
+                    if (item.isLeftClick()) {
+                        ((ValueReturnGui<Pair<PotionEffectType, Pair<Integer, Integer>>>) (ValueGuiManager.getValueGui("potionEntrySection"))).openWithValue(player, potionInfo, "potionEntrySectionSelect");
                     }
                 }), (j - count) % 7, (j - count) / 7);
             }
@@ -114,13 +128,5 @@ public class PotionEntryCreateGui implements GuiInstance {
         }
         gui.addPane(pane);
         return gui;
-    }
-
-    public static void addPlayerEffect(Player p, Pair<PotionEffectType, Pair<Integer, Integer>> effect) {
-        if (potionSaves.containsKey(p.getUniqueId())) {
-            potionSaves.get(p.getUniqueId()).addEffect(effect.a(), effect.b().a(), effect.b().b());
-        } else {
-            potionSaves.put(p.getUniqueId(), new PotionEntryInfo(List.of(effect)));
-        }
     }
 }
