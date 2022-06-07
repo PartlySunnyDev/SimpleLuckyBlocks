@@ -6,8 +6,10 @@ import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import me.partlysunny.SimpleLuckyBlocksCore;
+import me.partlysunny.blocks.loot.entry.command.CommandEntry;
 import me.partlysunny.gui.GuiInstance;
 import me.partlysunny.gui.GuiManager;
+import me.partlysunny.gui.guis.loot.entry.creation.EntrySaveWrapper;
 import me.partlysunny.gui.textInput.ChatListener;
 import me.partlysunny.util.Util;
 import me.partlysunny.util.classes.ItemBuilder;
@@ -26,7 +28,7 @@ import java.util.*;
 
 public class CommandEntryCreateGui implements GuiInstance {
 
-    private static final Map<UUID, CommandInfo> commandSaves = new HashMap<>();
+    private static final Map<UUID, EntrySaveWrapper<CommandEntry>> commandSaves = new HashMap<>();
 
     private static void addNewCommandFromInput(Player pl) {
         boolean hasValue = commandSaves.containsKey(pl.getUniqueId());
@@ -36,20 +38,20 @@ public class CommandEntryCreateGui implements GuiInstance {
             return;
         }
         if (hasValue) {
-            commandSaves.get(pl.getUniqueId()).addCommand(currentInput);
+            commandSaves.get(pl.getUniqueId()).entry().addCommand(currentInput);
         } else {
-            commandSaves.put(pl.getUniqueId(), new CommandInfo(new ArrayList<>(List.of(currentInput))));
+            commandSaves.put(pl.getUniqueId(), new EntrySaveWrapper<>(null, new CommandEntry(new ArrayList<>(List.of(currentInput)))));
         }
     }
 
     @Override
     public Gui getGui(HumanEntity p) {
         if (!(p instanceof Player player)) return new ChestGui(3, "");
-        CommandInfo commandEntry;
+        EntrySaveWrapper<CommandEntry> commandEntry;
         if (commandSaves.containsKey(p.getUniqueId())) {
             commandEntry = commandSaves.get(p.getUniqueId());
         } else {
-            CommandInfo value = new CommandInfo(new ArrayList<>());
+            EntrySaveWrapper<CommandEntry> value = new EntrySaveWrapper<>(null, new CommandEntry(new ArrayList<>()));
             commandSaves.put(player.getUniqueId(), value);
             commandEntry = value;
         }
@@ -57,7 +59,7 @@ public class CommandEntryCreateGui implements GuiInstance {
         Util.setClickSoundTo(Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_OFF, gui);
         PaginatedPane pane = new PaginatedPane(0, 0, 9, 5);
         int displaySize = 21;
-        String[] a = commandEntry.commands().toArray(new String[0]);
+        String[] a = commandEntry.entry().getCommands();
         int numPages = (int) Math.ceil(a.length / (displaySize * 1f));
         if (numPages == 0) {
             numPages = 1;
@@ -76,20 +78,28 @@ public class CommandEntryCreateGui implements GuiInstance {
                         Util.invalid("Characters must be at least 2 and at most 29!", pl);
                         return;
                     }
+                    if (Util.isValidFilePath(input)) {
+                        Util.invalid("Invalid File Name!", pl);
+                        return;
+                    }
                     if (!commandSaves.containsKey(pl.getUniqueId())) {
-                        commandSaves.put(pl.getUniqueId(), new CommandInfo(new ArrayList<>()));
+                        commandSaves.put(pl.getUniqueId(), new EntrySaveWrapper<>(null, new CommandEntry(new ArrayList<>())));
                     }
                     commandSaves.get(pl.getUniqueId()).setName(input);
                 });
                 player.closeInventory();
             }), 3, 0);
             border.addItem(new GuiItem(ItemBuilder.builder(Material.BLUE_CONCRETE).setName(ChatColor.BLUE + "Create Entry").build(), item -> {
-                CommandInfo save = commandSaves.get(player.getUniqueId());
-                if (save == null || save.commands().size() < 1) {
+                EntrySaveWrapper<CommandEntry> save = commandSaves.get(player.getUniqueId());
+                if (save == null || save.entry().commands().size() < 1) {
                     Util.invalid("Invalid info!", player);
                     return;
                 }
-                YamlConfiguration config = save.getSave();
+                if (save.name() == null) {
+                    Util.invalid("Please specify a name!", player);
+                    return;
+                }
+                YamlConfiguration config = save.entry().getSave();
                 try {
                     config.save(new File(JavaPlugin.getPlugin(SimpleLuckyBlocksCore.class).getDataFolder() + "/lootEntries", save.name() + ".yml"));
                 } catch (IOException e) {
@@ -110,11 +120,11 @@ public class CommandEntryCreateGui implements GuiInstance {
                 Util.addLoreLine(commandItem, ChatColor.GREEN + "Left click to edit!");
                 items.addItem(new GuiItem(commandItem, item -> {
                     if (item.isRightClick()) {
-                        commandEntry.removeCommand(command);
+                        commandEntry.entry().removeCommand(command);
                         GuiManager.openInventory(player, "commandEntryCreate");
                     }
                     if (item.isLeftClick()) {
-                        commandEntry.removeCommand(command);
+                        commandEntry.entry().removeCommand(command);
                         player.closeInventory();
                         ChatListener.startChatListen(player, "commandEntryCreate", ChatColor.RED + "Enter command", CommandEntryCreateGui::addNewCommandFromInput);
                     }

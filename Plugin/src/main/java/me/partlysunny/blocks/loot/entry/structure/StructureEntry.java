@@ -1,8 +1,10 @@
 package me.partlysunny.blocks.loot.entry.structure;
 
+import me.partlysunny.blocks.loot.entry.EntryType;
 import me.partlysunny.blocks.loot.entry.IEntry;
 import me.partlysunny.worldedit.WorldEditHook;
 import org.bukkit.Location;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 public class StructureEntry implements IEntry {
@@ -25,5 +27,16 @@ public class StructureEntry implements IEntry {
             return;
         }
         WorldEditHook.paste(structure, l.add(offsetX, offsetY, offsetZ));
+    }
+
+    @Override
+    public YamlConfiguration getSave() {
+        YamlConfiguration config = new YamlConfiguration();
+        return config;
+    }
+
+    @Override
+    public EntryType getEntryType() {
+        return EntryType.STRUCTURE;
     }
 }

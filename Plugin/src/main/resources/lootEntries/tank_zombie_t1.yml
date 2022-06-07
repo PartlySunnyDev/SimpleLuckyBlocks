@@ -5,7 +5,7 @@ max: 1
 health: 30
 speedMultiplier: 0.5
 name: Tank Zombie
-armorPieces:
+equipment:
   helmet:
     material: DIAMOND_HELMET
   chestplate:
@@ -19,6 +19,6 @@ armorPieces:
   boots:
     material: DIAMOND_BOOTS
     dropChance: 1
-mainHand:
-  material: IRON_SWORD
+  main_hand:
+    material: IRON_SWORD
 spawnEffect: EXPLOSION_EFFECT

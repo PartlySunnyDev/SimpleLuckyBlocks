@@ -215,6 +215,16 @@ public final class Util {
         throw new IllegalArgumentException("Key " + key + " inside " + y.getName() + " was not found!");
     }
 
+    public static boolean isValidFilePath(String path) {
+        File f = new File(path);
+        try {
+            f.getCanonicalPath();
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
     public static ItemStack produceLuckyBlock(LuckyBlockType type) {
         ItemStack itemStack = type.innerItem();
         ItemStack block;

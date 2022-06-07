@@ -1,8 +1,10 @@
 package me.partlysunny.blocks.loot.entry.item.wand;
 
+import me.partlysunny.blocks.loot.entry.EntryType;
 import me.partlysunny.blocks.loot.entry.IEntry;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -30,5 +32,16 @@ public class WandEntry implements IEntry {
             return;
         }
         world.dropItemNaturally(l, WandManager.getWand(wandType).generate(displayName, lore, minPower, maxPower));
+    }
+
+    @Override
+    public YamlConfiguration getSave() {
+        YamlConfiguration config = new YamlConfiguration();
+        return config;
+    }
+
+    @Override
+    public EntryType getEntryType() {
+        return EntryType.WAND;
     }
 }

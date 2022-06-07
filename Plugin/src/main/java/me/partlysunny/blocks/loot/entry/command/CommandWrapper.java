@@ -14,4 +14,16 @@ public class CommandWrapper {
     public void execute(Server s, Location l) {
         s.dispatchCommand(s.getConsoleSender(), command.replace("<pos>", String.format("%d %d %d", (int) l.getX(), (int) l.getY(), (int) l.getZ())));
     }
+
+    public String command() {
+        return command;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof CommandWrapper) {
+            return ((CommandWrapper) obj).command.equals(command);
+        }
+        return false;
+    }
 }

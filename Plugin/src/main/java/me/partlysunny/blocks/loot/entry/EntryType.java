@@ -8,6 +8,7 @@ import me.partlysunny.blocks.loot.entry.mob.MobEntry;
 import me.partlysunny.blocks.loot.entry.mob.SpawnEffect;
 import me.partlysunny.blocks.loot.entry.potion.PotionEntry;
 import me.partlysunny.blocks.loot.entry.structure.StructureEntry;
+import me.partlysunny.gui.guis.loot.entry.creation.mob.MobSlot;
 import me.partlysunny.util.Util;
 import me.partlysunny.util.classes.ItemBuilder;
 import me.partlysunny.util.classes.Pair;
@@ -23,9 +24,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 
 import static me.partlysunny.blocks.loot.entry.LootEntryManager.loadItemSection;
@@ -75,38 +74,19 @@ public enum EntryType {
         float dropB = 0;
         float dropM = 0;
         String customName = Util.getOrDefault(name, "name", "");
-        if (name.contains("armorPieces")) {
-            ConfigurationSection armor = Util.getOrError(name, "armorPieces");
-            for (String s : armor.getKeys(false)) {
-                ConfigurationSection pieceInfo = getOrError(armor, s);
+        Map<MobSlot, Pair<ItemStack, Double>> loadedEquipment = new HashMap<>();
+        if (name.contains("equipment")) {
+            ConfigurationSection equipment = Util.getOrError(name, "equipment");
+            for (String s : equipment.getKeys(false)) {
+                ConfigurationSection pieceInfo = getOrError(equipment, s);
                 ItemBuilder b = loadItemSection(pieceInfo);
-                switch (s) {
-                    case "helmet" -> {
-                        armorPieces[3] = b.build();
-                        dropH = getOrDefault(pieceInfo, "dropChance", 0);
-                    }
-                    case "boots" -> {
-                        armorPieces[0] = b.build();
-                        dropB = getOrDefault(pieceInfo, "dropChance", 0);
-                    }
-                    case "chestplate" -> {
-                        armorPieces[2] = b.build();
-                        dropC = getOrDefault(pieceInfo, "dropChance", 0);
-                    }
-                    case "leggings" -> {
-                        armorPieces[1] = b.build();
-                        dropL = getOrDefault(pieceInfo, "dropChance", 0);
-                    }
+                MobSlot mobSlot = MobSlot.valueOfOrNull(s);
+                if (mobSlot != null) {
+                    loadedEquipment.put(mobSlot, new Pair<>(b.build(), getOrDefault(pieceInfo, "dropChance", 0d)));
                 }
             }
         }
-        if (name.contains("mainHand")) {
-            ConfigurationSection mainHandInfo = Util.getOrError(name, "mainHand");
-            ItemBuilder b = loadItemSection(mainHandInfo);
-
-            itemOnHand = b.build();
-        }
-        return new MobEntry(t, min, max, armorPieces, itemOnHand, health, speedMultiplier, customName, e, dropH, dropC, dropL, dropB, dropM);
+        return new MobEntry(t, min, max, health, speedMultiplier, customName, e, loadedEquipment);
     }),
     POTION("potion", PotionBuilder.builder(PotionBuilder.PotionFormat.SPLASH).setName(ChatColor.BLUE + "Potion").setPotionData(PotionType.SPEED, null).setLore().build(), (name) -> {
         ConfigurationSection effects = Util.getOrError(name, "effects");

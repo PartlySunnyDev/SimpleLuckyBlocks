@@ -6,10 +6,12 @@ import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import me.partlysunny.SimpleLuckyBlocksCore;
+import me.partlysunny.blocks.loot.entry.potion.PotionEntry;
 import me.partlysunny.gui.GuiInstance;
 import me.partlysunny.gui.GuiManager;
 import me.partlysunny.gui.guis.common.ValueGuiManager;
 import me.partlysunny.gui.guis.common.ValueReturnGui;
+import me.partlysunny.gui.guis.loot.entry.creation.EntrySaveWrapper;
 import me.partlysunny.gui.textInput.ChatListener;
 import me.partlysunny.util.Util;
 import me.partlysunny.util.classes.ItemBuilder;
@@ -35,24 +37,24 @@ import java.util.UUID;
 
 public class PotionEntryCreateGui implements GuiInstance {
 
-    private static final Map<UUID, PotionEntryInfo> potionSaves = new HashMap<>();
+    private static final Map<UUID, EntrySaveWrapper<PotionEntry>> potionSaves = new HashMap<>();
 
     public static void addPlayerEffect(Player p, Pair<PotionEffectType, Pair<Integer, Integer>> effect) {
         if (potionSaves.containsKey(p.getUniqueId())) {
-            potionSaves.get(p.getUniqueId()).addEffect(effect.a(), effect.b().a(), effect.b().b());
+            potionSaves.get(p.getUniqueId()).entry().addEffect(effect.a(), effect.b().a(), effect.b().b());
         } else {
-            potionSaves.put(p.getUniqueId(), new PotionEntryInfo(List.of(effect)));
+            potionSaves.put(p.getUniqueId(), new EntrySaveWrapper<>(null, new PotionEntry(List.of(effect))));
         }
     }
 
     @Override
     public Gui getGui(HumanEntity p) {
         if (!(p instanceof Player player)) return new ChestGui(3, "");
-        PotionEntryInfo potionEntry;
+        EntrySaveWrapper<PotionEntry> potionEntry;
         if (potionSaves.containsKey(p.getUniqueId())) {
             potionEntry = potionSaves.get(p.getUniqueId());
         } else {
-            PotionEntryInfo value = new PotionEntryInfo(List.of());
+            EntrySaveWrapper<PotionEntry> value = new EntrySaveWrapper<>(null, new PotionEntry(List.of()));
             potionSaves.put(player.getUniqueId(), value);
             potionEntry = value;
         }
@@ -60,7 +62,7 @@ public class PotionEntryCreateGui implements GuiInstance {
         Util.setClickSoundTo(Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_OFF, gui);
         PaginatedPane pane = new PaginatedPane(0, 0, 9, 5);
         int displaySize = 21;
-        Pair<PotionEffectType, Pair<Integer, Integer>>[] a = potionEntry.getEffects();
+        Pair<PotionEffectType, Pair<Integer, Integer>>[] a = potionEntry.entry().getEffects();
         int numPages = (int) Math.ceil(a.length / (displaySize * 1f));
         if (numPages == 0) {
             numPages = 1;
@@ -79,20 +81,28 @@ public class PotionEntryCreateGui implements GuiInstance {
                         Util.invalid("Characters must be at least 2 and at most 29!", pl);
                         return;
                     }
+                    if (Util.isValidFilePath(input)) {
+                        Util.invalid("Invalid File Name!", pl);
+                        return;
+                    }
                     if (!potionSaves.containsKey(pl.getUniqueId())) {
-                        potionSaves.put(pl.getUniqueId(), new PotionEntryInfo(List.of()));
+                        potionSaves.put(pl.getUniqueId(), new EntrySaveWrapper<>(null, new PotionEntry(List.of())));
                     }
                     potionSaves.get(pl.getUniqueId()).setName(input);
                 });
                 player.closeInventory();
             }), 3, 0);
             border.addItem(new GuiItem(ItemBuilder.builder(Material.BLUE_CONCRETE).setName(ChatColor.BLUE + "Create Effect").build(), item -> {
-                PotionEntryInfo save = potionSaves.get(player.getUniqueId());
-                if (save == null || save.getEffects().length < 1) {
+                EntrySaveWrapper<PotionEntry> save = potionSaves.get(player.getUniqueId());
+                if (save == null || save.entry().getEffects().length < 1) {
                     Util.invalid("Invalid info!", player);
                     return;
                 }
-                YamlConfiguration config = save.getSave();
+                if (save.name() == null) {
+                    Util.invalid("Please specify a name!", player);
+                    return;
+                }
+                YamlConfiguration config = save.entry().getSave();
                 try {
                     config.save(new File(JavaPlugin.getPlugin(SimpleLuckyBlocksCore.class).getDataFolder() + "/lootEntries", save.name() + ".yml"));
                 } catch (IOException e) {
@@ -113,7 +123,7 @@ public class PotionEntryCreateGui implements GuiInstance {
                 Util.addLoreLine(potionAsItem, ChatColor.GREEN + "Left click to edit!");
                 items.addItem(new GuiItem(potionAsItem, item -> {
                     if (item.isRightClick()) {
-                        potionEntry.removeEffect(potionInfo.a());
+                        potionEntry.entry().removeEffect(potionInfo.a());
                         GuiManager.openInventory(player, "potionEntryCreate");
                     }
                     if (item.isLeftClick()) {
