@@ -26,7 +26,6 @@ import me.partlysunny.gui.textInput.ChatListener;
 import me.partlysunny.util.classes.ItemBuilder;
 import me.partlysunny.util.classes.Pair;
 import me.partlysunny.util.reflection.JavaAccessor;
-import org.apache.commons.io.FilenameUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
@@ -111,7 +110,7 @@ public final class Util {
         try {
             URL url = new URL(urlString);
             reader = new BufferedReader(new InputStreamReader(url.openStream()));
-            StringBuffer buffer = new StringBuffer();
+            StringBuilder buffer = new StringBuilder();
             int read;
             char[] chars = new char[1024];
             while ((read = reader.read(chars)) != -1) buffer.append(chars, 0, read);
@@ -184,9 +183,7 @@ public final class Util {
 
     public static List<String> processTexts(List<String> texts) {
         List<String> result = new ArrayList<>();
-        texts.forEach(n -> {
-            result.add(processText(n));
-        });
+        texts.forEach(n -> result.add(processText(n)));
         return result;
     }
 
@@ -564,21 +561,11 @@ public final class Util {
         return asType;
     }
 
-    public static ChestGui getConfigListMenu(Player p, String guiId, String title, String fileFolder, String createGui, String backButtonLink) {
+    public static ChestGui getEntryManagement(Player p, String guiId, String title, String[] values, String createGui, String backButtonLink) {
         JavaPlugin plugin = JavaPlugin.getPlugin(SimpleLuckyBlocksCore.class);
-        File f = new File(plugin.getDataFolder(), fileFolder);
-        if (!f.exists()) {
-            ConsoleLogger.error("An internal error occurred (DATA_FOLDER_NOT_FOUND). Please contact the developer!");
-            return null;
-        }
-        File[] files = f.listFiles();
-        if (files == null) {
-            ConsoleLogger.error("An internal error occurred (DATA_FOLDER_INVALID). Please contact the developer!");
-            return null;
-        }
         ChestGui gui = new ChestGui(5, title);
         PaginatedPane pane = new PaginatedPane(0, 0, 9, 5);
-        int numPages = (int) Math.ceil(files.length / 27f);
+        int numPages = (int) Math.ceil(values.length / 27f);
         if (numPages == 0) {
             numPages = 1;
         }
@@ -591,10 +578,10 @@ public final class Util {
             border.addItem(new GuiItem(ItemBuilder.builder(Material.YELLOW_CONCRETE).setName(ChatColor.GOLD + "Reload").build(), item -> GuiManager.openInventory(p, guiId)), 2, 0);
             items.fillWith(ItemBuilder.builder(Material.GRAY_STAINED_GLASS_PANE).setName("").build());
             for (int j = count; j < count + 27; j++) {
-                if (j > files.length - 1) {
+                if (j > values.length - 1) {
                     break;
                 }
-                String fileName = FilenameUtils.getBaseName(files[j].getName());
+                String fileName = values[j];
                 items.addItem(new GuiItem(ItemBuilder.builder(Material.PAPER).setName(ChatColor.GRAY + fileName).build()), (j - count) % 9, (j - count) / 9);
             }
             count += 27;
@@ -642,8 +629,14 @@ public final class Util {
     }
 
     public static void addEditable(ItemStack i) {
-        if (i.hasItemMeta() && !(i.getItemMeta().getLore() == null) && !i.getItemMeta().getLore().get(i.getItemMeta().getLore().size() - 1).equals(ChatColor.GREEN + "Click to edit!")) {
-            addLoreLine(i, ChatColor.GREEN + "Click to edit!");
+        if (i.hasItemMeta()) {
+            if (!(i.getItemMeta().getLore() == null)) {
+                if (!i.getItemMeta().getLore().get(i.getItemMeta().getLore().size() - 1).equals(ChatColor.GREEN + "Click to edit!")) {
+                    addLoreLine(i, ChatColor.GREEN + "Click to edit!");
+                }
+            } else {
+                addLoreLine(i, ChatColor.GREEN + "Click to edit");
+            }
         }
     }
 

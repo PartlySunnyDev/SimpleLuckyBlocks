@@ -30,6 +30,10 @@ public class LootEntryManager {
         return entryTypes.get(id);
     }
 
+    public static String[] getEntryKeys() {
+        return entryTypes.keySet().toArray(new String[0]);
+    }
+
     public static void loadEntries() {
         entryTypes.clear();
         File dir = new File(JavaPlugin.getPlugin(SimpleLuckyBlocksCore.class).getDataFolder() + "/lootEntries");
