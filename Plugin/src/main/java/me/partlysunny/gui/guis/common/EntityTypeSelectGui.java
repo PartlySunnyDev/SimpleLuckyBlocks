@@ -3,6 +3,7 @@ package me.partlysunny.gui.guis.common;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
+import me.partlysunny.gui.ValueReturnGui;
 import me.partlysunny.util.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;

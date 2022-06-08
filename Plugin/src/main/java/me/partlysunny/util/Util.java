@@ -15,9 +15,13 @@ import de.tr7zw.nbtapi.NBTItem;
 import me.partlysunny.ConsoleLogger;
 import me.partlysunny.SimpleLuckyBlocksCore;
 import me.partlysunny.blocks.LuckyBlockType;
+import me.partlysunny.blocks.loot.entry.IEntry;
 import me.partlysunny.gui.GuiManager;
-import me.partlysunny.gui.guis.common.ValueGuiManager;
-import me.partlysunny.gui.guis.common.ValueReturnGui;
+import me.partlysunny.gui.ValueGuiManager;
+import me.partlysunny.gui.ValueReturnGui;
+import me.partlysunny.gui.guis.loot.entry.creation.EntrySaveWrapper;
+import me.partlysunny.gui.guis.loot.entry.creation.mob.MobEntryCreateGui;
+import me.partlysunny.gui.guis.loot.entry.creation.mob.equipment.MobSlot;
 import me.partlysunny.gui.textInput.ChatListener;
 import me.partlysunny.util.classes.ItemBuilder;
 import me.partlysunny.util.classes.Pair;
@@ -478,6 +482,15 @@ public final class Util {
         }), x, y);
     }
 
+    public static void addEquipmentSlot(StaticPane pane, Player p, String currentGui, MobSlot slot, ItemStack toShow, int x, int y) {
+        pane.addItem(new GuiItem(toShow, item -> {
+            MobEntryCreateGui.setSlot(p.getUniqueId(), slot);
+            ValueGuiManager.getValueGui("mobEquipment").setReturnTo(p.getUniqueId(), currentGui);
+            p.closeInventory();
+            GuiManager.openInventory(p, "mobEquipmentSelect");
+        }), x, y);
+    }
+
     public static void addReturnButton(StaticPane pane, Player p, String returnTo, int x, int y) {
         pane.addItem(new GuiItem(ItemBuilder.builder(Material.ARROW).setName(ChatColor.GREEN + "Back").build(), item -> {
             GuiManager.openInventory(p, returnTo);
@@ -507,6 +520,25 @@ public final class Util {
         }
         if (currentInput < 1) {
             pl.sendMessage("Must be greater than 1!");
+            return null;
+        }
+        return currentInput;
+    }
+
+    public static Double getTextInputAsDouble(Player pl) {
+        String input = ChatListener.getCurrentInput(pl);
+        if (input.equals("cancel")) {
+            return null;
+        }
+        double currentInput;
+        try {
+            currentInput = Double.parseDouble(input);
+        } catch (NumberFormatException e) {
+            pl.sendMessage(ChatColor.RED + "Invalid number!");
+            return null;
+        }
+        if (currentInput < 0) {
+            pl.sendMessage("Must be greater than 0!");
             return null;
         }
         return currentInput;
@@ -574,6 +606,7 @@ public final class Util {
         return gui;
     }
 
+
     public static ConfigurationSection getEnchantSection(Map<Enchantment, Integer> enchants) {
         ConfigurationSection returned = new YamlConfiguration();
         for (Enchantment e : enchants.keySet()) {
@@ -585,6 +618,33 @@ public final class Util {
             returned.set(key, subSection);
         }
         return returned;
+    }
+
+    public static <T extends IEntry> void addRenameButton(StaticPane mainPane, Player player, Map<UUID, EntrySaveWrapper<T>> toChange, T def, String currentUi, int x, int y) {
+        mainPane.addItem(new GuiItem(ItemBuilder.builder(Material.ACACIA_SIGN).setName(ChatColor.RED + "Rename").setLore(ChatColor.GRAY + "Current name: " + toChange.getOrDefault(player.getUniqueId(), new EntrySaveWrapper<>("None", null)).name()).build(), event -> {
+            ChatListener.startChatListen(player, currentUi, ChatColor.RED + "Enter new name!", pl -> {
+                String input = ChatListener.getCurrentInput(pl);
+                if (input.length() < 2 || input.length() > 30) {
+                    Util.invalid("Characters must be at least 2 and at most 29!", pl);
+                    return;
+                }
+                if (!Util.isValidFilePath(input)) {
+                    Util.invalid("Invalid File Name!", pl);
+                    return;
+                }
+                if (!toChange.containsKey(pl.getUniqueId())) {
+                    toChange.put(pl.getUniqueId(), new EntrySaveWrapper<>(null, def));
+                }
+                toChange.get(pl.getUniqueId()).setName(input);
+            });
+            player.closeInventory();
+        }), x, y);
+    }
+
+    public static void addEditable(ItemStack i) {
+        if (i.hasItemMeta() && !(i.getItemMeta().getLore() == null) && !i.getItemMeta().getLore().get(i.getItemMeta().getLore().size() - 1).equals(ChatColor.GREEN + "Click to edit!")) {
+            addLoreLine(i, ChatColor.GREEN + "Click to edit!");
+        }
     }
 
     public static void changePage(PaginatedPane p, int amount) {

@@ -8,10 +8,10 @@ import me.partlysunny.SimpleLuckyBlocksCore;
 import me.partlysunny.blocks.loot.entry.item.ItemEntry;
 import me.partlysunny.gui.GuiInstance;
 import me.partlysunny.gui.GuiManager;
-import me.partlysunny.gui.guis.common.ValueGuiManager;
-import me.partlysunny.gui.guis.common.ValueReturnGui;
+import me.partlysunny.gui.ValueGuiManager;
+import me.partlysunny.gui.ValueReturnGui;
+import me.partlysunny.gui.guis.common.material.MaterialSelectGui;
 import me.partlysunny.gui.guis.loot.entry.creation.EntrySaveWrapper;
-import me.partlysunny.gui.textInput.ChatListener;
 import me.partlysunny.util.Util;
 import me.partlysunny.util.classes.ItemBuilder;
 import org.bukkit.ChatColor;
@@ -34,6 +34,7 @@ public class ItemEntryCreateGui implements GuiInstance {
     private static final Map<UUID, EntrySaveWrapper<ItemEntry>> itemSaves = new HashMap<>();
 
     @Override
+    @SuppressWarnings("unchecked")
     public Gui getGui(HumanEntity p) {
         if (!(p instanceof Player player)) return new ChestGui(3, "");
         UUID pId = player.getUniqueId();
@@ -59,9 +60,10 @@ public class ItemEntryCreateGui implements GuiInstance {
         StaticPane mainPane = new StaticPane(0, 0, 9, 3);
         mainPane.fillWith(new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
         ItemStack item = itemInfo.entry().itemToDrop().clone();
-        Util.addLoreLine(item, ChatColor.GREEN + "Click to edit!");
+        Util.addEditable(item);
         mainPane.addItem(new GuiItem(item, x -> {
             ValueGuiManager.getValueGui("itemMaker").setReturnTo(p.getUniqueId(), "itemEntryCreate");
+            MaterialSelectGui.setFilters(player.getUniqueId(), "meta");
             p.closeInventory();
             ((ValueReturnGui<ItemStack>) ValueGuiManager.getValueGui("itemMaker")).openWithValue(player, itemInfo.entry().itemToDrop(), "itemMakerSelect");
         }), 1, 1);
@@ -94,24 +96,7 @@ public class ItemEntryCreateGui implements GuiInstance {
                 itemSaves.put(pl.getUniqueId(), new EntrySaveWrapper<>(null, new ItemEntry(new ItemStack(Material.WOODEN_AXE), 0, currentInput)));
             }
         });
-        mainPane.addItem(new GuiItem(ItemBuilder.builder(Material.ACACIA_SIGN).setName(ChatColor.RED + "Rename").setLore(ChatColor.GRAY + "Current name: " + itemInfo.name()).build(), event -> {
-            ChatListener.startChatListen(player, "itemEntryCreate", ChatColor.RED + "Enter new name!", pl -> {
-                String input = ChatListener.getCurrentInput(pl);
-                if (input.length() < 2 || input.length() > 30) {
-                    Util.invalid("Characters must be at least 2 and at most 29!", pl);
-                    return;
-                }
-                if (Util.isValidFilePath(input)) {
-                    Util.invalid("Invalid File Name!", pl);
-                    return;
-                }
-                if (!itemSaves.containsKey(pl.getUniqueId())) {
-                    itemSaves.put(pl.getUniqueId(), new EntrySaveWrapper<>(null, new ItemEntry(new ItemStack(Material.WOODEN_AXE), 0, 0)));
-                }
-                itemSaves.get(pl.getUniqueId()).setName(input);
-            });
-            player.closeInventory();
-        }), 4, 1);
+        Util.addRenameButton(mainPane, player, itemSaves, new ItemEntry(new ItemStack(Material.WOODEN_AXE), 0, 0), "itemEntryCreate", 4, 1);
         mainPane.addItem(new GuiItem(ItemBuilder.builder(Material.BLUE_CONCRETE).setName(ChatColor.BLUE + "Create Item Entry").build(), event -> {
             EntrySaveWrapper<ItemEntry> save = itemSaves.get(player.getUniqueId());
             if (save == null || save.entry().min() > save.entry().max()) {

@@ -8,7 +8,7 @@ import me.partlysunny.blocks.loot.entry.mob.MobEntry;
 import me.partlysunny.blocks.loot.entry.mob.SpawnEffect;
 import me.partlysunny.blocks.loot.entry.potion.PotionEntry;
 import me.partlysunny.blocks.loot.entry.structure.StructureEntry;
-import me.partlysunny.gui.guis.loot.entry.creation.mob.MobSlot;
+import me.partlysunny.gui.guis.loot.entry.creation.mob.equipment.MobSlot;
 import me.partlysunny.util.Util;
 import me.partlysunny.util.classes.ItemBuilder;
 import me.partlysunny.util.classes.Pair;
@@ -66,13 +66,6 @@ public enum EntryType {
         int max = Util.getOrError(name, "max");
         int health = Util.getOrDefault(name, "health", -1);
         double speedMultiplier = Util.getOrDefault(name, "speedMultiplier", -1d);
-        ItemStack[] armorPieces = new ItemStack[4];
-        ItemStack itemOnHand = null;
-        float dropH = 0;
-        float dropC = 0;
-        float dropL = 0;
-        float dropB = 0;
-        float dropM = 0;
         String customName = Util.getOrDefault(name, "name", "");
         Map<MobSlot, Pair<ItemStack, Double>> loadedEquipment = new HashMap<>();
         if (name.contains("equipment")) {
@@ -80,9 +73,10 @@ public enum EntryType {
             for (String s : equipment.getKeys(false)) {
                 ConfigurationSection pieceInfo = getOrError(equipment, s);
                 ItemBuilder b = loadItemSection(pieceInfo);
-                MobSlot mobSlot = MobSlot.valueOfOrNull(s);
+                MobSlot mobSlot = MobSlot.valueOfOrNull(s.toUpperCase());
                 if (mobSlot != null) {
-                    loadedEquipment.put(mobSlot, new Pair<>(b.build(), getOrDefault(pieceInfo, "dropChance", 0d)));
+                    Double dropChance = getOrDefault(pieceInfo, "dropChance", 0d);
+                    loadedEquipment.put(mobSlot, new Pair<>(b.build(), dropChance));
                 }
             }
         }

@@ -21,8 +21,8 @@ public class ItemBuilder {
     }
 
     public ItemBuilder(ItemStack s) {
-        this.s = s;
-        this.meta = s.getItemMeta();
+        this.s = s.clone();
+        this.meta = s.getItemMeta().clone();
     }
 
     public static ItemBuilder builder(Material m) {

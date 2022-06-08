@@ -5,8 +5,8 @@ import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import me.partlysunny.gui.GuiManager;
-import me.partlysunny.gui.guis.common.ValueGuiManager;
-import me.partlysunny.gui.guis.common.ValueReturnGui;
+import me.partlysunny.gui.ValueGuiManager;
+import me.partlysunny.gui.ValueReturnGui;
 import me.partlysunny.util.Util;
 import me.partlysunny.util.classes.ItemBuilder;
 import me.partlysunny.util.classes.Pair;
@@ -65,7 +65,7 @@ public class PotionEntrySectionSelectGui extends ValueReturnGui<Pair<PotionEffec
                 this.values.put(pl.getUniqueId(), new Pair<>(PotionEffectType.ABSORPTION, new Pair<>(currentInput * 20, 0)));
             }
         });
-        ItemStack lvlItem = ItemBuilder.builder(Material.PAPER).setName(ChatColor.BLUE + "Amplifier").setLore(ChatColor.GRAY + (current.b().b() == null ? "0" : current.b().b().toString())).build();
+        ItemStack lvlItem = ItemBuilder.builder(Material.PAPER).setName(ChatColor.BLUE + "Amplifier").setLore(ChatColor.GRAY + (current.b().b() == null ? "0" : String.valueOf(current.b().b() + 1))).build();
         Util.addTextInputLink(mainPane, player, "potionEntrySectionSelect", ChatColor.RED + "Enter amplifier (lvl) or \"cancel\" to cancel", lvlItem, 5, 1, pl -> {
             boolean hasValue = this.values.containsKey(pl.getUniqueId());
             Integer currentInput = Util.getTextInputAsInt(pl);

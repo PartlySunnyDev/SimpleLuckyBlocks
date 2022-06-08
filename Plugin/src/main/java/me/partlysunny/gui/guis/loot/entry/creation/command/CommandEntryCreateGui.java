@@ -71,24 +71,7 @@ public class CommandEntryCreateGui implements GuiInstance {
             border.fillWith(new ItemStack(Material.BLACK_STAINED_GLASS_PANE));
             Util.addTextInputLink(border, player, "commandEntryCreate", ChatColor.RED + "Enter command", ItemBuilder.builder(Material.GREEN_CONCRETE).setName(ChatColor.GREEN + "Add new command").build(), 1, 0, CommandEntryCreateGui::addNewCommandFromInput);
             border.addItem(new GuiItem(ItemBuilder.builder(Material.YELLOW_CONCRETE).setName(ChatColor.GOLD + "Reload").build(), item -> GuiManager.openInventory(player, "commandEntryCreate")), 2, 0);
-            border.addItem(new GuiItem(ItemBuilder.builder(Material.ACACIA_SIGN).setName(ChatColor.RED + "Rename").setLore(ChatColor.GRAY + "Current name: " + commandEntry.name()).build(), item -> {
-                ChatListener.startChatListen(player, "commandEntryCreate", ChatColor.RED + "Enter new name!", pl -> {
-                    String input = ChatListener.getCurrentInput(pl);
-                    if (input.length() < 2 || input.length() > 30) {
-                        Util.invalid("Characters must be at least 2 and at most 29!", pl);
-                        return;
-                    }
-                    if (Util.isValidFilePath(input)) {
-                        Util.invalid("Invalid File Name!", pl);
-                        return;
-                    }
-                    if (!commandSaves.containsKey(pl.getUniqueId())) {
-                        commandSaves.put(pl.getUniqueId(), new EntrySaveWrapper<>(null, new CommandEntry(new ArrayList<>())));
-                    }
-                    commandSaves.get(pl.getUniqueId()).setName(input);
-                });
-                player.closeInventory();
-            }), 3, 0);
+            Util.addRenameButton(border, player, commandSaves, new CommandEntry(new ArrayList<>(List.of())), "commandEntryCreate", 3, 0);
             border.addItem(new GuiItem(ItemBuilder.builder(Material.BLUE_CONCRETE).setName(ChatColor.BLUE + "Create Entry").build(), item -> {
                 EntrySaveWrapper<CommandEntry> save = commandSaves.get(player.getUniqueId());
                 if (save == null || save.entry().commands().size() < 1) {
@@ -117,7 +100,7 @@ public class CommandEntryCreateGui implements GuiInstance {
                 String command = a[j];
                 ItemStack commandItem = ItemBuilder.builder(Material.PAPER).setName(ChatColor.GRAY + "" + (j + 1)).setLore(Util.splitLoreForLine(command).toArray(new String[0])).build();
                 Util.addLoreLine(commandItem, ChatColor.RED + "Right click to delete!");
-                Util.addLoreLine(commandItem, ChatColor.GREEN + "Left click to edit!");
+                Util.addEditable(commandItem);
                 items.addItem(new GuiItem(commandItem, item -> {
                     if (item.isRightClick()) {
                         commandEntry.entry().removeCommand(command);

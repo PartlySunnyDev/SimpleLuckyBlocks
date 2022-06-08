@@ -1,9 +1,14 @@
-package me.partlysunny.gui.guis.common;
+package me.partlysunny.gui;
 
-import me.partlysunny.gui.GuiManager;
+import me.partlysunny.gui.guis.common.EnchantmentSelectGui;
+import me.partlysunny.gui.guis.common.EntityTypeSelectGui;
+import me.partlysunny.gui.guis.common.PotionEffectTypeSelectGui;
+import me.partlysunny.gui.guis.common.SpawnEffectSelectGui;
 import me.partlysunny.gui.guis.common.item.ItemMakerSelectGui;
 import me.partlysunny.gui.guis.common.item.enchant.EnchantCreationSelectGui;
 import me.partlysunny.gui.guis.common.item.enchant.EnchantModifierSelectGui;
+import me.partlysunny.gui.guis.common.material.MaterialSelectGui;
+import me.partlysunny.gui.guis.loot.entry.creation.mob.equipment.MobEquipmentSelectGui;
 import me.partlysunny.gui.guis.loot.entry.creation.potion.PotionEntrySectionSelectGui;
 
 import java.util.HashMap;
@@ -35,6 +40,8 @@ public class ValueGuiManager {
         registerValueGui("itemMaker", new ItemMakerSelectGui());
         registerValueGui("enchantModifier", new EnchantModifierSelectGui());
         registerValueGui("enchantCreation", new EnchantCreationSelectGui());
+        registerValueGui("mobEquipment", new MobEquipmentSelectGui());
+        registerValueGui("spawnEffect", new SpawnEffectSelectGui());
     }
 
 }

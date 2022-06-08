@@ -18,7 +18,7 @@ equipment:
         lvl: 5
   boots:
     material: DIAMOND_BOOTS
-    dropChance: 1
+    dropChance: 1.0
   main_hand:
     material: IRON_SWORD
 spawnEffect: EXPLOSION_EFFECT

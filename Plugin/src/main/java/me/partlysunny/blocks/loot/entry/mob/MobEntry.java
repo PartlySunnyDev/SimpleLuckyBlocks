@@ -2,10 +2,13 @@ package me.partlysunny.blocks.loot.entry.mob;
 
 import me.partlysunny.blocks.loot.entry.EntryType;
 import me.partlysunny.blocks.loot.entry.IEntry;
-import me.partlysunny.gui.guis.loot.entry.creation.mob.MobSlot;
+import me.partlysunny.gui.guis.loot.entry.creation.mob.equipment.MobSlot;
 import me.partlysunny.util.Util;
+import me.partlysunny.util.classes.ItemBuilder;
 import me.partlysunny.util.classes.Pair;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -22,6 +25,7 @@ import java.util.Map;
 
 public class MobEntry implements IEntry {
 
+    private static final ItemStack emptySlot = ItemBuilder.builder(Material.BLACK_STAINED_GLASS_PANE).setName(ChatColor.RED + "Empty Slot!").build();
     private final Map<MobSlot, Pair<ItemStack, Double>> equipment;
     private EntityType entityType;
     private int health;
@@ -30,7 +34,6 @@ public class MobEntry implements IEntry {
     private SpawnEffect spawnEffect;
     private int min;
     private int max;
-    private String entryName;
 
     public MobEntry() {
         this(EntityType.ARROW, 0, 0, 10, 1, "", SpawnEffect.NONE, new HashMap<>());
@@ -60,6 +63,8 @@ public class MobEntry implements IEntry {
                 EntityEquipment equipment = le.getEquipment();
                 for (MobSlot s : this.equipment.keySet()) {
                     equipment.setItem(s.corresponding(), getEquipment(s));
+                }
+                for (MobSlot s : this.equipment.keySet()) {
                     s.modify(equipment, getEquipmentDropChance(s));
                 }
                 if (health != -1) {
@@ -79,22 +84,31 @@ public class MobEntry implements IEntry {
     }
 
     public void setEquipment(MobSlot slot, ItemStack s) {
+        if (!equipment.containsKey(slot)) {
+            equipment.put(slot, new Pair<>(emptySlot, 0d));
+        }
         Pair<ItemStack, Double> info = equipment.get(slot);
         info.setA(s);
     }
 
     public void setEquipmentDropChance(MobSlot slot, Double f) {
+        if (!equipment.containsKey(slot)) {
+            equipment.put(slot, new Pair<>(emptySlot, 0d));
+        }
         Pair<ItemStack, Double> info = equipment.get(slot);
         info.setB(f);
     }
 
     public ItemStack getEquipment(MobSlot slot) {
-        Pair<ItemStack, Double> info = equipment.get(slot);
+        Pair<ItemStack, Double> info = equipment.getOrDefault(slot, new Pair<>(emptySlot, 0d));
+        if (info.a().getItemMeta() == null) {
+            throw new IllegalArgumentException("Equipment has no meta!");
+        }
         return info.a();
     }
 
     public Double getEquipmentDropChance(MobSlot slot) {
-        Pair<ItemStack, Double> info = equipment.get(slot);
+        Pair<ItemStack, Double> info = equipment.getOrDefault(slot, new Pair<>(emptySlot, 0d));
         return info.b();
     }
 
@@ -164,7 +178,7 @@ public class MobEntry implements IEntry {
         config.set("health", health);
         config.set("speedMultiplier", speedMultiplier);
         config.set("name", name);
-        config.set("spawnEffect", spawnEffect);
+        config.set("spawnEffect", spawnEffect.toString());
         YamlConfiguration equipmentSection = new YamlConfiguration();
         for (MobSlot s : equipment.keySet()) {
             Pair<ItemStack, Double> info = equipment.get(s);

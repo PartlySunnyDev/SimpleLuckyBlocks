@@ -44,7 +44,6 @@ public class StructureManager {
     }
 
     private static void loadStructure(File file) throws IOException {
-        ConsoleLogger.console(file.getPath());
         Clipboard fromInput = WorldEditHook.getFromInput(file);
         if (fromInput == null) {
             return;

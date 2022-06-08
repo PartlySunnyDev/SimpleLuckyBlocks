@@ -1,7 +1,5 @@
-package me.partlysunny.gui.guis.common;
+package me.partlysunny.gui;
 
-import me.partlysunny.gui.GuiInstance;
-import me.partlysunny.gui.GuiManager;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;

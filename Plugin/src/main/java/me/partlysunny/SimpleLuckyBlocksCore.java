@@ -7,8 +7,9 @@ import me.partlysunny.commands.SLBCommand;
 import me.partlysunny.commands.SLBTabCompleter;
 import me.partlysunny.commands.subcommands.*;
 import me.partlysunny.gui.GuiManager;
+import me.partlysunny.gui.ValueGuiManager;
 import me.partlysunny.gui.guis.MainPageGui;
-import me.partlysunny.gui.guis.common.ValueGuiManager;
+import me.partlysunny.gui.guis.common.material.filters.FilterManager;
 import me.partlysunny.gui.guis.loot.LootMenuGui;
 import me.partlysunny.gui.guis.loot.entry.EntryCreationGui;
 import me.partlysunny.gui.guis.loot.entry.EntryManagementGui;
@@ -96,6 +97,7 @@ public final class SimpleLuckyBlocksCore extends JavaPlugin {
         //Create particle effect ticker
         new Ticker();
         //Register subcommands
+        FilterManager.initFilters();
         registerCommands();
         registerListeners();
         reload();
