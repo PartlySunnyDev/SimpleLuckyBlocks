@@ -13,10 +13,7 @@ import me.partlysunny.gui.guis.common.material.filters.FilterManager;
 import me.partlysunny.gui.guis.loot.LootMenuGui;
 import me.partlysunny.gui.guis.loot.entry.EntryCreationGui;
 import me.partlysunny.gui.guis.loot.entry.EntryManagementGui;
-import me.partlysunny.gui.guis.loot.entry.creation.command.CommandEntryCreateGui;
-import me.partlysunny.gui.guis.loot.entry.creation.item.ItemEntryCreateGui;
-import me.partlysunny.gui.guis.loot.entry.creation.mob.MobEntryCreateGui;
-import me.partlysunny.gui.guis.loot.entry.creation.potion.PotionEntryCreateGui;
+import me.partlysunny.gui.guis.loot.entry.creation.CreateGuiManager;
 import me.partlysunny.gui.textInput.ChatListener;
 import me.partlysunny.listeners.*;
 import me.partlysunny.util.Util;
@@ -120,10 +117,7 @@ public final class SimpleLuckyBlocksCore extends JavaPlugin {
         GuiManager.registerGui("mainPage", new MainPageGui());
         GuiManager.registerGui("entryCreation", new EntryCreationGui());
         GuiManager.registerGui("entryManagement", new EntryManagementGui());
-        GuiManager.registerGui("potionEntryCreate", new PotionEntryCreateGui());
-        GuiManager.registerGui("itemEntryCreate", new ItemEntryCreateGui());
-        GuiManager.registerGui("commandEntryCreate", new CommandEntryCreateGui());
-        GuiManager.registerGui("mobEntryCreate", new MobEntryCreateGui());
+        CreateGuiManager.init();
         ValueGuiManager.init();
     }
 

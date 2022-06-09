@@ -7,8 +7,8 @@ import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import me.partlysunny.SimpleLuckyBlocksCore;
 import me.partlysunny.blocks.loot.entry.command.CommandEntry;
-import me.partlysunny.gui.GuiInstance;
 import me.partlysunny.gui.GuiManager;
+import me.partlysunny.gui.guis.loot.entry.creation.EntryCreateGui;
 import me.partlysunny.gui.guis.loot.entry.creation.EntrySaveWrapper;
 import me.partlysunny.gui.textInput.ChatListener;
 import me.partlysunny.util.Util;
@@ -26,7 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-public class CommandEntryCreateGui implements GuiInstance {
+public class CommandEntryCreateGui extends EntryCreateGui<CommandEntry> {
 
     private static final Map<UUID, EntrySaveWrapper<CommandEntry>> commandSaves = new HashMap<>();
 

@@ -6,11 +6,11 @@ import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import me.partlysunny.SimpleLuckyBlocksCore;
 import me.partlysunny.blocks.loot.entry.item.ItemEntry;
-import me.partlysunny.gui.GuiInstance;
 import me.partlysunny.gui.GuiManager;
 import me.partlysunny.gui.ValueGuiManager;
 import me.partlysunny.gui.ValueReturnGui;
 import me.partlysunny.gui.guis.common.material.MaterialSelectGui;
+import me.partlysunny.gui.guis.loot.entry.creation.EntryCreateGui;
 import me.partlysunny.gui.guis.loot.entry.creation.EntrySaveWrapper;
 import me.partlysunny.util.Util;
 import me.partlysunny.util.classes.ItemBuilder;
@@ -29,9 +29,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class ItemEntryCreateGui implements GuiInstance {
+public class ItemEntryCreateGui extends EntryCreateGui<ItemEntry> {
 
-    private static final Map<UUID, EntrySaveWrapper<ItemEntry>> itemSaves = new HashMap<>();
+    private static final Map<UUID, EntrySaveWrapper<ItemEntry>> saves = new HashMap<>();
 
     @Override
     @SuppressWarnings("unchecked")
@@ -42,19 +42,19 @@ public class ItemEntryCreateGui implements GuiInstance {
         Util.setClickSoundTo(Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_OFF, gui);
         EntrySaveWrapper<ItemEntry> itemInfo;
         ItemStack createdItem = (ItemStack) ValueGuiManager.getValueGui("itemMaker").getValue(pId);
-        if (itemSaves.containsKey(p.getUniqueId())) {
+        if (saves.containsKey(p.getUniqueId())) {
             if (createdItem != null) {
-                itemSaves.get(p.getUniqueId()).entry().setItemToDrop(createdItem);
+                saves.get(p.getUniqueId()).entry().setItemToDrop(createdItem);
                 ValueGuiManager.getValueGui("itemMaker").resetValue(player.getUniqueId());
             }
-            itemInfo = itemSaves.get(p.getUniqueId());
+            itemInfo = saves.get(p.getUniqueId());
         } else {
             EntrySaveWrapper<ItemEntry> value = new EntrySaveWrapper<>(null, new ItemEntry(new ItemStack(Material.WOODEN_AXE), 0, 0));
             if (createdItem != null) {
                 value.entry().setItemToDrop(createdItem);
                 ValueGuiManager.getValueGui("itemMaker").resetValue(player.getUniqueId());
             }
-            itemSaves.put(player.getUniqueId(), value);
+            saves.put(player.getUniqueId(), value);
             itemInfo = value;
         }
         StaticPane mainPane = new StaticPane(0, 0, 9, 3);
@@ -69,7 +69,7 @@ public class ItemEntryCreateGui implements GuiInstance {
         }), 1, 1);
         ItemStack minItem = ItemBuilder.builder(Material.PAPER).setName(ChatColor.BLUE + "Minimum amount").setLore(ChatColor.GRAY + "" + itemInfo.entry().min()).build();
         Util.addTextInputLink(mainPane, player, "itemEntryCreate", ChatColor.RED + "Enter minimum value or \"cancel\" to cancel", minItem, 2, 1, pl -> {
-            boolean hasValue = itemSaves.containsKey(pl.getUniqueId());
+            boolean hasValue = saves.containsKey(pl.getUniqueId());
             Integer currentInput = Util.getTextInputAsInt(pl);
             if (currentInput == null) {
                 Util.invalid("Invalid value!", pl);
@@ -78,12 +78,12 @@ public class ItemEntryCreateGui implements GuiInstance {
             if (hasValue) {
                 itemInfo.entry().setMin(currentInput);
             } else {
-                itemSaves.put(pl.getUniqueId(), new EntrySaveWrapper<>(null, new ItemEntry(new ItemStack(Material.WOODEN_AXE), currentInput, 0)));
+                saves.put(pl.getUniqueId(), new EntrySaveWrapper<>(null, new ItemEntry(new ItemStack(Material.WOODEN_AXE), currentInput, 0)));
             }
         });
         ItemStack maxItem = ItemBuilder.builder(Material.PAPER).setName(ChatColor.BLUE + "Maximum amount").setLore(ChatColor.GRAY + "" + itemInfo.entry().max()).build();
         Util.addTextInputLink(mainPane, player, "itemEntryCreate", ChatColor.RED + "Enter maximum value or \"cancel\" to cancel", maxItem, 3, 1, pl -> {
-            boolean hasValue = itemSaves.containsKey(pl.getUniqueId());
+            boolean hasValue = saves.containsKey(pl.getUniqueId());
             Integer currentInput = Util.getTextInputAsInt(pl);
             if (currentInput == null) {
                 Util.invalid("Invalid value!", pl);
@@ -93,12 +93,12 @@ public class ItemEntryCreateGui implements GuiInstance {
             if (hasValue) {
                 itemInfo.entry().setMax(currentInput);
             } else {
-                itemSaves.put(pl.getUniqueId(), new EntrySaveWrapper<>(null, new ItemEntry(new ItemStack(Material.WOODEN_AXE), 0, currentInput)));
+                saves.put(pl.getUniqueId(), new EntrySaveWrapper<>(null, new ItemEntry(new ItemStack(Material.WOODEN_AXE), 0, currentInput)));
             }
         });
-        Util.addRenameButton(mainPane, player, itemSaves, new ItemEntry(new ItemStack(Material.WOODEN_AXE), 0, 0), "itemEntryCreate", 4, 1);
+        Util.addRenameButton(mainPane, player, saves, new ItemEntry(new ItemStack(Material.WOODEN_AXE), 0, 0), "itemEntryCreate", 4, 1);
         mainPane.addItem(new GuiItem(ItemBuilder.builder(Material.BLUE_CONCRETE).setName(ChatColor.BLUE + "Create Item Entry").build(), event -> {
-            EntrySaveWrapper<ItemEntry> save = itemSaves.get(player.getUniqueId());
+            EntrySaveWrapper<ItemEntry> save = saves.get(player.getUniqueId());
             if (save == null || save.entry().min() > save.entry().max()) {
                 Util.invalid("Invalid info!", player);
                 return;

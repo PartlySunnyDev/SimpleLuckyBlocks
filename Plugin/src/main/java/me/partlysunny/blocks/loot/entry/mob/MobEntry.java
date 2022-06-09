@@ -68,7 +68,8 @@ public class MobEntry implements IEntry {
                     s.modify(equipment, getEquipmentDropChance(s));
                 }
                 if (health != -1) {
-                    le.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(health);
+                    AttributeInstance attribute = le.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+                    attribute.setBaseValue(health);
                 }
                 if (speedMultiplier != -1) {
                     AttributeInstance attribute = le.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);

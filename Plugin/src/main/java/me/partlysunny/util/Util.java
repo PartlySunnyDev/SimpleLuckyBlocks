@@ -16,9 +16,12 @@ import me.partlysunny.ConsoleLogger;
 import me.partlysunny.SimpleLuckyBlocksCore;
 import me.partlysunny.blocks.LuckyBlockType;
 import me.partlysunny.blocks.loot.entry.IEntry;
+import me.partlysunny.blocks.loot.entry.LootEntryManager;
 import me.partlysunny.gui.GuiManager;
 import me.partlysunny.gui.ValueGuiManager;
 import me.partlysunny.gui.ValueReturnGui;
+import me.partlysunny.gui.guis.loot.entry.creation.CreateGuiManager;
+import me.partlysunny.gui.guis.loot.entry.creation.EntryCreateGui;
 import me.partlysunny.gui.guis.loot.entry.creation.EntrySaveWrapper;
 import me.partlysunny.gui.guis.loot.entry.creation.mob.MobEntryCreateGui;
 import me.partlysunny.gui.guis.loot.entry.creation.mob.equipment.MobSlot;
@@ -561,6 +564,12 @@ public final class Util {
         return asType;
     }
 
+    public static void deleteFile(File f) {
+        if (f.exists() && !f.isDirectory()) {
+            f.delete();
+        }
+    }
+
     public static ChestGui getEntryManagement(Player p, String guiId, String title, String[] values, String createGui, String backButtonLink) {
         JavaPlugin plugin = JavaPlugin.getPlugin(SimpleLuckyBlocksCore.class);
         ChestGui gui = new ChestGui(5, title);
@@ -582,7 +591,25 @@ public final class Util {
                     break;
                 }
                 String fileName = values[j];
-                items.addItem(new GuiItem(ItemBuilder.builder(Material.PAPER).setName(ChatColor.GRAY + fileName).build()), (j - count) % 9, (j - count) / 9);
+                ItemStack build = ItemBuilder.builder(Material.PAPER).setName(ChatColor.GRAY + fileName).build();
+                Util.addLoreLine(build, ChatColor.GREEN + "Click to open with this value!");
+                Util.addLoreLine(build, ChatColor.RED + "Right click to delete!");
+                items.addItem(new GuiItem(build, event -> {
+                    if (event.isLeftClick()) {
+                        IEntry e = LootEntryManager.getEntry(fileName);
+                        switch (e.getEntryType()) {
+                            case MOB -> openCreateUiWithValue(p, "mobEntry", fileName, e);
+                            case ITEM -> openCreateUiWithValue(p, "itemEntry", fileName, e);
+                            case POTION -> openCreateUiWithValue(p, "potionEntry", fileName, e);
+                            case COMMAND -> openCreateUiWithValue(p, "commandEntry", fileName, e);
+                            case STRUCTURE -> openCreateUiWithValue(p, "structureEntry", fileName, e);
+                            case WAND -> openCreateUiWithValue(p, "wandEntry", fileName, e);
+                        }
+                    } else if (event.isRightClick()) {
+                        deleteFile(new File(plugin.getDataFolder() + "/lootEntries", fileName + ".yml"));
+                        GuiManager.openInventory(p, "entryManagement");
+                    }
+                }), (j - count) % 9, (j - count) / 9);
             }
             count += 27;
             Util.addReturnButton(border, p, backButtonLink, 0, 4);
@@ -591,6 +618,12 @@ public final class Util {
         }
         gui.addPane(pane);
         return gui;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T extends IEntry> void openCreateUiWithValue(Player p, String createUi, String fileName, T value) {
+        ((EntryCreateGui<T>) CreateGuiManager.getCreateGui(createUi)).setSave(p.getUniqueId(), new EntrySaveWrapper<>(fileName, value));
+        GuiManager.openInventory(p, createUi + "Create");
     }
 
 

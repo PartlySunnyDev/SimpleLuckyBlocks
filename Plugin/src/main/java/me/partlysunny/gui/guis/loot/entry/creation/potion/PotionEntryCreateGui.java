@@ -7,10 +7,11 @@ import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import me.partlysunny.SimpleLuckyBlocksCore;
 import me.partlysunny.blocks.loot.entry.potion.PotionEntry;
-import me.partlysunny.gui.GuiInstance;
 import me.partlysunny.gui.GuiManager;
 import me.partlysunny.gui.ValueGuiManager;
 import me.partlysunny.gui.ValueReturnGui;
+import me.partlysunny.gui.guis.loot.entry.creation.CreateGuiManager;
+import me.partlysunny.gui.guis.loot.entry.creation.EntryCreateGui;
 import me.partlysunny.gui.guis.loot.entry.creation.EntrySaveWrapper;
 import me.partlysunny.util.Util;
 import me.partlysunny.util.classes.ItemBuilder;
@@ -29,17 +30,19 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
-public class PotionEntryCreateGui implements GuiInstance {
-
-    private static final Map<UUID, EntrySaveWrapper<PotionEntry>> potionSaves = new HashMap<>();
+public class PotionEntryCreateGui extends EntryCreateGui<PotionEntry> {
 
     public static void addPlayerEffect(Player p, Pair<PotionEffectType, Pair<Integer, Integer>> effect) {
-        if (potionSaves.containsKey(p.getUniqueId())) {
-            potionSaves.get(p.getUniqueId()).entry().addEffect(effect.a(), effect.b().a(), effect.b().b());
+        Map<UUID, EntrySaveWrapper<PotionEntry>> saves = (Map<UUID, EntrySaveWrapper<PotionEntry>>) CreateGuiManager.getCreateGui("potionEntry");
+        if (saves.containsKey(p.getUniqueId())) {
+            saves.get(p.getUniqueId()).entry().addEffect(effect.a(), effect.b().a(), effect.b().b());
         } else {
-            potionSaves.put(p.getUniqueId(), new EntrySaveWrapper<>(null, new PotionEntry(List.of(effect))));
+            saves.put(p.getUniqueId(), new EntrySaveWrapper<>(null, new PotionEntry(List.of(effect))));
         }
     }
 
@@ -47,11 +50,11 @@ public class PotionEntryCreateGui implements GuiInstance {
     public Gui getGui(HumanEntity p) {
         if (!(p instanceof Player player)) return new ChestGui(3, "");
         EntrySaveWrapper<PotionEntry> potionEntry;
-        if (potionSaves.containsKey(p.getUniqueId())) {
-            potionEntry = potionSaves.get(p.getUniqueId());
+        if (saves.containsKey(p.getUniqueId())) {
+            potionEntry = saves.get(p.getUniqueId());
         } else {
             EntrySaveWrapper<PotionEntry> value = new EntrySaveWrapper<>(null, new PotionEntry(List.of()));
-            potionSaves.put(player.getUniqueId(), value);
+            saves.put(player.getUniqueId(), value);
             potionEntry = value;
         }
         ChestGui gui = new ChestGui(5, ChatColor.DARK_AQUA + "Potion Entry Creator");
@@ -70,9 +73,9 @@ public class PotionEntryCreateGui implements GuiInstance {
             Util.addPageNav(pane, numPages, i, border, gui);
             border.addItem(new GuiItem(ItemBuilder.builder(Material.GREEN_CONCRETE).setName(ChatColor.GREEN + "Add new").build(), item -> GuiManager.openInventory(player, "potionEntrySectionSelect")), 1, 0);
             border.addItem(new GuiItem(ItemBuilder.builder(Material.YELLOW_CONCRETE).setName(ChatColor.GOLD + "Reload").build(), item -> GuiManager.openInventory(player, "potionEntryCreate")), 2, 0);
-            Util.addRenameButton(border, player, potionSaves, new PotionEntry(new ArrayList<>(List.of())), "potionEntryCreate", 3, 0);
+            Util.addRenameButton(border, player, saves, new PotionEntry(new ArrayList<>(List.of())), "potionEntryCreate", 3, 0);
             border.addItem(new GuiItem(ItemBuilder.builder(Material.BLUE_CONCRETE).setName(ChatColor.BLUE + "Create Effect").build(), item -> {
-                EntrySaveWrapper<PotionEntry> save = potionSaves.get(player.getUniqueId());
+                EntrySaveWrapper<PotionEntry> save = saves.get(player.getUniqueId());
                 if (save == null || save.entry().getEffects().length < 1) {
                     Util.invalid("Invalid info!", player);
                     return;

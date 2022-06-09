@@ -7,9 +7,9 @@ import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import me.partlysunny.SimpleLuckyBlocksCore;
 import me.partlysunny.blocks.loot.entry.mob.MobEntry;
 import me.partlysunny.blocks.loot.entry.mob.SpawnEffect;
-import me.partlysunny.gui.GuiInstance;
 import me.partlysunny.gui.GuiManager;
 import me.partlysunny.gui.ValueGuiManager;
+import me.partlysunny.gui.guis.loot.entry.creation.EntryCreateGui;
 import me.partlysunny.gui.guis.loot.entry.creation.EntrySaveWrapper;
 import me.partlysunny.gui.guis.loot.entry.creation.mob.equipment.EquipmentWrapper;
 import me.partlysunny.gui.guis.loot.entry.creation.mob.equipment.MobSlot;
@@ -32,9 +32,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class MobEntryCreateGui implements GuiInstance {
+public class MobEntryCreateGui extends EntryCreateGui<MobEntry> {
 
-    private static final Map<UUID, EntrySaveWrapper<MobEntry>> mobSaves = new HashMap<>();
     private static final Map<UUID, MobSlot> currentSlot = new HashMap<>();
 
     public static MobSlot getSlotFor(UUID player) {
@@ -48,28 +47,28 @@ public class MobEntryCreateGui implements GuiInstance {
     @Override
     public Gui getGui(HumanEntity p) {
         if (!(p instanceof Player player)) return new ChestGui(3, "");
-        boolean a = mobSaves.containsKey(player.getUniqueId());
+        boolean a = saves.containsKey(player.getUniqueId());
         EntityType b = (EntityType) ValueGuiManager.getValueGui("entityType").getValue(player.getUniqueId());
         if (b != null) {
             if (a) {
-                EntrySaveWrapper<MobEntry> plValue = mobSaves.get(player.getUniqueId());
+                EntrySaveWrapper<MobEntry> plValue = saves.get(player.getUniqueId());
                 plValue.entry().setEntityType(b);
             } else {
                 MobEntry mobEntry = new MobEntry();
                 mobEntry.setEntityType(b);
-                mobSaves.put(player.getUniqueId(), new EntrySaveWrapper<>(null, mobEntry));
+                saves.put(player.getUniqueId(), new EntrySaveWrapper<>(null, mobEntry));
             }
             ValueGuiManager.getValueGui("entityType").resetValue(player.getUniqueId());
         }
         SpawnEffect se = (SpawnEffect) ValueGuiManager.getValueGui("spawnEffect").getValue(player.getUniqueId());
         if (se != null) {
             if (a) {
-                EntrySaveWrapper<MobEntry> plValue = mobSaves.get(player.getUniqueId());
+                EntrySaveWrapper<MobEntry> plValue = saves.get(player.getUniqueId());
                 plValue.entry().setSpawnEffect(se);
             } else {
                 MobEntry mobEntry = new MobEntry();
                 mobEntry.setSpawnEffect(se);
-                mobSaves.put(player.getUniqueId(), new EntrySaveWrapper<>(null, mobEntry));
+                saves.put(player.getUniqueId(), new EntrySaveWrapper<>(null, mobEntry));
             }
             ValueGuiManager.getValueGui("spawnEffect").resetValue(player.getUniqueId());
         }
@@ -77,14 +76,14 @@ public class MobEntryCreateGui implements GuiInstance {
         ChestGui gui = new ChestGui(6, ChatColor.GREEN + "Mob Entry Creator");
         EquipmentWrapper createdItem = (EquipmentWrapper) ValueGuiManager.getValueGui("mobEquipment").getValue(pId);
         EntrySaveWrapper<MobEntry> mobInfo;
-        if (mobSaves.containsKey(p.getUniqueId())) {
+        if (saves.containsKey(p.getUniqueId())) {
             if (createdItem != null) {
-                MobEntry entry = mobSaves.get(p.getUniqueId()).entry();
+                MobEntry entry = saves.get(p.getUniqueId()).entry();
                 entry.setEquipment(createdItem.slot(), createdItem.item());
                 entry.setEquipmentDropChance(createdItem.slot(), createdItem.dropChance());
                 ValueGuiManager.getValueGui("mobEquipment").resetValue(player.getUniqueId());
             }
-            mobInfo = mobSaves.get(p.getUniqueId());
+            mobInfo = saves.get(p.getUniqueId());
         } else {
             EntrySaveWrapper<MobEntry> value = new EntrySaveWrapper<>(null, new MobEntry());
             if (createdItem != null) {
@@ -92,7 +91,7 @@ public class MobEntryCreateGui implements GuiInstance {
                 value.entry().setEquipmentDropChance(createdItem.slot(), createdItem.dropChance());
                 ValueGuiManager.getValueGui("mobEquipment").resetValue(player.getUniqueId());
             }
-            mobSaves.put(player.getUniqueId(), value);
+            saves.put(player.getUniqueId(), value);
             mobInfo = value;
         }
         StaticPane mainPane = new StaticPane(0, 0, 9, 6);
@@ -121,7 +120,7 @@ public class MobEntryCreateGui implements GuiInstance {
 
         ItemStack minItem = ItemBuilder.builder(Material.PAPER).setName(ChatColor.BLUE + "Minimum amount").setLore(ChatColor.GRAY + "" + entry.min()).build();
         Util.addTextInputLink(mainPane, player, "mobEntryCreate", ChatColor.RED + "Enter minimum value or \"cancel\" to cancel", minItem, 5, 2, pl -> {
-            boolean hasValue = mobSaves.containsKey(pl.getUniqueId());
+            boolean hasValue = saves.containsKey(pl.getUniqueId());
             Integer currentInput = Util.getTextInputAsInt(pl);
             if (currentInput == null) {
                 Util.invalid("Invalid value!", pl);
@@ -132,12 +131,12 @@ public class MobEntryCreateGui implements GuiInstance {
             } else {
                 MobEntry newEntry = new MobEntry();
                 newEntry.setMin(currentInput);
-                mobSaves.put(pl.getUniqueId(), new EntrySaveWrapper<>(null, newEntry));
+                saves.put(pl.getUniqueId(), new EntrySaveWrapper<>(null, newEntry));
             }
         });
         ItemStack maxItem = ItemBuilder.builder(Material.PAPER).setName(ChatColor.BLUE + "Maximum amount").setLore(ChatColor.GRAY + "" + entry.max()).build();
         Util.addTextInputLink(mainPane, player, "mobEntryCreate", ChatColor.RED + "Enter maximum value or \"cancel\" to cancel", maxItem, 5, 3, pl -> {
-            boolean hasValue = mobSaves.containsKey(pl.getUniqueId());
+            boolean hasValue = saves.containsKey(pl.getUniqueId());
             Integer currentInput = Util.getTextInputAsInt(pl);
             if (currentInput == null) {
                 Util.invalid("Invalid value!", pl);
@@ -148,12 +147,12 @@ public class MobEntryCreateGui implements GuiInstance {
             } else {
                 MobEntry newEntry = new MobEntry();
                 newEntry.setMax(currentInput);
-                mobSaves.put(pl.getUniqueId(), new EntrySaveWrapper<>(null, newEntry));
+                saves.put(pl.getUniqueId(), new EntrySaveWrapper<>(null, newEntry));
             }
         });
         ItemStack health = ItemBuilder.builder(Material.PAPER).setName(ChatColor.BLUE + "Mob Health").setLore(ChatColor.GRAY + "" + entry.health()).build();
         Util.addTextInputLink(mainPane, player, "mobEntryCreate", ChatColor.RED + "Enter new mob health or \"cancel\" to cancel", health, 3, 2, pl -> {
-            boolean hasValue = mobSaves.containsKey(pl.getUniqueId());
+            boolean hasValue = saves.containsKey(pl.getUniqueId());
             Integer currentInput = Util.getTextInputAsInt(pl);
             if (currentInput == null) {
                 Util.invalid("Invalid value!", pl);
@@ -164,12 +163,12 @@ public class MobEntryCreateGui implements GuiInstance {
             } else {
                 MobEntry newEntry = new MobEntry();
                 newEntry.setHealth(currentInput);
-                mobSaves.put(pl.getUniqueId(), new EntrySaveWrapper<>(null, newEntry));
+                saves.put(pl.getUniqueId(), new EntrySaveWrapper<>(null, newEntry));
             }
         });
         ItemStack speedMultiplier = ItemBuilder.builder(Material.PAPER).setName(ChatColor.BLUE + "Speed Multiplier").setLore(ChatColor.GRAY + "" + entry.speedMultiplier()).build();
         Util.addTextInputLink(mainPane, player, "mobEntryCreate", ChatColor.RED + "Enter new speed multiplier or \"cancel\" to cancel", speedMultiplier, 3, 3, pl -> {
-            boolean hasValue = mobSaves.containsKey(pl.getUniqueId());
+            boolean hasValue = saves.containsKey(pl.getUniqueId());
             Double currentInput = Util.getTextInputAsDouble(pl);
             if (currentInput == null) {
                 Util.invalid("Invalid value!", pl);
@@ -180,7 +179,7 @@ public class MobEntryCreateGui implements GuiInstance {
             } else {
                 MobEntry newEntry = new MobEntry();
                 newEntry.setSpeedMultiplier(currentInput);
-                mobSaves.put(pl.getUniqueId(), new EntrySaveWrapper<>(null, newEntry));
+                saves.put(pl.getUniqueId(), new EntrySaveWrapper<>(null, newEntry));
             }
         });
         mainPane.addItem(new GuiItem(ItemBuilder.builder(Material.NAME_TAG).setName(ChatColor.RED + "Display Name").setLore(ChatColor.GRAY + "Current display name: " + mobInfo.entry().name()).build(), event -> {
@@ -194,18 +193,18 @@ public class MobEntryCreateGui implements GuiInstance {
                     Util.invalid("Invalid File Name!", pl);
                     return;
                 }
-                if (!mobSaves.containsKey(pl.getUniqueId())) {
-                    mobSaves.put(pl.getUniqueId(), new EntrySaveWrapper<>(null, new MobEntry()));
+                if (!saves.containsKey(pl.getUniqueId())) {
+                    saves.put(pl.getUniqueId(), new EntrySaveWrapper<>(null, new MobEntry()));
                 }
-                mobSaves.get(pl.getUniqueId()).entry().setName(input);
+                saves.get(pl.getUniqueId()).entry().setName(input);
             });
             player.closeInventory();
         }), 4, 3);
 
-        Util.addRenameButton(mainPane, player, mobSaves, new MobEntry(), "mobEntryCreate", 4, 2);
+        Util.addRenameButton(mainPane, player, saves, new MobEntry(), "mobEntryCreate", 4, 2);
         Util.addReturnButton(mainPane, player, "entryCreation", 0, 5);
         mainPane.addItem(new GuiItem(ItemBuilder.builder(Material.BLUE_CONCRETE).setName(ChatColor.BLUE + "Create Mob Entry").build(), item -> {
-            EntrySaveWrapper<MobEntry> save = mobSaves.get(player.getUniqueId());
+            EntrySaveWrapper<MobEntry> save = saves.get(player.getUniqueId());
             if (save == null) {
                 Util.invalid("Invalid info!", player);
                 return;
