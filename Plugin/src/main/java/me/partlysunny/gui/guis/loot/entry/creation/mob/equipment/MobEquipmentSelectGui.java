@@ -5,8 +5,8 @@ import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import me.partlysunny.gui.GuiManager;
-import me.partlysunny.gui.ValueGuiManager;
-import me.partlysunny.gui.ValueReturnGui;
+import me.partlysunny.gui.SelectGuiManager;
+import me.partlysunny.gui.SelectGui;
 import me.partlysunny.gui.guis.common.material.MaterialSelectGui;
 import me.partlysunny.gui.guis.loot.entry.creation.mob.MobEntryCreateGui;
 import me.partlysunny.util.Util;
@@ -20,12 +20,12 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
 
-public class MobEquipmentSelectGui extends ValueReturnGui<EquipmentWrapper> {
+public class MobEquipmentSelectGui extends SelectGui<EquipmentWrapper> {
     @Override
     public Gui getGui(HumanEntity p) {
         if (!(p instanceof Player player)) return new ChestGui(3, "");
         UUID pId = player.getUniqueId();
-        ItemStack createdItem = (ItemStack) ValueGuiManager.getValueGui("itemMaker").getValue(pId);
+        ItemStack createdItem = (ItemStack) SelectGuiManager.getValueGui("itemMaker").getValue(pId);
         EquipmentWrapper eqInfo;
         MobSlot slotFor = MobEntryCreateGui.getSlotFor(pId);
         Material validMat = slotFor.getValidMaterial();
@@ -35,14 +35,14 @@ public class MobEquipmentSelectGui extends ValueReturnGui<EquipmentWrapper> {
             }
             if (createdItem != null) {
                 values.get(p.getUniqueId()).setItem(createdItem);
-                ValueGuiManager.getValueGui("itemMaker").resetValue(player.getUniqueId());
+                SelectGuiManager.getValueGui("itemMaker").resetValue(player.getUniqueId());
             }
             eqInfo = values.get(p.getUniqueId());
         } else {
             EquipmentWrapper value = new EquipmentWrapper(slotFor, new ItemStack(validMat), 1);
             if (createdItem != null) {
                 value.setItem(createdItem);
-                ValueGuiManager.getValueGui("itemMaker").resetValue(player.getUniqueId());
+                SelectGuiManager.getValueGui("itemMaker").resetValue(player.getUniqueId());
             }
             values.put(player.getUniqueId(), value);
             eqInfo = value;
@@ -54,10 +54,10 @@ public class MobEquipmentSelectGui extends ValueReturnGui<EquipmentWrapper> {
         Util.addEditable(item);
         EquipmentWrapper finalEqInfo = eqInfo;
         mainPane.addItem(new GuiItem(item, x -> {
-            ValueGuiManager.getValueGui("itemMaker").setReturnTo(p.getUniqueId(), "mobEquipmentSelect");
+            SelectGuiManager.getValueGui("itemMaker").setReturnTo(p.getUniqueId(), "mobEquipmentSelect");
             MaterialSelectGui.setFilters(pId, "meta", slotFor.toString().toLowerCase());
             p.closeInventory();
-            ((ValueReturnGui<ItemStack>) ValueGuiManager.getValueGui("itemMaker")).openWithValue(player, finalEqInfo.item(), "itemMakerSelect");
+            ((SelectGui<ItemStack>) SelectGuiManager.getValueGui("itemMaker")).openWithValue(player, finalEqInfo.item(), "itemMakerSelect");
         }), 2, 1);
         ItemStack minItem = ItemBuilder.builder(Material.PAPER).setName(ChatColor.BLUE + "Drop Chance").setLore(ChatColor.GRAY + "" + eqInfo.dropChance()).build();
         Util.addTextInputLink(mainPane, player, "mobEquipmentSelect", ChatColor.RED + "Enter new drop chance or \"cancel\" to cancel", minItem, 4, 1, pl -> {

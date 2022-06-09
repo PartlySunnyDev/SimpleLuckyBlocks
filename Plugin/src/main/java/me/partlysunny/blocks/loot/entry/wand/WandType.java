@@ -1,4 +1,4 @@
-package me.partlysunny.blocks.loot.entry.item.wand;
+package me.partlysunny.blocks.loot.entry.wand;
 
 import me.partlysunny.util.Util;
 import org.bukkit.Location;

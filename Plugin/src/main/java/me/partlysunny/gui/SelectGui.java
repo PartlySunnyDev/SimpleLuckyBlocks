@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public abstract class ValueReturnGui<T> implements GuiInstance {
+public abstract class SelectGui<T> implements GuiInstance {
 
     protected final Map<UUID, T> values = new HashMap<>();
     protected final Map<UUID, String> guiToReturn = new HashMap<>();

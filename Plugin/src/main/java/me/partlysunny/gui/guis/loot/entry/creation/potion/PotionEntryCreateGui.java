@@ -5,11 +5,10 @@ import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
-import me.partlysunny.SimpleLuckyBlocksCore;
 import me.partlysunny.blocks.loot.entry.potion.PotionEntry;
 import me.partlysunny.gui.GuiManager;
-import me.partlysunny.gui.ValueGuiManager;
-import me.partlysunny.gui.ValueReturnGui;
+import me.partlysunny.gui.SelectGui;
+import me.partlysunny.gui.SelectGuiManager;
 import me.partlysunny.gui.guis.loot.entry.creation.CreateGuiManager;
 import me.partlysunny.gui.guis.loot.entry.creation.EntryCreateGui;
 import me.partlysunny.gui.guis.loot.entry.creation.EntrySaveWrapper;
@@ -20,16 +19,12 @@ import me.partlysunny.util.classes.PotionBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -76,20 +71,7 @@ public class PotionEntryCreateGui extends EntryCreateGui<PotionEntry> {
             Util.addRenameButton(border, player, saves, new PotionEntry(new ArrayList<>(List.of())), "potionEntryCreate", 3, 0);
             border.addItem(new GuiItem(ItemBuilder.builder(Material.BLUE_CONCRETE).setName(ChatColor.BLUE + "Create Effect").build(), item -> {
                 EntrySaveWrapper<PotionEntry> save = saves.get(player.getUniqueId());
-                if (save == null || save.entry().getEffects().length < 1) {
-                    Util.invalid("Invalid info!", player);
-                    return;
-                }
-                if (save.name() == null) {
-                    Util.invalid("Please specify a name!", player);
-                    return;
-                }
-                YamlConfiguration config = save.entry().getSave();
-                try {
-                    config.save(new File(JavaPlugin.getPlugin(SimpleLuckyBlocksCore.class).getDataFolder() + "/lootEntries", save.name() + ".yml"));
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                if (Util.saveInfo(player, save == null, save.name(), save.entry().getSave()) || save.entry().getEffects().length < 1) return;
                 player.sendMessage(ChatColor.GREEN + "Successfully created potion entry with name " + save.name() + "!");
                 player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
                 GuiManager.openInventory(player, "entryManagement");
@@ -109,7 +91,7 @@ public class PotionEntryCreateGui extends EntryCreateGui<PotionEntry> {
                         GuiManager.openInventory(player, "potionEntryCreate");
                     }
                     if (item.isLeftClick()) {
-                        ((ValueReturnGui<Pair<PotionEffectType, Pair<Integer, Integer>>>) (ValueGuiManager.getValueGui("potionEntrySection"))).openWithValue(player, potionInfo, "potionEntrySectionSelect");
+                        ((SelectGui<Pair<PotionEffectType, Pair<Integer, Integer>>>) (SelectGuiManager.getValueGui("potionEntrySection"))).openWithValue(player, potionInfo, "potionEntrySectionSelect");
                     }
                 }), (j - count) % 7, (j - count) / 7);
             }
@@ -121,4 +103,6 @@ public class PotionEntryCreateGui extends EntryCreateGui<PotionEntry> {
         gui.addPane(pane);
         return gui;
     }
+
+
 }

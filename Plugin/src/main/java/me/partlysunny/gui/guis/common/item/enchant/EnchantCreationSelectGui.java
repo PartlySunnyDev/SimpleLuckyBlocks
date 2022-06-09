@@ -5,8 +5,8 @@ import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import me.partlysunny.gui.GuiManager;
-import me.partlysunny.gui.ValueGuiManager;
-import me.partlysunny.gui.ValueReturnGui;
+import me.partlysunny.gui.SelectGuiManager;
+import me.partlysunny.gui.SelectGui;
 import me.partlysunny.util.Util;
 import me.partlysunny.util.classes.ItemBuilder;
 import org.bukkit.ChatColor;
@@ -18,12 +18,12 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public class EnchantCreationSelectGui extends ValueReturnGui<EnchantContainer> {
+public class EnchantCreationSelectGui extends SelectGui<EnchantContainer> {
     @Override
     public Gui getGui(HumanEntity p) {
         if (!(p instanceof Player player)) return new ChestGui(3, "");
         ChestGui gui = new ChestGui(3, ChatColor.AQUA + "Enchant Creator");
-        Enchantment b = (Enchantment) ValueGuiManager.getValueGui("enchantment").getValue(player.getUniqueId());
+        Enchantment b = (Enchantment) SelectGuiManager.getValueGui("enchantment").getValue(player.getUniqueId());
         boolean a = values.containsKey(player.getUniqueId());
         if (b != null) {
             if (a) {
@@ -32,7 +32,7 @@ public class EnchantCreationSelectGui extends ValueReturnGui<EnchantContainer> {
             } else {
                 this.values.put(player.getUniqueId(), new EnchantContainer(b, 0));
             }
-            ValueGuiManager.getValueGui("potionEffectType").resetValue(player.getUniqueId());
+            SelectGuiManager.getValueGui("potionEffectType").resetValue(player.getUniqueId());
         }
         EnchantContainer c = a ? values.get(player.getUniqueId()) : new EnchantContainer(Enchantment.ARROW_DAMAGE, 0);
         values.put(player.getUniqueId(), c);
@@ -58,7 +58,7 @@ public class EnchantCreationSelectGui extends ValueReturnGui<EnchantContainer> {
         }), 0, 2);
         mainPane.addItem(new GuiItem(ItemBuilder.builder(Material.GREEN_CONCRETE).setName(ChatColor.GREEN + "Confirm").build(), item -> {
             player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
-            ((EnchantModifierSelectGui) ValueGuiManager.getValueGui("enchantModifier")).addEnchantTo(player.getUniqueId(), getValue(player.getUniqueId()));
+            ((EnchantModifierSelectGui) SelectGuiManager.getValueGui("enchantModifier")).addEnchantTo(player.getUniqueId(), getValue(player.getUniqueId()));
             GuiManager.openInventory(player, getReturnTo(player));
         }), 8, 1);
         gui.addPane(mainPane);

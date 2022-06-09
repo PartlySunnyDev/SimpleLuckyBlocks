@@ -3,7 +3,7 @@ package me.partlysunny.gui.guis.common;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
-import me.partlysunny.gui.ValueReturnGui;
+import me.partlysunny.gui.SelectGui;
 import me.partlysunny.util.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
@@ -12,7 +12,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 
-public class EnchantmentSelectGui extends ValueReturnGui<Enchantment> {
+public class EnchantmentSelectGui extends SelectGui<Enchantment> {
     @Override
     public Gui getGui(HumanEntity p) {
         if (!(p instanceof Player player)) return new ChestGui(3, "");

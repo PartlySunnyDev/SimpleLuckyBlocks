@@ -4,11 +4,10 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
-import me.partlysunny.SimpleLuckyBlocksCore;
 import me.partlysunny.blocks.loot.entry.mob.MobEntry;
 import me.partlysunny.blocks.loot.entry.mob.SpawnEffect;
 import me.partlysunny.gui.GuiManager;
-import me.partlysunny.gui.ValueGuiManager;
+import me.partlysunny.gui.SelectGuiManager;
 import me.partlysunny.gui.guis.loot.entry.creation.EntryCreateGui;
 import me.partlysunny.gui.guis.loot.entry.creation.EntrySaveWrapper;
 import me.partlysunny.gui.guis.loot.entry.creation.mob.equipment.EquipmentWrapper;
@@ -19,15 +18,11 @@ import me.partlysunny.util.classes.ItemBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -48,7 +43,7 @@ public class MobEntryCreateGui extends EntryCreateGui<MobEntry> {
     public Gui getGui(HumanEntity p) {
         if (!(p instanceof Player player)) return new ChestGui(3, "");
         boolean a = saves.containsKey(player.getUniqueId());
-        EntityType b = (EntityType) ValueGuiManager.getValueGui("entityType").getValue(player.getUniqueId());
+        EntityType b = (EntityType) SelectGuiManager.getValueGui("entityType").getValue(player.getUniqueId());
         if (b != null) {
             if (a) {
                 EntrySaveWrapper<MobEntry> plValue = saves.get(player.getUniqueId());
@@ -58,9 +53,9 @@ public class MobEntryCreateGui extends EntryCreateGui<MobEntry> {
                 mobEntry.setEntityType(b);
                 saves.put(player.getUniqueId(), new EntrySaveWrapper<>(null, mobEntry));
             }
-            ValueGuiManager.getValueGui("entityType").resetValue(player.getUniqueId());
+            SelectGuiManager.getValueGui("entityType").resetValue(player.getUniqueId());
         }
-        SpawnEffect se = (SpawnEffect) ValueGuiManager.getValueGui("spawnEffect").getValue(player.getUniqueId());
+        SpawnEffect se = (SpawnEffect) SelectGuiManager.getValueGui("spawnEffect").getValue(player.getUniqueId());
         if (se != null) {
             if (a) {
                 EntrySaveWrapper<MobEntry> plValue = saves.get(player.getUniqueId());
@@ -70,18 +65,18 @@ public class MobEntryCreateGui extends EntryCreateGui<MobEntry> {
                 mobEntry.setSpawnEffect(se);
                 saves.put(player.getUniqueId(), new EntrySaveWrapper<>(null, mobEntry));
             }
-            ValueGuiManager.getValueGui("spawnEffect").resetValue(player.getUniqueId());
+            SelectGuiManager.getValueGui("spawnEffect").resetValue(player.getUniqueId());
         }
         UUID pId = player.getUniqueId();
         ChestGui gui = new ChestGui(6, ChatColor.GREEN + "Mob Entry Creator");
-        EquipmentWrapper createdItem = (EquipmentWrapper) ValueGuiManager.getValueGui("mobEquipment").getValue(pId);
+        EquipmentWrapper createdItem = (EquipmentWrapper) SelectGuiManager.getValueGui("mobEquipment").getValue(pId);
         EntrySaveWrapper<MobEntry> mobInfo;
         if (saves.containsKey(p.getUniqueId())) {
             if (createdItem != null) {
                 MobEntry entry = saves.get(p.getUniqueId()).entry();
                 entry.setEquipment(createdItem.slot(), createdItem.item());
                 entry.setEquipmentDropChance(createdItem.slot(), createdItem.dropChance());
-                ValueGuiManager.getValueGui("mobEquipment").resetValue(player.getUniqueId());
+                SelectGuiManager.getValueGui("mobEquipment").resetValue(player.getUniqueId());
             }
             mobInfo = saves.get(p.getUniqueId());
         } else {
@@ -89,7 +84,7 @@ public class MobEntryCreateGui extends EntryCreateGui<MobEntry> {
             if (createdItem != null) {
                 value.entry().setEquipment(createdItem.slot(), createdItem.item());
                 value.entry().setEquipmentDropChance(createdItem.slot(), createdItem.dropChance());
-                ValueGuiManager.getValueGui("mobEquipment").resetValue(player.getUniqueId());
+                SelectGuiManager.getValueGui("mobEquipment").resetValue(player.getUniqueId());
             }
             saves.put(player.getUniqueId(), value);
             mobInfo = value;
@@ -101,22 +96,22 @@ public class MobEntryCreateGui extends EntryCreateGui<MobEntry> {
         //Create all equipment slots
         ItemStack helmetItem = ItemBuilder.builder(entry.getEquipment(MobSlot.HELMET)).setName(ChatColor.GRAY + "Helmet").build();
         Util.addEditable(helmetItem);
-        Util.addEquipmentSlot(mainPane, player, "mobEntryCreate", MobSlot.HELMET, helmetItem, 1, 1);
+        Util.addEquipmentSlot(mainPane, player, "mobEntryCreate", MobSlot.HELMET, helmetItem, entry.getEquipment(MobSlot.HELMET), entry.getEquipmentDropChance(MobSlot.HELMET), 1, 1);
         ItemStack chestplateItem = ItemBuilder.builder(entry.getEquipment(MobSlot.CHESTPLATE)).setName(ChatColor.GRAY + "Chestplate").build();
         Util.addEditable(chestplateItem);
-        Util.addEquipmentSlot(mainPane, player, "mobEntryCreate", MobSlot.CHESTPLATE, chestplateItem, 1, 2);
+        Util.addEquipmentSlot(mainPane, player, "mobEntryCreate", MobSlot.CHESTPLATE, chestplateItem, entry.getEquipment(MobSlot.CHESTPLATE), entry.getEquipmentDropChance(MobSlot.CHESTPLATE), 1, 2);
         ItemStack leggingsItem = ItemBuilder.builder(entry.getEquipment(MobSlot.LEGGINGS)).setName(ChatColor.GRAY + "Leggings").build();
         Util.addEditable(leggingsItem);
-        Util.addEquipmentSlot(mainPane, player, "mobEntryCreate", MobSlot.LEGGINGS, leggingsItem, 1, 3);
+        Util.addEquipmentSlot(mainPane, player, "mobEntryCreate", MobSlot.LEGGINGS, leggingsItem, entry.getEquipment(MobSlot.LEGGINGS), entry.getEquipmentDropChance(MobSlot.LEGGINGS), 1, 3);
         ItemStack bootsItem = ItemBuilder.builder(entry.getEquipment(MobSlot.BOOTS)).setName(ChatColor.GRAY + "Boots").build();
         Util.addEditable(bootsItem);
-        Util.addEquipmentSlot(mainPane, player, "mobEntryCreate", MobSlot.BOOTS, bootsItem, 1, 4);
+        Util.addEquipmentSlot(mainPane, player, "mobEntryCreate", MobSlot.BOOTS, bootsItem, entry.getEquipment(MobSlot.BOOTS), entry.getEquipmentDropChance(MobSlot.BOOTS), 1, 4);
         ItemStack mainHandItem = ItemBuilder.builder(entry.getEquipment(MobSlot.MAIN_HAND)).setName(ChatColor.GRAY + "Main Hand").build();
         Util.addEditable(mainHandItem);
-        Util.addEquipmentSlot(mainPane, player, "mobEntryCreate", MobSlot.MAIN_HAND, mainHandItem, 2, 2);
+        Util.addEquipmentSlot(mainPane, player, "mobEntryCreate", MobSlot.MAIN_HAND, mainHandItem, entry.getEquipment(MobSlot.MAIN_HAND), entry.getEquipmentDropChance(MobSlot.MAIN_HAND), 2, 2);
         ItemStack offHandItem = ItemBuilder.builder(entry.getEquipment(MobSlot.OFF_HAND)).setName(ChatColor.GRAY + "Off Hand").build();
         Util.addEditable(offHandItem);
-        Util.addEquipmentSlot(mainPane, player, "mobEntryCreate", MobSlot.OFF_HAND, offHandItem, 0, 2);
+        Util.addEquipmentSlot(mainPane, player, "mobEntryCreate", MobSlot.OFF_HAND, offHandItem, entry.getEquipment(MobSlot.OFF_HAND), entry.getEquipmentDropChance(MobSlot.OFF_HAND), 0, 2);
 
         ItemStack minItem = ItemBuilder.builder(Material.PAPER).setName(ChatColor.BLUE + "Minimum amount").setLore(ChatColor.GRAY + "" + entry.min()).build();
         Util.addTextInputLink(mainPane, player, "mobEntryCreate", ChatColor.RED + "Enter minimum value or \"cancel\" to cancel", minItem, 5, 2, pl -> {
@@ -205,20 +200,7 @@ public class MobEntryCreateGui extends EntryCreateGui<MobEntry> {
         Util.addReturnButton(mainPane, player, "entryCreation", 0, 5);
         mainPane.addItem(new GuiItem(ItemBuilder.builder(Material.BLUE_CONCRETE).setName(ChatColor.BLUE + "Create Mob Entry").build(), item -> {
             EntrySaveWrapper<MobEntry> save = saves.get(player.getUniqueId());
-            if (save == null) {
-                Util.invalid("Invalid info!", player);
-                return;
-            }
-            if (save.name() == null) {
-                Util.invalid("Please specify a name!", player);
-                return;
-            }
-            YamlConfiguration config = save.entry().getSave();
-            try {
-                config.save(new File(JavaPlugin.getPlugin(SimpleLuckyBlocksCore.class).getDataFolder() + "/lootEntries", save.name() + ".yml"));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            if (Util.saveInfo(player, save == null, save.name(), save.entry().getSave())) return;
             player.sendMessage(ChatColor.GREEN + "Successfully created mob entry with name " + save.name() + "!");
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
             GuiManager.openInventory(player, "entryManagement");

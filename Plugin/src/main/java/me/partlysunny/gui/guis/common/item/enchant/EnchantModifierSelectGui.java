@@ -6,8 +6,8 @@ import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import me.partlysunny.gui.GuiManager;
-import me.partlysunny.gui.ValueGuiManager;
-import me.partlysunny.gui.ValueReturnGui;
+import me.partlysunny.gui.SelectGuiManager;
+import me.partlysunny.gui.SelectGui;
 import me.partlysunny.util.Util;
 import me.partlysunny.util.classes.ItemBuilder;
 import org.bukkit.ChatColor;
@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class EnchantModifierSelectGui extends ValueReturnGui<ItemStack> {
+public class EnchantModifierSelectGui extends SelectGui<ItemStack> {
 
     @Override
     public Gui getGui(HumanEntity p) {
@@ -47,7 +47,7 @@ public class EnchantModifierSelectGui extends ValueReturnGui<ItemStack> {
             StaticPane items = new StaticPane(1, 1, 7, 3);
             Util.addPageNav(pane, numPages, i, border, gui);
             border.addItem(new GuiItem(ItemBuilder.builder(Material.GREEN_CONCRETE).setName(ChatColor.GREEN + "Add new").build(), item -> {
-                ValueReturnGui<EnchantContainer> enchantCreation = (ValueReturnGui<EnchantContainer>) (ValueGuiManager.getValueGui("enchantCreation"));
+                SelectGui<EnchantContainer> enchantCreation = (SelectGui<EnchantContainer>) (SelectGuiManager.getValueGui("enchantCreation"));
                 enchantCreation.setReturnTo(player.getUniqueId(), "enchantModifierSelect");
                 GuiManager.openInventory(player, "enchantCreationSelect");
             }), 1, 0);
@@ -72,7 +72,7 @@ public class EnchantModifierSelectGui extends ValueReturnGui<ItemStack> {
                         GuiManager.openInventory(player, "enchantModifierSelect");
                     }
                     if (item.isLeftClick()) {
-                        ValueReturnGui<EnchantContainer> enchantCreation = (ValueReturnGui<EnchantContainer>) (ValueGuiManager.getValueGui("enchantCreation"));
+                        SelectGui<EnchantContainer> enchantCreation = (SelectGui<EnchantContainer>) (SelectGuiManager.getValueGui("enchantCreation"));
                         enchantCreation.setReturnTo(player.getUniqueId(), "enchantModifierSelect");
                         enchantCreation.openWithValue(player, container, "enchantCreationSelect");
                     }

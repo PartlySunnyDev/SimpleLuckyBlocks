@@ -1,9 +1,6 @@
 package me.partlysunny.gui;
 
-import me.partlysunny.gui.guis.common.EnchantmentSelectGui;
-import me.partlysunny.gui.guis.common.EntityTypeSelectGui;
-import me.partlysunny.gui.guis.common.PotionEffectTypeSelectGui;
-import me.partlysunny.gui.guis.common.SpawnEffectSelectGui;
+import me.partlysunny.gui.guis.common.*;
 import me.partlysunny.gui.guis.common.item.ItemMakerSelectGui;
 import me.partlysunny.gui.guis.common.item.enchant.EnchantCreationSelectGui;
 import me.partlysunny.gui.guis.common.item.enchant.EnchantModifierSelectGui;
@@ -14,16 +11,16 @@ import me.partlysunny.gui.guis.loot.entry.creation.potion.PotionEntrySectionSele
 import java.util.HashMap;
 import java.util.Map;
 
-public class ValueGuiManager {
+public class SelectGuiManager {
 
-    private static final Map<String, ValueReturnGui<?>> valueGuis = new HashMap<>();
+    private static final Map<String, SelectGui<?>> valueGuis = new HashMap<>();
 
-    public static void registerValueGui(String id, ValueReturnGui<?> valueGui) {
+    public static void registerValueGui(String id, SelectGui<?> valueGui) {
         valueGuis.put(id, valueGui);
         GuiManager.registerGui(id + "Select", valueGui);
     }
 
-    public static ValueReturnGui<?> getValueGui(String id) {
+    public static SelectGui<?> getValueGui(String id) {
         return valueGuis.get(id);
     }
 
@@ -42,6 +39,8 @@ public class ValueGuiManager {
         registerValueGui("enchantCreation", new EnchantCreationSelectGui());
         registerValueGui("mobEquipment", new MobEquipmentSelectGui());
         registerValueGui("spawnEffect", new SpawnEffectSelectGui());
+        registerValueGui("wandType", new WandTypeSelectGui());
+        registerValueGui("wand", new WandSelectGui());
     }
 
 }

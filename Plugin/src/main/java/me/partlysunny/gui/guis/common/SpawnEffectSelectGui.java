@@ -4,14 +4,14 @@ import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
 import me.partlysunny.blocks.loot.entry.mob.SpawnEffect;
-import me.partlysunny.gui.ValueReturnGui;
+import me.partlysunny.gui.SelectGui;
 import me.partlysunny.util.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 
-public class SpawnEffectSelectGui extends ValueReturnGui<SpawnEffect> {
+public class SpawnEffectSelectGui extends SelectGui<SpawnEffect> {
     @Override
     public Gui getGui(HumanEntity p) {
         if (!(p instanceof Player player)) return new ChestGui(3, "");

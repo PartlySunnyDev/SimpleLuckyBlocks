@@ -5,8 +5,8 @@ import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import me.partlysunny.gui.GuiManager;
-import me.partlysunny.gui.ValueGuiManager;
-import me.partlysunny.gui.ValueReturnGui;
+import me.partlysunny.gui.SelectGuiManager;
+import me.partlysunny.gui.SelectGui;
 import me.partlysunny.gui.textInput.ChatListener;
 import me.partlysunny.util.Util;
 import me.partlysunny.util.classes.ItemBuilder;
@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class ItemMakerSelectGui extends ValueReturnGui<ItemStack> {
+public class ItemMakerSelectGui extends SelectGui<ItemStack> {
 
     @Override
     public Gui getGui(HumanEntity p) {
@@ -32,17 +32,17 @@ public class ItemMakerSelectGui extends ValueReturnGui<ItemStack> {
         UUID pId = player.getUniqueId();
         boolean hasPlayer = this.values.containsKey(pId);
         ItemStack current = new ItemStack(Material.WOODEN_AXE);
-        Material materialValue = (Material) ValueGuiManager.getValueGui("material").getValue(pId);
+        Material materialValue = (Material) SelectGuiManager.getValueGui("material").getValue(pId);
         if (hasPlayer) {
             if (materialValue != null) {
                 values.get(player.getUniqueId()).setType(materialValue);
-                ValueGuiManager.getValueGui("material").resetValue(pId);
+                SelectGuiManager.getValueGui("material").resetValue(pId);
             }
             current = getValue(pId);
         } else {
             if (materialValue != null) {
                 values.put(pId, new ItemStack(materialValue));
-                ValueGuiManager.getValueGui("material").resetValue(pId);
+                SelectGuiManager.getValueGui("material").resetValue(pId);
             }
         }
         Material mat = current.getType();
@@ -54,9 +54,9 @@ public class ItemMakerSelectGui extends ValueReturnGui<ItemStack> {
         Util.addSelectionLink(mainPane, player, "itemMakerSelect", "materialSelect", ItemBuilder.builder(mat).setName(mat.name()).build(), 1, 1);
         ItemStack finalCurrent = current;
         mainPane.addItem(new GuiItem(ItemBuilder.builder(Material.ENCHANTED_BOOK).setName(ChatColor.LIGHT_PURPLE + "Modify Enchants").build(), x -> {
-            ValueGuiManager.getValueGui("enchantModifier").setReturnTo(p.getUniqueId(), "itemMakerSelect");
+            SelectGuiManager.getValueGui("enchantModifier").setReturnTo(p.getUniqueId(), "itemMakerSelect");
             p.closeInventory();
-            ((ValueReturnGui<ItemStack>) ValueGuiManager.getValueGui("enchantModifier")).openWithValue(player, finalCurrent, "enchantModifierSelect");
+            ((SelectGui<ItemStack>) SelectGuiManager.getValueGui("enchantModifier")).openWithValue(player, finalCurrent, "enchantModifierSelect");
         }), 3, 1);
         Util.addTextInputLink(mainPane, player, "itemMakerSelect", ChatColor.RED + "Input new item name:", ItemBuilder.builder(Material.PAPER).setName(ChatColor.GRAY + "Change Name").setLore(ChatColor.GRAY + "Current Name: " + name).build(), 5, 1, pl -> {
             boolean hasValue = this.values.containsKey(pl.getUniqueId());

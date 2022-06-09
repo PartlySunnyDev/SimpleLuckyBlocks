@@ -7,7 +7,7 @@ import me.partlysunny.commands.SLBCommand;
 import me.partlysunny.commands.SLBTabCompleter;
 import me.partlysunny.commands.subcommands.*;
 import me.partlysunny.gui.GuiManager;
-import me.partlysunny.gui.ValueGuiManager;
+import me.partlysunny.gui.SelectGuiManager;
 import me.partlysunny.gui.guis.MainPageGui;
 import me.partlysunny.gui.guis.common.material.filters.FilterManager;
 import me.partlysunny.gui.guis.loot.LootMenuGui;
@@ -34,7 +34,7 @@ import java.util.zip.ZipInputStream;
 
 import static me.partlysunny.blocks.loot.LootTableManager.loadLootTables;
 import static me.partlysunny.blocks.loot.entry.LootEntryManager.loadEntries;
-import static me.partlysunny.blocks.loot.entry.item.wand.WandManager.loadWands;
+import static me.partlysunny.blocks.loot.entry.wand.WandManager.loadWands;
 import static me.partlysunny.worldedit.StructureManager.loadStructures;
 
 public final class SimpleLuckyBlocksCore extends JavaPlugin {
@@ -118,7 +118,7 @@ public final class SimpleLuckyBlocksCore extends JavaPlugin {
         GuiManager.registerGui("entryCreation", new EntryCreationGui());
         GuiManager.registerGui("entryManagement", new EntryManagementGui());
         CreateGuiManager.init();
-        ValueGuiManager.init();
+        SelectGuiManager.init();
     }
 
     private void registerCommands() {

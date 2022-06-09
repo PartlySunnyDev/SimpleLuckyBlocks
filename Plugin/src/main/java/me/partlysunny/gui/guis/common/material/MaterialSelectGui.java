@@ -3,7 +3,7 @@ package me.partlysunny.gui.guis.common.material;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
-import me.partlysunny.gui.ValueReturnGui;
+import me.partlysunny.gui.SelectGui;
 import me.partlysunny.gui.guis.common.material.filters.FilterManager;
 import me.partlysunny.gui.guis.common.material.filters.MaterialFilter;
 import me.partlysunny.util.Util;
@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 
-public class MaterialSelectGui extends ValueReturnGui<Material> {
+public class MaterialSelectGui extends SelectGui<Material> {
 
     private static final Map<UUID, List<MaterialFilter>> filters = new HashMap<>();
 

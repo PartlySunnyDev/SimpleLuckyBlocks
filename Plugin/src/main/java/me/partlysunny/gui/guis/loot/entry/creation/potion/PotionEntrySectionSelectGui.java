@@ -5,8 +5,8 @@ import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import me.partlysunny.gui.GuiManager;
-import me.partlysunny.gui.ValueGuiManager;
-import me.partlysunny.gui.ValueReturnGui;
+import me.partlysunny.gui.SelectGuiManager;
+import me.partlysunny.gui.SelectGui;
 import me.partlysunny.util.Util;
 import me.partlysunny.util.classes.ItemBuilder;
 import me.partlysunny.util.classes.Pair;
@@ -20,13 +20,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 
-public class PotionEntrySectionSelectGui extends ValueReturnGui<Pair<PotionEffectType, Pair<Integer, Integer>>> {
+public class PotionEntrySectionSelectGui extends SelectGui<Pair<PotionEffectType, Pair<Integer, Integer>>> {
 
     @Override
     public Gui getGui(HumanEntity p) {
         if (!(p instanceof Player player)) return new ChestGui(3, "");
         boolean a = this.values.containsKey(player.getUniqueId());
-        PotionEffectType b = (PotionEffectType) ValueGuiManager.getValueGui("potionEffectType").getValue(player.getUniqueId());
+        PotionEffectType b = (PotionEffectType) SelectGuiManager.getValueGui("potionEffectType").getValue(player.getUniqueId());
         if (b != null) {
             if (a) {
                 Pair<PotionEffectType, Pair<Integer, Integer>> plValue = this.values.get(player.getUniqueId());
@@ -34,7 +34,7 @@ public class PotionEntrySectionSelectGui extends ValueReturnGui<Pair<PotionEffec
             } else {
                 this.values.put(player.getUniqueId(), new Pair<>(b, new Pair<>(0, 0)));
             }
-            ValueGuiManager.getValueGui("potionEffectType").resetValue(player.getUniqueId());
+            SelectGuiManager.getValueGui("potionEffectType").resetValue(player.getUniqueId());
         }
         ChestGui gui = new ChestGui(3, ChatColor.GRAY + "Potion Effect Creator");
         Util.setClickSoundTo(Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_OFF, gui);

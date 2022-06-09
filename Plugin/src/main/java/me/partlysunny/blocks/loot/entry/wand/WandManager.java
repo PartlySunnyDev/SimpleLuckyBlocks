@@ -1,4 +1,4 @@
-package me.partlysunny.blocks.loot.entry.item.wand;
+package me.partlysunny.blocks.loot.entry.wand;
 
 import me.partlysunny.ConsoleLogger;
 import me.partlysunny.SimpleLuckyBlocksCore;
@@ -9,6 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class WandManager {
 
@@ -24,6 +25,10 @@ public class WandManager {
 
     public static Wand getWand(String id) {
         return wandTypes.get(id);
+    }
+
+    public static Set<String> wandKeys() {
+        return wandTypes.keySet();
     }
 
     public static void loadWands() {

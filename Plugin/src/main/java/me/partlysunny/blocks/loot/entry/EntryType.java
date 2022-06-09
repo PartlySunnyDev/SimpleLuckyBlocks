@@ -3,7 +3,7 @@ package me.partlysunny.blocks.loot.entry;
 import me.partlysunny.SimpleLuckyBlocksCore;
 import me.partlysunny.blocks.loot.entry.command.CommandEntry;
 import me.partlysunny.blocks.loot.entry.item.ItemEntry;
-import me.partlysunny.blocks.loot.entry.item.wand.WandEntry;
+import me.partlysunny.blocks.loot.entry.wand.WandEntry;
 import me.partlysunny.blocks.loot.entry.mob.MobEntry;
 import me.partlysunny.blocks.loot.entry.mob.SpawnEffect;
 import me.partlysunny.blocks.loot.entry.potion.PotionEntry;

@@ -1,7 +1,7 @@
 package me.partlysunny.commands.subcommands;
 
-import me.partlysunny.blocks.loot.entry.item.wand.Wand;
-import me.partlysunny.blocks.loot.entry.item.wand.WandManager;
+import me.partlysunny.blocks.loot.entry.wand.Wand;
+import me.partlysunny.blocks.loot.entry.wand.WandManager;
 import me.partlysunny.util.CommandUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;

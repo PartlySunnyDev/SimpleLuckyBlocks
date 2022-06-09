@@ -18,12 +18,13 @@ import me.partlysunny.blocks.LuckyBlockType;
 import me.partlysunny.blocks.loot.entry.IEntry;
 import me.partlysunny.blocks.loot.entry.LootEntryManager;
 import me.partlysunny.gui.GuiManager;
-import me.partlysunny.gui.ValueGuiManager;
-import me.partlysunny.gui.ValueReturnGui;
+import me.partlysunny.gui.SelectGuiManager;
+import me.partlysunny.gui.SelectGui;
 import me.partlysunny.gui.guis.loot.entry.creation.CreateGuiManager;
 import me.partlysunny.gui.guis.loot.entry.creation.EntryCreateGui;
 import me.partlysunny.gui.guis.loot.entry.creation.EntrySaveWrapper;
 import me.partlysunny.gui.guis.loot.entry.creation.mob.MobEntryCreateGui;
+import me.partlysunny.gui.guis.loot.entry.creation.mob.equipment.EquipmentWrapper;
 import me.partlysunny.gui.guis.loot.entry.creation.mob.equipment.MobSlot;
 import me.partlysunny.gui.textInput.ChatListener;
 import me.partlysunny.util.classes.ItemBuilder;
@@ -384,7 +385,7 @@ public final class Util {
         return ui;
     }
 
-    public static void addListPages(PaginatedPane pane, Player p, ValueReturnGui<?> from, int x, int y, int width, int height, String[] a, ChestGui gui) {
+    public static void addListPages(PaginatedPane pane, Player p, SelectGui<?> from, int x, int y, int width, int height, String[] a, ChestGui gui) {
         pane.setOnClick(event -> {
             if (event.getWhoClicked() instanceof Player pp) {
                 pp.playSound(pp.getLocation(), Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_OFF, 1, 1);
@@ -469,7 +470,7 @@ public final class Util {
 
     public static void addSelectionLink(StaticPane pane, Player p, String currentGui, String selectionLink, ItemStack toShow, int x, int y) {
         pane.addItem(new GuiItem(toShow, item -> {
-            ValueGuiManager.getValueGui(selectionLink.substring(0, selectionLink.length() - 6)).setReturnTo(p.getUniqueId(), currentGui);
+            SelectGuiManager.getValueGui(selectionLink.substring(0, selectionLink.length() - 6)).setReturnTo(p.getUniqueId(), currentGui);
             p.closeInventory();
             GuiManager.openInventory(p, selectionLink);
         }), x, y);
@@ -482,12 +483,12 @@ public final class Util {
         }), x, y);
     }
 
-    public static void addEquipmentSlot(StaticPane pane, Player p, String currentGui, MobSlot slot, ItemStack toShow, int x, int y) {
+    public static void addEquipmentSlot(StaticPane pane, Player p, String currentGui, MobSlot slot, ItemStack toShow, ItemStack currentItem, double dropChance, int x, int y) {
         pane.addItem(new GuiItem(toShow, item -> {
             MobEntryCreateGui.setSlot(p.getUniqueId(), slot);
-            ValueGuiManager.getValueGui("mobEquipment").setReturnTo(p.getUniqueId(), currentGui);
+            SelectGuiManager.getValueGui("mobEquipment").setReturnTo(p.getUniqueId(), currentGui);
             p.closeInventory();
-            GuiManager.openInventory(p, "mobEquipmentSelect");
+            ((SelectGui<EquipmentWrapper>) SelectGuiManager.getValueGui("mobEquipment")).openWithValue(p, new EquipmentWrapper(slot, currentItem, dropChance), "mobEquipmentSelect");
         }), x, y);
     }
 
@@ -618,6 +619,24 @@ public final class Util {
         }
         gui.addPane(pane);
         return gui;
+    }
+
+    public static boolean saveInfo(Player player, boolean b, String name, YamlConfiguration save) {
+        if (b) {
+            Util.invalid("Invalid info!", player);
+            return true;
+        }
+        if (name == null) {
+            Util.invalid("Please specify a name!", player);
+            return true;
+        }
+        YamlConfiguration config = save;
+        try {
+            config.save(new File(JavaPlugin.getPlugin(SimpleLuckyBlocksCore.class).getDataFolder() + "/lootEntries", name + ".yml"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return false;
     }
 
     @SuppressWarnings("unchecked")

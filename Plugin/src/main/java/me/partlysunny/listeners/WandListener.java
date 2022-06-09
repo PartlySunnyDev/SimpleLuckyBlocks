@@ -1,7 +1,7 @@
 package me.partlysunny.listeners;
 
 import de.tr7zw.nbtapi.NBTItem;
-import me.partlysunny.blocks.loot.entry.item.wand.WandType;
+import me.partlysunny.blocks.loot.entry.wand.WandType;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;

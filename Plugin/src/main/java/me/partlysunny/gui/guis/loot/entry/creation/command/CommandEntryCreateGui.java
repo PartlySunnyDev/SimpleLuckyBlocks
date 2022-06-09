@@ -5,25 +5,21 @@ import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
-import me.partlysunny.SimpleLuckyBlocksCore;
 import me.partlysunny.blocks.loot.entry.command.CommandEntry;
 import me.partlysunny.gui.GuiManager;
 import me.partlysunny.gui.guis.loot.entry.creation.EntryCreateGui;
 import me.partlysunny.gui.guis.loot.entry.creation.EntrySaveWrapper;
+import me.partlysunny.gui.guis.loot.entry.creation.potion.PotionEntryCreateGui;
 import me.partlysunny.gui.textInput.ChatListener;
 import me.partlysunny.util.Util;
 import me.partlysunny.util.classes.ItemBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 public class CommandEntryCreateGui extends EntryCreateGui<CommandEntry> {
@@ -72,20 +68,7 @@ public class CommandEntryCreateGui extends EntryCreateGui<CommandEntry> {
             Util.addRenameButton(border, player, saves, new CommandEntry(new ArrayList<>(List.of())), "commandEntryCreate", 3, 0);
             border.addItem(new GuiItem(ItemBuilder.builder(Material.BLUE_CONCRETE).setName(ChatColor.BLUE + "Create Entry").build(), item -> {
                 EntrySaveWrapper<CommandEntry> save = saves.get(player.getUniqueId());
-                if (save == null || save.entry().commands().size() < 1) {
-                    Util.invalid("Invalid info!", player);
-                    return;
-                }
-                if (save.name() == null) {
-                    Util.invalid("Please specify a name!", player);
-                    return;
-                }
-                YamlConfiguration config = save.entry().getSave();
-                try {
-                    config.save(new File(JavaPlugin.getPlugin(SimpleLuckyBlocksCore.class).getDataFolder() + "/lootEntries", save.name() + ".yml"));
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                if (Util.saveInfo(player, save == null, save.name(), save.entry().getSave()) || save.entry().commands().size() < 1) return;
                 player.sendMessage(ChatColor.GREEN + "Successfully created command entry with name " + save.name() + "!");
                 player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
                 GuiManager.openInventory(player, "entryManagement");
