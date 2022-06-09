@@ -31,8 +31,6 @@ import java.util.UUID;
 
 public class ItemEntryCreateGui extends EntryCreateGui<ItemEntry> {
 
-    private static final Map<UUID, EntrySaveWrapper<ItemEntry>> saves = new HashMap<>();
-
     @Override
     @SuppressWarnings("unchecked")
     public Gui getGui(HumanEntity p) {

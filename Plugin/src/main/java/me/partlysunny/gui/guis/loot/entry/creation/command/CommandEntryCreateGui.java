@@ -28,19 +28,17 @@ import java.util.*;
 
 public class CommandEntryCreateGui extends EntryCreateGui<CommandEntry> {
 
-    private static final Map<UUID, EntrySaveWrapper<CommandEntry>> commandSaves = new HashMap<>();
-
-    private static void addNewCommandFromInput(Player pl) {
-        boolean hasValue = commandSaves.containsKey(pl.getUniqueId());
+    private void addNewCommandFromInput(Player pl) {
+        boolean hasValue = saves.containsKey(pl.getUniqueId());
         String currentInput = ChatListener.getCurrentInput(pl);
         if (currentInput == null) {
             Util.invalid("Invalid value!", pl);
             return;
         }
         if (hasValue) {
-            commandSaves.get(pl.getUniqueId()).entry().addCommand(currentInput);
+            saves.get(pl.getUniqueId()).entry().addCommand(currentInput);
         } else {
-            commandSaves.put(pl.getUniqueId(), new EntrySaveWrapper<>(null, new CommandEntry(new ArrayList<>(List.of(currentInput)))));
+            saves.put(pl.getUniqueId(), new EntrySaveWrapper<>(null, new CommandEntry(new ArrayList<>(List.of(currentInput)))));
         }
     }
 
@@ -48,11 +46,11 @@ public class CommandEntryCreateGui extends EntryCreateGui<CommandEntry> {
     public Gui getGui(HumanEntity p) {
         if (!(p instanceof Player player)) return new ChestGui(3, "");
         EntrySaveWrapper<CommandEntry> commandEntry;
-        if (commandSaves.containsKey(p.getUniqueId())) {
-            commandEntry = commandSaves.get(p.getUniqueId());
+        if (saves.containsKey(p.getUniqueId())) {
+            commandEntry = saves.get(p.getUniqueId());
         } else {
             EntrySaveWrapper<CommandEntry> value = new EntrySaveWrapper<>(null, new CommandEntry(new ArrayList<>()));
-            commandSaves.put(player.getUniqueId(), value);
+            saves.put(player.getUniqueId(), value);
             commandEntry = value;
         }
         ChestGui gui = new ChestGui(5, ChatColor.RED + "Command Entry Creator");
@@ -69,11 +67,11 @@ public class CommandEntryCreateGui extends EntryCreateGui<CommandEntry> {
             StaticPane border = new StaticPane(0, 0, 9, 5);
             StaticPane items = new StaticPane(1, 1, 7, 3);
             border.fillWith(new ItemStack(Material.BLACK_STAINED_GLASS_PANE));
-            Util.addTextInputLink(border, player, "commandEntryCreate", ChatColor.RED + "Enter command", ItemBuilder.builder(Material.GREEN_CONCRETE).setName(ChatColor.GREEN + "Add new command").build(), 1, 0, CommandEntryCreateGui::addNewCommandFromInput);
+            Util.addTextInputLink(border, player, "commandEntryCreate", ChatColor.RED + "Enter command", ItemBuilder.builder(Material.GREEN_CONCRETE).setName(ChatColor.GREEN + "Add new command").build(), 1, 0, this::addNewCommandFromInput);
             border.addItem(new GuiItem(ItemBuilder.builder(Material.YELLOW_CONCRETE).setName(ChatColor.GOLD + "Reload").build(), item -> GuiManager.openInventory(player, "commandEntryCreate")), 2, 0);
-            Util.addRenameButton(border, player, commandSaves, new CommandEntry(new ArrayList<>(List.of())), "commandEntryCreate", 3, 0);
+            Util.addRenameButton(border, player, saves, new CommandEntry(new ArrayList<>(List.of())), "commandEntryCreate", 3, 0);
             border.addItem(new GuiItem(ItemBuilder.builder(Material.BLUE_CONCRETE).setName(ChatColor.BLUE + "Create Entry").build(), item -> {
-                EntrySaveWrapper<CommandEntry> save = commandSaves.get(player.getUniqueId());
+                EntrySaveWrapper<CommandEntry> save = saves.get(player.getUniqueId());
                 if (save == null || save.entry().commands().size() < 1) {
                     Util.invalid("Invalid info!", player);
                     return;
@@ -109,7 +107,7 @@ public class CommandEntryCreateGui extends EntryCreateGui<CommandEntry> {
                     if (item.isLeftClick()) {
                         commandEntry.entry().removeCommand(command);
                         player.closeInventory();
-                        ChatListener.startChatListen(player, "commandEntryCreate", ChatColor.RED + "Enter command", CommandEntryCreateGui::addNewCommandFromInput);
+                        ChatListener.startChatListen(player, "commandEntryCreate", ChatColor.RED + "Enter command", this::addNewCommandFromInput);
                     }
                 }), (j - count) % 7, (j - count) / 7);
             }

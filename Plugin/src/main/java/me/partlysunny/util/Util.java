@@ -622,7 +622,9 @@ public final class Util {
 
     @SuppressWarnings("unchecked")
     private static <T extends IEntry> void openCreateUiWithValue(Player p, String createUi, String fileName, T value) {
+        ConsoleLogger.console(p.getUniqueId() + ", " + createUi + ", " + fileName + ", " + value.getEntryType());
         ((EntryCreateGui<T>) CreateGuiManager.getCreateGui(createUi)).setSave(p.getUniqueId(), new EntrySaveWrapper<>(fileName, value));
+        ConsoleLogger.console(((EntryCreateGui<T>) CreateGuiManager.getCreateGui(createUi)).getSave(p.getUniqueId()).name());
         GuiManager.openInventory(p, createUi + "Create");
     }
 
