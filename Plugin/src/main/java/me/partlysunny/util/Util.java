@@ -575,7 +575,7 @@ public final class Util {
         JavaPlugin plugin = JavaPlugin.getPlugin(SimpleLuckyBlocksCore.class);
         ChestGui gui = new ChestGui(5, title);
         PaginatedPane pane = new PaginatedPane(0, 0, 9, 5);
-        int numPages = (int) Math.ceil(values.length / 27f);
+        int numPages = (int) Math.ceil(values.length / 21f);
         if (numPages == 0) {
             numPages = 1;
         }
@@ -610,7 +610,7 @@ public final class Util {
                         deleteFile(new File(plugin.getDataFolder() + "/lootEntries", fileName + ".yml"));
                         GuiManager.openInventory(p, "entryManagement");
                     }
-                }), (j - count) % 9, (j - count) / 9);
+                }), (j - count) % 7, (j - count) / 7);
             }
             count += 27;
             Util.addReturnButton(border, p, backButtonLink, 0, 4);

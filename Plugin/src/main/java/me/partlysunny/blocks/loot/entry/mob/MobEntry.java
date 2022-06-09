@@ -68,6 +68,7 @@ public class MobEntry implements IEntry {
                     s.modify(equipment, getEquipmentDropChance(s));
                 }
                 if (health != -1) {
+                    // TODO not working?
                     AttributeInstance attribute = le.getAttribute(Attribute.GENERIC_MAX_HEALTH);
                     attribute.setBaseValue(health);
                 }
