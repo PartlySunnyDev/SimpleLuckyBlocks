@@ -5,6 +5,7 @@ import me.partlysunny.gui.guis.loot.entry.creation.command.CommandEntryCreateGui
 import me.partlysunny.gui.guis.loot.entry.creation.item.ItemEntryCreateGui;
 import me.partlysunny.gui.guis.loot.entry.creation.mob.MobEntryCreateGui;
 import me.partlysunny.gui.guis.loot.entry.creation.potion.PotionEntryCreateGui;
+import me.partlysunny.gui.guis.loot.entry.creation.structure.StructureEntryCreateGui;
 import me.partlysunny.gui.guis.loot.entry.creation.wand.WandEntryCreateGui;
 
 import java.util.HashMap;
@@ -33,6 +34,7 @@ public class CreateGuiManager {
         registerCreateGui("itemEntry", new ItemEntryCreateGui());
         registerCreateGui("mobEntry", new MobEntryCreateGui());
         registerCreateGui("wandEntry", new WandEntryCreateGui());
+        registerCreateGui("structureEntry", new StructureEntryCreateGui());
     }
 
 }

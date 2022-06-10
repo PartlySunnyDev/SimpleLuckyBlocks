@@ -36,7 +36,7 @@ public class WandEntryCreateGui extends EntryCreateGui<WandEntry> {
             }
             SelectGuiManager.getValueGui("wand").resetValue(player.getUniqueId());
         }
-        ChestGui gui = new ChestGui(3, ChatColor.GRAY + "Item Maker");
+        ChestGui gui = new ChestGui(3, ChatColor.GRAY + "Wand Entry Creator");
         StaticPane mainPane = new StaticPane(0, 0, 9, 3);
         mainPane.fillWith(new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
         EntrySaveWrapper<WandEntry> wandInfo;
@@ -98,6 +98,7 @@ public class WandEntryCreateGui extends EntryCreateGui<WandEntry> {
             }
         });
         ItemStack wandItem = ItemBuilder.builder(Material.STICK).setName(ChatColor.RED + wandInfo.entry().wandType()).setLore(ChatColor.GRAY + "Current wand type!").build();
+        Util.addSelectionLink(mainPane, player, "wandEntryCreate", "wandSelect", wandItem, 5, 1);
         mainPane.addItem(new GuiItem(ItemBuilder.builder(Material.BLUE_CONCRETE).setName(ChatColor.BLUE + "Create Wand Entry").build(), item -> {
             EntrySaveWrapper<WandEntry> save = saves.get(player.getUniqueId());
             if (Util.saveInfo(player, save == null, save.name(), save.entry().getSave())) return;
@@ -105,7 +106,6 @@ public class WandEntryCreateGui extends EntryCreateGui<WandEntry> {
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
             GuiManager.openInventory(player, "entryManagement");
         }), 8, 1);
-        Util.addSelectionLink(mainPane, player, "wandEntryCreate", "wandSelect", wandItem, 5, 1);
         Util.addRenameButton(mainPane, player, saves, new WandEntry(), "wandEntryCreate", 6, 1);
         Util.addReturnButton(mainPane, player, "entryCreation", 0, 2);
         gui.addPane(mainPane);

@@ -111,7 +111,7 @@ public enum EntryType {
             return null;
         }
         String structure = Util.getOrError(name, "structure");
-        double offsetX = Util.getOrDefault(name, "offsetX", 0d), offsetY = Util.getOrDefault(name, "offsetY", 0d), offsetZ = Util.getOrDefault(name, "offsetZ", 0d);
+        int offsetX = Util.getOrDefault(name, "offsetX", 0), offsetY = Util.getOrDefault(name, "offsetY", 0), offsetZ = Util.getOrDefault(name, "offsetZ", 0);
         return new StructureEntry(structure, offsetX, offsetY, offsetZ);
     });
 

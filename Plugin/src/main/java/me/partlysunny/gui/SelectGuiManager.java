@@ -41,6 +41,7 @@ public class SelectGuiManager {
         registerValueGui("spawnEffect", new SpawnEffectSelectGui());
         registerValueGui("wandType", new WandTypeSelectGui());
         registerValueGui("wand", new WandSelectGui());
+        registerValueGui("structure", new StructureSelectGui());
     }
 
 }

@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class StructureManager {
 
@@ -51,4 +52,7 @@ public class StructureManager {
         registerStructure(new ClipboardWrapper(file.getName().replaceFirst("[.][^.]+$", ""), fromInput));
     }
 
+    public static Set<String> structureKeys() {
+        return structures.keySet();
+    }
 }
