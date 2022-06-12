@@ -72,6 +72,7 @@ public class CommandEntryCreateGui extends EntryCreateGui<CommandEntry> {
                     return;
                 player.sendMessage(ChatColor.GREEN + "Successfully created command entry with name " + save.name() + "!");
                 player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+                saves.remove(player.getUniqueId());
                 GuiManager.openInventory(player, "entryManagement");
             }), 8, 2);
             items.fillWith(ItemBuilder.builder(Material.GRAY_STAINED_GLASS_PANE).setName("").build());

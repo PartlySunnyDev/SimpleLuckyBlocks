@@ -104,6 +104,7 @@ public class WandEntryCreateGui extends EntryCreateGui<WandEntry> {
             if (Util.saveInfo(player, save == null, save.name(), save.entry().getSave(), "lootEntries")) return;
             player.sendMessage(ChatColor.GREEN + "Successfully created wand entry with name " + save.name() + "!");
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+            saves.remove(player.getUniqueId());
             GuiManager.openInventory(player, "entryManagement");
         }), 8, 1);
         Util.addRenameButton(mainPane, player, saves, new WandEntry(), "wandEntryCreate", 6, 1);

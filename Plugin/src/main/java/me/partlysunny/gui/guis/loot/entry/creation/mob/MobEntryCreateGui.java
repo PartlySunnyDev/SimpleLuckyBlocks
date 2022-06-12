@@ -199,6 +199,7 @@ public class MobEntryCreateGui extends EntryCreateGui<MobEntry> {
             if (Util.saveInfo(player, save == null, save.name(), save.entry().getSave(), "lootEntries")) return;
             player.sendMessage(ChatColor.GREEN + "Successfully created mob entry with name " + save.name() + "!");
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+            saves.remove(player.getUniqueId());
             GuiManager.openInventory(player, "entryManagement");
         }), 8, 2);
         ItemStack entityItem = ItemBuilder.builder(Material.ZOMBIE_HEAD).setName(ChatColor.RED + mobInfo.entry().entityType().toString()).setLore(ChatColor.GRAY + "Current entity type!").build();

@@ -93,6 +93,7 @@ public class ItemEntryCreateGui extends EntryCreateGui<ItemEntry> {
             if (Util.saveInfo(player, save == null, save.name(), save.entry().getSave(), "lootEntries")) return;
             player.sendMessage(ChatColor.GREEN + "Successfully created item entry with name " + save.name() + "!");
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+            saves.remove(player.getUniqueId());
             GuiManager.openInventory(player, "entryManagement");
         }), 7, 1);
         Util.addReturnButton(mainPane, player, "entryCreation", 0, 2);

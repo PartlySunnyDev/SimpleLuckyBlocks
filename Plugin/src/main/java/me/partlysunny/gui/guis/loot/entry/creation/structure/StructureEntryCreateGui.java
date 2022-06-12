@@ -93,6 +93,7 @@ public class StructureEntryCreateGui extends EntryCreateGui<StructureEntry> {
                 return;
             player.sendMessage(ChatColor.GREEN + "Successfully created structure entry with name " + save.name() + "!");
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+            saves.remove(player.getUniqueId());
             GuiManager.openInventory(player, "entryManagement");
         }), 7, 1);
         ItemStack structureItem = ItemBuilder.builder(Material.STICK).setName(ChatColor.RED + structureEntry.entry().structure()).setLore(ChatColor.GRAY + "Current structure!").build();
