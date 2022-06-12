@@ -184,10 +184,6 @@ public class MobEntryCreateGui extends EntryCreateGui<MobEntry> {
                     Util.invalid("Characters must be at least 2 and at most 29!", pl);
                     return;
                 }
-                if (!Util.isValidFilePath(input)) {
-                    Util.invalid("Invalid File Name!", pl);
-                    return;
-                }
                 if (!saves.containsKey(pl.getUniqueId())) {
                     saves.put(pl.getUniqueId(), new EntrySaveWrapper<>(null, new MobEntry()));
                 }

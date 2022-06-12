@@ -220,13 +220,13 @@ public final class Util {
         throw new IllegalArgumentException("Key " + key + " inside " + y.getName() + " was not found!");
     }
 
-    public static boolean isValidFilePath(String path) {
+    public static boolean isInvalidFilePath(String path) {
         File f = new File(path);
         try {
             f.getCanonicalPath();
-            return true;
-        } catch (IOException e) {
             return false;
+        } catch (IOException e) {
+            return true;
         }
     }
 
@@ -669,7 +669,7 @@ public final class Util {
                     Util.invalid("Characters must be at least 2 and at most 29!", pl);
                     return;
                 }
-                if (!Util.isValidFilePath(input)) {
+                if (Util.isInvalidFilePath(input)) {
                     Util.invalid("Invalid File Name!", pl);
                     return;
                 }

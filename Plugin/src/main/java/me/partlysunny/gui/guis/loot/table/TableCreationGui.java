@@ -72,7 +72,7 @@ public class TableCreationGui implements GuiInstance {
                         Util.invalid("Characters must be at least 2 and at most 29!", pl);
                         return;
                     }
-                    if (!Util.isValidFilePath(input)) {
+                    if (Util.isInvalidFilePath(input)) {
                         Util.invalid("Invalid File Name!", pl);
                         return;
                     }
