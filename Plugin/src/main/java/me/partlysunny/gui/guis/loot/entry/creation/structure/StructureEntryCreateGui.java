@@ -89,7 +89,8 @@ public class StructureEntryCreateGui extends EntryCreateGui<StructureEntry> {
         });
         mainPane.addItem(new GuiItem(ItemBuilder.builder(Material.BLUE_CONCRETE).setName(ChatColor.BLUE + "Create Structure Entry").build(), item -> {
             EntrySaveWrapper<StructureEntry> save = saves.get(player.getUniqueId());
-            if (Util.saveInfo(player, save == null, save.name(), save.entry().getSave()) && !(StructureManager.getStructure(save.entry().structure()) == null)) return;
+            if (Util.saveInfo(player, save == null, save.name(), save.entry().getSave(), "lootEntries") && !(StructureManager.getStructure(save.entry().structure()) == null))
+                return;
             player.sendMessage(ChatColor.GREEN + "Successfully created structure entry with name " + save.name() + "!");
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
             GuiManager.openInventory(player, "entryManagement");
@@ -101,5 +102,5 @@ public class StructureEntryCreateGui extends EntryCreateGui<StructureEntry> {
         gui.addPane(mainPane);
         Util.setClickSoundTo(Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_OFF, gui);
         return gui;
-}
+    }
 }

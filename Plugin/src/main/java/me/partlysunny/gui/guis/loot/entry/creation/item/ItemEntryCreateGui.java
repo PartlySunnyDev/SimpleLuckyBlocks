@@ -6,12 +6,11 @@ import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import me.partlysunny.blocks.loot.entry.item.ItemEntry;
 import me.partlysunny.gui.GuiManager;
-import me.partlysunny.gui.SelectGuiManager;
 import me.partlysunny.gui.SelectGui;
+import me.partlysunny.gui.SelectGuiManager;
 import me.partlysunny.gui.guis.common.material.MaterialSelectGui;
 import me.partlysunny.gui.guis.loot.entry.creation.EntryCreateGui;
 import me.partlysunny.gui.guis.loot.entry.creation.EntrySaveWrapper;
-import me.partlysunny.gui.guis.loot.entry.creation.potion.PotionEntryCreateGui;
 import me.partlysunny.util.Util;
 import me.partlysunny.util.classes.ItemBuilder;
 import org.bukkit.ChatColor;
@@ -91,12 +90,12 @@ public class ItemEntryCreateGui extends EntryCreateGui<ItemEntry> {
         Util.addRenameButton(mainPane, player, saves, new ItemEntry(new ItemStack(Material.WOODEN_AXE), 0, 0), "itemEntryCreate", 4, 1);
         mainPane.addItem(new GuiItem(ItemBuilder.builder(Material.BLUE_CONCRETE).setName(ChatColor.BLUE + "Create Item Entry").build(), event -> {
             EntrySaveWrapper<ItemEntry> save = saves.get(player.getUniqueId());
-            if (Util.saveInfo(player, save == null, save.name(), save.entry().getSave())) return;
+            if (Util.saveInfo(player, save == null, save.name(), save.entry().getSave(), "lootEntries")) return;
             player.sendMessage(ChatColor.GREEN + "Successfully created item entry with name " + save.name() + "!");
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
             GuiManager.openInventory(player, "entryManagement");
         }), 7, 1);
-        Util.addReturnButton(mainPane, player, "entryManagement", 0, 2);
+        Util.addReturnButton(mainPane, player, "entryCreation", 0, 2);
         gui.addPane(mainPane);
         return gui;
     }

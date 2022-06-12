@@ -71,7 +71,8 @@ public class PotionEntryCreateGui extends EntryCreateGui<PotionEntry> {
             Util.addRenameButton(border, player, saves, new PotionEntry(new ArrayList<>(List.of())), "potionEntryCreate", 3, 0);
             border.addItem(new GuiItem(ItemBuilder.builder(Material.BLUE_CONCRETE).setName(ChatColor.BLUE + "Create Effect").build(), item -> {
                 EntrySaveWrapper<PotionEntry> save = saves.get(player.getUniqueId());
-                if (Util.saveInfo(player, save == null, save.name(), save.entry().getSave()) || save.entry().getEffects().length < 1) return;
+                if (Util.saveInfo(player, save == null, save.name(), save.entry().getSave(), "lootEntries") || save.entry().getEffects().length < 1)
+                    return;
                 player.sendMessage(ChatColor.GREEN + "Successfully created potion entry with name " + save.name() + "!");
                 player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
                 GuiManager.openInventory(player, "entryManagement");

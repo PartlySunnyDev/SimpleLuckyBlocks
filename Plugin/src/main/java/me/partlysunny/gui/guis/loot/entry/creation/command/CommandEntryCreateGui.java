@@ -9,7 +9,6 @@ import me.partlysunny.blocks.loot.entry.command.CommandEntry;
 import me.partlysunny.gui.GuiManager;
 import me.partlysunny.gui.guis.loot.entry.creation.EntryCreateGui;
 import me.partlysunny.gui.guis.loot.entry.creation.EntrySaveWrapper;
-import me.partlysunny.gui.guis.loot.entry.creation.potion.PotionEntryCreateGui;
 import me.partlysunny.gui.textInput.ChatListener;
 import me.partlysunny.util.Util;
 import me.partlysunny.util.classes.ItemBuilder;
@@ -20,7 +19,8 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CommandEntryCreateGui extends EntryCreateGui<CommandEntry> {
 
@@ -68,7 +68,8 @@ public class CommandEntryCreateGui extends EntryCreateGui<CommandEntry> {
             Util.addRenameButton(border, player, saves, new CommandEntry(new ArrayList<>(List.of())), "commandEntryCreate", 3, 0);
             border.addItem(new GuiItem(ItemBuilder.builder(Material.BLUE_CONCRETE).setName(ChatColor.BLUE + "Create Entry").build(), item -> {
                 EntrySaveWrapper<CommandEntry> save = saves.get(player.getUniqueId());
-                if (Util.saveInfo(player, save == null, save.name(), save.entry().getSave()) || save.entry().commands().size() < 1) return;
+                if (Util.saveInfo(player, save == null || save.entry().commands().size() < 1, save.name(), save.entry().getSave(), "lootEntries"))
+                    return;
                 player.sendMessage(ChatColor.GREEN + "Successfully created command entry with name " + save.name() + "!");
                 player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
                 GuiManager.openInventory(player, "entryManagement");

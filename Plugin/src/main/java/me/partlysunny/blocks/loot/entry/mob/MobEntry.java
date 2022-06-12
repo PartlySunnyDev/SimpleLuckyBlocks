@@ -87,7 +87,7 @@ public class MobEntry implements IEntry {
 
     public void setEquipment(MobSlot slot, ItemStack s) {
         if (!equipment.containsKey(slot)) {
-            equipment.put(slot, new Pair<>(emptySlot, 0d));
+            equipment.put(slot, new Pair<>(emptySlot.clone(), 0d));
         }
         Pair<ItemStack, Double> info = equipment.get(slot);
         info.setA(s);
@@ -95,14 +95,14 @@ public class MobEntry implements IEntry {
 
     public void setEquipmentDropChance(MobSlot slot, Double f) {
         if (!equipment.containsKey(slot)) {
-            equipment.put(slot, new Pair<>(emptySlot, 0d));
+            equipment.put(slot, new Pair<>(emptySlot.clone(), 0d));
         }
         Pair<ItemStack, Double> info = equipment.get(slot);
         info.setB(f);
     }
 
     public ItemStack getEquipment(MobSlot slot) {
-        Pair<ItemStack, Double> info = equipment.getOrDefault(slot, new Pair<>(emptySlot, 0d));
+        Pair<ItemStack, Double> info = equipment.getOrDefault(slot, new Pair<>(emptySlot.clone(), 0d));
         if (info.a().getItemMeta() == null) {
             throw new IllegalArgumentException("Equipment has no meta!");
         }
@@ -110,7 +110,7 @@ public class MobEntry implements IEntry {
     }
 
     public Double getEquipmentDropChance(MobSlot slot) {
-        Pair<ItemStack, Double> info = equipment.getOrDefault(slot, new Pair<>(emptySlot, 0d));
+        Pair<ItemStack, Double> info = equipment.getOrDefault(slot, new Pair<>(emptySlot.clone(), 0d));
         return info.b();
     }
 

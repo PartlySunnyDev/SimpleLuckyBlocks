@@ -3,7 +3,6 @@ package me.partlysunny.blocks.loot;
 import me.partlysunny.ConsoleLogger;
 import me.partlysunny.SimpleLuckyBlocksCore;
 import me.partlysunny.util.Util;
-import me.partlysunny.util.classes.Pair;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -45,14 +44,17 @@ public class LootTableManager {
 
     private static void loadTable(String childName, YamlConfiguration name) {
         int rolls = Util.getOrError(name, "rolls");
-        List<Pair<String, Pair<String, Integer>>> entryInfos = new ArrayList<>();
+        List<TableEntryWrapper> entryInfos = new ArrayList<>();
         ConfigurationSection entries = Util.getOrError(name, "entries");
         for (String entry : entries.getKeys(false)) {
             ConfigurationSection entryInfo = Util.getOrError(entries, entry);
             String message = Util.getOrDefault(entryInfo, "message", "");
-            entryInfos.add(new Pair<>(entry, new Pair<>(message, Util.getOrError(entryInfo, "weight"))));
+            entryInfos.add(new TableEntryWrapper(entry, Util.getOrError(entryInfo, "weight"), message));
         }
         registerTable(childName.substring(0, childName.length() - 4), new CustomLootTable(rolls, entryInfos));
     }
 
+    public static String[] getEntryKeys() {
+        return tables.keySet().toArray(new String[0]);
+    }
 }

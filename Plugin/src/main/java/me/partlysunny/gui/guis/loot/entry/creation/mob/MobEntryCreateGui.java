@@ -200,7 +200,7 @@ public class MobEntryCreateGui extends EntryCreateGui<MobEntry> {
         Util.addReturnButton(mainPane, player, "entryCreation", 0, 5);
         mainPane.addItem(new GuiItem(ItemBuilder.builder(Material.BLUE_CONCRETE).setName(ChatColor.BLUE + "Create Mob Entry").build(), item -> {
             EntrySaveWrapper<MobEntry> save = saves.get(player.getUniqueId());
-            if (Util.saveInfo(player, save == null, save.name(), save.entry().getSave())) return;
+            if (Util.saveInfo(player, save == null, save.name(), save.entry().getSave(), "lootEntries")) return;
             player.sendMessage(ChatColor.GREEN + "Successfully created mob entry with name " + save.name() + "!");
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
             GuiManager.openInventory(player, "entryManagement");

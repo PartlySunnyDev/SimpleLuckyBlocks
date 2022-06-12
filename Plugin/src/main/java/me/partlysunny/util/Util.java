@@ -18,8 +18,8 @@ import me.partlysunny.blocks.LuckyBlockType;
 import me.partlysunny.blocks.loot.entry.IEntry;
 import me.partlysunny.blocks.loot.entry.LootEntryManager;
 import me.partlysunny.gui.GuiManager;
-import me.partlysunny.gui.SelectGuiManager;
 import me.partlysunny.gui.SelectGui;
+import me.partlysunny.gui.SelectGuiManager;
 import me.partlysunny.gui.guis.loot.entry.creation.CreateGuiManager;
 import me.partlysunny.gui.guis.loot.entry.creation.EntryCreateGui;
 import me.partlysunny.gui.guis.loot.entry.creation.EntrySaveWrapper;
@@ -621,7 +621,7 @@ public final class Util {
         return gui;
     }
 
-    public static boolean saveInfo(Player player, boolean b, String name, YamlConfiguration save) {
+    public static boolean saveInfo(Player player, boolean b, String name, YamlConfiguration save, String folder) {
         if (b) {
             Util.invalid("Invalid info!", player);
             return true;
@@ -632,7 +632,7 @@ public final class Util {
         }
         YamlConfiguration config = save;
         try {
-            config.save(new File(JavaPlugin.getPlugin(SimpleLuckyBlocksCore.class).getDataFolder() + "/lootEntries", name + ".yml"));
+            config.save(new File(JavaPlugin.getPlugin(SimpleLuckyBlocksCore.class).getDataFolder() + "/" + folder, name + ".yml"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -692,6 +692,10 @@ public final class Util {
                 addLoreLine(i, ChatColor.GREEN + "Click to edit");
             }
         }
+    }
+
+    public static ItemStack getInfoItem(String title, String currentValue) {
+        return ItemBuilder.builder(Material.PAPER).setName(ChatColor.BLUE + title).setLore(ChatColor.GRAY + "" + currentValue).build();
     }
 
     public static void changePage(PaginatedPane p, int amount) {

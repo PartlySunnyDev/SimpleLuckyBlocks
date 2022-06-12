@@ -101,7 +101,7 @@ public class WandEntryCreateGui extends EntryCreateGui<WandEntry> {
         Util.addSelectionLink(mainPane, player, "wandEntryCreate", "wandSelect", wandItem, 5, 1);
         mainPane.addItem(new GuiItem(ItemBuilder.builder(Material.BLUE_CONCRETE).setName(ChatColor.BLUE + "Create Wand Entry").build(), item -> {
             EntrySaveWrapper<WandEntry> save = saves.get(player.getUniqueId());
-            if (Util.saveInfo(player, save == null, save.name(), save.entry().getSave())) return;
+            if (Util.saveInfo(player, save == null, save.name(), save.entry().getSave(), "lootEntries")) return;
             player.sendMessage(ChatColor.GREEN + "Successfully created wand entry with name " + save.name() + "!");
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
             GuiManager.openInventory(player, "entryManagement");
@@ -111,5 +111,5 @@ public class WandEntryCreateGui extends EntryCreateGui<WandEntry> {
         gui.addPane(mainPane);
         Util.setClickSoundTo(Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_OFF, gui);
         return gui;
-}
+    }
 }

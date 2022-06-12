@@ -7,6 +7,7 @@ import me.partlysunny.gui.guis.common.item.enchant.EnchantModifierSelectGui;
 import me.partlysunny.gui.guis.common.material.MaterialSelectGui;
 import me.partlysunny.gui.guis.loot.entry.creation.mob.equipment.MobEquipmentSelectGui;
 import me.partlysunny.gui.guis.loot.entry.creation.potion.PotionEntrySectionSelectGui;
+import me.partlysunny.gui.guis.loot.table.entry.TableEntrySelectGui;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,6 +43,8 @@ public class SelectGuiManager {
         registerValueGui("wandType", new WandTypeSelectGui());
         registerValueGui("wand", new WandSelectGui());
         registerValueGui("structure", new StructureSelectGui());
+        registerValueGui("tableEntry", new TableEntrySelectGui());
+        registerValueGui("entryType", new EntryTypeSelectGui());
     }
 
 }

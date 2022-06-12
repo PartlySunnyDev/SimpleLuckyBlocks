@@ -5,8 +5,8 @@ import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import me.partlysunny.gui.GuiManager;
-import me.partlysunny.gui.SelectGuiManager;
 import me.partlysunny.gui.SelectGui;
+import me.partlysunny.gui.SelectGuiManager;
 import me.partlysunny.gui.guis.common.material.MaterialSelectGui;
 import me.partlysunny.gui.guis.loot.entry.creation.mob.MobEntryCreateGui;
 import me.partlysunny.util.Util;
@@ -55,7 +55,7 @@ public class MobEquipmentSelectGui extends SelectGui<EquipmentWrapper> {
         EquipmentWrapper finalEqInfo = eqInfo;
         mainPane.addItem(new GuiItem(item, x -> {
             SelectGuiManager.getValueGui("itemMaker").setReturnTo(p.getUniqueId(), "mobEquipmentSelect");
-            MaterialSelectGui.setFilters(pId, "meta", slotFor.toString().toLowerCase());
+            MaterialSelectGui.setFilters(pId, "meta", slotFor.toString().toLowerCase(), "item");
             p.closeInventory();
             ((SelectGui<ItemStack>) SelectGuiManager.getValueGui("itemMaker")).openWithValue(player, finalEqInfo.item(), "itemMakerSelect");
         }), 2, 1);
