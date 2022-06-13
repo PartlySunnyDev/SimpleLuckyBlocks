@@ -1,5 +1,7 @@
 package me.partlysunny.util.classes;
 
+import de.tr7zw.nbtapi.NBTItem;
+import me.partlysunny.ConsoleLogger;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
@@ -14,15 +16,23 @@ public class ItemBuilder {
     private final ItemMeta meta;
     private final ItemStack s;
     private final Map<Enchantment, Integer> enchants = new HashMap<>();
+    private final NBTItem nbti;
 
     public ItemBuilder(Material m) {
         this.s = new ItemStack(m);
+        this.nbti = new NBTItem(s);
         this.meta = s.getItemMeta();
     }
 
     public ItemBuilder(ItemStack s) {
         this.s = s.clone();
-        this.meta = s.getItemMeta().clone();
+        ItemMeta itemMeta = s.getItemMeta();
+        if (itemMeta != null) {
+            this.meta = itemMeta.clone();
+        } else {
+            this.meta = null;
+        }
+        this.nbti = new NBTItem(this.s);
     }
 
     public static ItemBuilder builder(Material m) {
@@ -33,13 +43,18 @@ public class ItemBuilder {
         return new ItemBuilder(i);
     }
 
+    public ItemBuilder setNbtTag(String key, Object value) {
+        nbti.setObject(key, value);
+        return this;
+    }
+
     public ItemBuilder setName(String name) {
-        meta.setDisplayName(name);
+        if (meta != null) meta.setDisplayName(name);
         return this;
     }
 
     public ItemBuilder setLore(String... lore) {
-        meta.setLore(Arrays.asList(lore));
+        if (meta != null) meta.setLore(Arrays.asList(lore));
         return this;
     }
 
@@ -49,16 +64,21 @@ public class ItemBuilder {
     }
 
     public ItemBuilder setUnbreakable(boolean u) {
-        meta.setUnbreakable(u);
+        if (meta != null) meta.setUnbreakable(u);
         return this;
     }
 
     public ItemStack build() {
-        s.setItemMeta(meta);
+        if (meta != null) s.setItemMeta(meta);
         for (Enchantment m : enchants.keySet()) {
             s.addUnsafeEnchantment(m, enchants.get(m));
         }
+        nbti.mergeCustomNBT(s);
         return s;
     }
 
+    public ItemBuilder setAmount(int amount) {
+        s.setAmount(amount);
+        return this;
+    }
 }

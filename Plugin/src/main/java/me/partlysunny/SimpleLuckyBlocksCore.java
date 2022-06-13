@@ -131,6 +131,7 @@ public final class SimpleLuckyBlocksCore extends JavaPlugin {
         SLBCommand.registerSubCommand(new GiveWandSubCommand());
         SLBCommand.registerSubCommand(new GenBlocksSubCommand());
         SLBCommand.registerSubCommand(new LuckyMenuSubCommand());
+        SLBCommand.registerSubCommand(new SuperKitSubCommand());
         getCommand("slb").setExecutor(new SLBCommand());
         getCommand("slb").setTabCompleter(new SLBTabCompleter());
     }

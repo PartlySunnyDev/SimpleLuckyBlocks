@@ -4,6 +4,7 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem;
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui;
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
+import de.tr7zw.nbtapi.NBTItem;
 import me.partlysunny.gui.GuiManager;
 import me.partlysunny.gui.SelectGui;
 import me.partlysunny.gui.SelectGuiManager;
@@ -30,8 +31,11 @@ public class MobEquipmentSelectGui extends SelectGui<EquipmentWrapper> {
         MobSlot slotFor = MobEntryCreateGui.getSlotFor(pId);
         Material validMat = slotFor.getValidMaterial();
         if (values.containsKey(p.getUniqueId())) {
-            if (!slotFor.matchesFilter(values.get(pId).item().getType())) {
-                values.get(pId).item().setType(validMat);
+            ItemStack item = values.get(pId).item();
+            if (new NBTItem(item).hasKey("empty")) {
+                values.get(pId).setItem(new ItemStack(validMat));
+            } else if (!slotFor.matchesFilter(item.getType())) {
+                item.setType(validMat);
             }
             if (createdItem != null) {
                 values.get(p.getUniqueId()).setItem(createdItem);

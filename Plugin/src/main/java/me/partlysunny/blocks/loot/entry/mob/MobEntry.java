@@ -25,7 +25,7 @@ import java.util.Map;
 
 public class MobEntry implements IEntry {
 
-    private static final ItemStack emptySlot = ItemBuilder.builder(Material.BLACK_STAINED_GLASS_PANE).setName(ChatColor.RED + "Empty Slot!").build();
+    private static final ItemStack emptySlot = ItemBuilder.builder(Material.BLACK_STAINED_GLASS_PANE).setName(ChatColor.RED + "Empty Slot!").setNbtTag("empty", true).build();
     private final Map<MobSlot, Pair<ItemStack, Double>> equipment;
     private EntityType entityType;
     private int health;
@@ -103,9 +103,6 @@ public class MobEntry implements IEntry {
 
     public ItemStack getEquipment(MobSlot slot) {
         Pair<ItemStack, Double> info = equipment.getOrDefault(slot, new Pair<>(emptySlot.clone(), 0d));
-        if (info.a().getItemMeta() == null) {
-            throw new IllegalArgumentException("Equipment has no meta!");
-        }
         return info.a();
     }
 

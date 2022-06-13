@@ -484,12 +484,14 @@ public final class Util {
     }
 
     public static void addEquipmentSlot(StaticPane pane, Player p, String currentGui, MobSlot slot, ItemStack toShow, ItemStack currentItem, double dropChance, int x, int y) {
-        pane.addItem(new GuiItem(toShow, item -> {
-            MobEntryCreateGui.setSlot(p.getUniqueId(), slot);
-            SelectGuiManager.getValueGui("mobEquipment").setReturnTo(p.getUniqueId(), currentGui);
-            p.closeInventory();
-            ((SelectGui<EquipmentWrapper>) SelectGuiManager.getValueGui("mobEquipment")).openWithValue(p, new EquipmentWrapper(slot, currentItem, dropChance), "mobEquipmentSelect");
-        }), x, y);
+        if (currentItem.getType() != Material.AIR && toShow.getType() != Material.AIR) {
+            pane.addItem(new GuiItem(toShow, item -> {
+                MobEntryCreateGui.setSlot(p.getUniqueId(), slot);
+                SelectGuiManager.getValueGui("mobEquipment").setReturnTo(p.getUniqueId(), currentGui);
+                p.closeInventory();
+                ((SelectGui<EquipmentWrapper>) SelectGuiManager.getValueGui("mobEquipment")).openWithValue(p, new EquipmentWrapper(slot, currentItem, dropChance), "mobEquipmentSelect");
+            }), x, y);
+        }
     }
 
     public static void addReturnButton(StaticPane pane, Player p, String returnTo, int x, int y) {
