@@ -14,7 +14,6 @@ import me.partlysunny.gui.guis.loot.entry.creation.EntryCreateGui;
 import me.partlysunny.gui.guis.loot.entry.creation.EntrySaveWrapper;
 import me.partlysunny.util.Util;
 import me.partlysunny.util.classes.ItemBuilder;
-import me.partlysunny.util.classes.Pair;
 import me.partlysunny.util.classes.PotionBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -23,7 +22,6 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,10 +30,10 @@ import java.util.UUID;
 
 public class PotionEntryCreateGui extends EntryCreateGui<PotionEntry> {
 
-    public static void addPlayerEffect(Player p, Pair<PotionEffectType, Pair<Integer, Integer>> effect) {
+    public static void addPlayerEffect(Player p, PotionEntryEffectWrapper effect) {
         Map<UUID, EntrySaveWrapper<PotionEntry>> saves = (Map<UUID, EntrySaveWrapper<PotionEntry>>) CreateGuiManager.getCreateGui("potionEntry");
         if (saves.containsKey(p.getUniqueId())) {
-            saves.get(p.getUniqueId()).entry().addEffect(effect.a(), effect.b().a(), effect.b().b());
+            saves.get(p.getUniqueId()).entry().addEffect(effect.type(), effect.duration(), effect.amplifier());
         } else {
             saves.put(p.getUniqueId(), new EntrySaveWrapper<>(null, new PotionEntry(List.of(effect))));
         }
@@ -49,8 +47,7 @@ public class PotionEntryCreateGui extends EntryCreateGui<PotionEntry> {
         Util.setClickSoundTo(Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_OFF, gui);
         PaginatedPane pane = new PaginatedPane(0, 0, 9, 5);
         int displaySize = 21;
-        // TODO Migrate pairs to wrapper class
-        Pair<PotionEffectType, Pair<Integer, Integer>>[] a = potionEntry.entry().getEffects();
+        PotionEntryEffectWrapper[] a = potionEntry.entry().getEffects();
         int numPages = (int) Math.ceil(a.length / (displaySize * 1f));
         if (numPages == 0) {
             numPages = 1;
@@ -77,17 +74,17 @@ public class PotionEntryCreateGui extends EntryCreateGui<PotionEntry> {
                 if (j > a.length - 1) {
                     break;
                 }
-                Pair<PotionEffectType, Pair<Integer, Integer>> potionInfo = a[j];
-                ItemStack potionAsItem = PotionBuilder.builder(PotionBuilder.PotionFormat.POTION).setName(potionInfo.a().getName()).addCustomEffect(new PotionEffect(potionInfo.a(), potionInfo.b().a(), potionInfo.b().b())).setPotionData(null, potionInfo.a().getColor()).build();
+                PotionEntryEffectWrapper potionInfo = a[j];
+                ItemStack potionAsItem = PotionBuilder.builder(PotionBuilder.PotionFormat.POTION).setName(potionInfo.type().getName()).addCustomEffect(new PotionEffect(potionInfo.type(), potionInfo.duration(), potionInfo.amplifier())).setPotionData(null, potionInfo.type().getColor()).build();
                 Util.addLoreLine(potionAsItem, ChatColor.RED + "Right click to delete!");
                 Util.addLoreLine(potionAsItem, ChatColor.GREEN + "Left click to edit!");
                 items.addItem(new GuiItem(potionAsItem, item -> {
                     if (item.isRightClick()) {
-                        potionEntry.entry().removeEffect(potionInfo.a());
+                        potionEntry.entry().removeEffect(potionInfo.type());
                         GuiManager.openInventory(player, "potionEntryCreate");
                     }
                     if (item.isLeftClick()) {
-                        ((SelectGui<Pair<PotionEffectType, Pair<Integer, Integer>>>) (SelectGuiManager.getSelectGui("potionEntrySection"))).openWithValue(player, potionInfo, "potionEntrySectionSelect");
+                        ((SelectGui<PotionEntryEffectWrapper>) (SelectGuiManager.getSelectGui("potionEntrySection"))).openWithValue(player, potionInfo, "potionEntrySectionSelect");
                     }
                 }), (j - count) % 7, (j - count) / 7);
             }

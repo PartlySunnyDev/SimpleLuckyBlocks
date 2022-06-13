@@ -9,6 +9,7 @@ import me.partlysunny.blocks.loot.entry.potion.PotionEntry;
 import me.partlysunny.blocks.loot.entry.structure.StructureEntry;
 import me.partlysunny.blocks.loot.entry.wand.WandEntry;
 import me.partlysunny.gui.guis.loot.entry.creation.mob.equipment.MobSlot;
+import me.partlysunny.gui.guis.loot.entry.creation.potion.PotionEntryEffectWrapper;
 import me.partlysunny.util.Util;
 import me.partlysunny.util.classes.ItemBuilder;
 import me.partlysunny.util.classes.Pair;
@@ -84,13 +85,13 @@ public enum EntryType {
     }),
     POTION("potion", PotionBuilder.builder(PotionBuilder.PotionFormat.SPLASH).setName(ChatColor.BLUE + "Potion").setPotionData(PotionType.SPEED, null).setLore().build(), (name) -> {
         ConfigurationSection effects = Util.getOrError(name, "effects");
-        List<Pair<PotionEffectType, Pair<Integer, Integer>>> theEffects = new ArrayList<>();
+        List<PotionEntryEffectWrapper> theEffects = new ArrayList<>();
         for (String effect : effects.getKeys(false)) {
             ConfigurationSection effectInfo = Util.getOrError(effects, effect);
             PotionEffectType t = PotionEffectType.getByKey(NamespacedKey.minecraft(Util.getOrError(effectInfo, "id").toString().toLowerCase()));
             int duration = Util.getOrDefault(effectInfo, "duration", 20);
             int lvl = Util.getOrDefault(effectInfo, "lvl", 1);
-            theEffects.add(new Pair<>(t, new Pair<>(duration, lvl)));
+            theEffects.add(new PotionEntryEffectWrapper(t, duration, lvl));
         }
         return new PotionEntry(theEffects);
     }),

@@ -2,7 +2,7 @@ package me.partlysunny.blocks.loot.entry.potion;
 
 import me.partlysunny.blocks.loot.entry.EntryType;
 import me.partlysunny.blocks.loot.entry.IEntry;
-import me.partlysunny.util.classes.Pair;
+import me.partlysunny.gui.guis.loot.entry.creation.potion.PotionEntryEffectWrapper;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -16,12 +16,11 @@ import java.util.Map;
 
 public class PotionEntry implements IEntry {
 
-    private final Map<PotionEffectType, Pair<Integer, Integer>> effects = new HashMap<>();
+    private final Map<PotionEffectType, PotionEntryEffectWrapper> effects = new HashMap<>();
 
-    public PotionEntry(List<Pair<PotionEffectType, Pair<Integer, Integer>>> effects) {
-        //Pair<duration, amplifier :)>
-        for (Pair<PotionEffectType, Pair<Integer, Integer>> effect : effects) {
-            this.effects.put(effect.a(), effect.b());
+    public PotionEntry(List<PotionEntryEffectWrapper> effects) {
+        for (PotionEntryEffectWrapper effect : effects) {
+            this.effects.put(effect.type(), effect);
         }
     }
 
@@ -31,12 +30,12 @@ public class PotionEntry implements IEntry {
             return;
         }
         for (PotionEffectType effect : effects.keySet()) {
-            p.addPotionEffect(new PotionEffect(effect, effects.get(effect).a(), effects.get(effect).b()));
+            p.addPotionEffect(new PotionEffect(effect, effects.get(effect).duration(), effects.get(effect).amplifier()));
         }
     }
 
     public void addEffect(PotionEffectType t, int duration, int lvl) {
-        effects.put(t, new Pair<>(duration, lvl));
+        effects.put(t, new PotionEntryEffectWrapper(t, duration, lvl));
     }
 
     public void removeEffect(PotionEffectType t) {
@@ -51,8 +50,8 @@ public class PotionEntry implements IEntry {
         for (PotionEffectType effect : this.effects.keySet()) {
             ConfigurationSection effectInfo = effects.createSection(effect.getKey().getKey().toLowerCase());
             effectInfo.set("id", effect.getKey().getKey());
-            effectInfo.set("lvl", this.effects.get(effect).b());
-            effectInfo.set("duration", this.effects.get(effect).a());
+            effectInfo.set("lvl", this.effects.get(effect).amplifier());
+            effectInfo.set("duration", this.effects.get(effect).duration());
         }
         return config;
     }
@@ -62,11 +61,11 @@ public class PotionEntry implements IEntry {
         return EntryType.POTION;
     }
 
-    public Pair<PotionEffectType, Pair<Integer, Integer>>[] getEffects() {
-        Pair<PotionEffectType, Pair<Integer, Integer>>[] returned = new Pair[effects.size()];
+    public PotionEntryEffectWrapper[] getEffects() {
+        PotionEntryEffectWrapper[] returned = new PotionEntryEffectWrapper[effects.size()];
         int count = 0;
         for (PotionEffectType t : effects.keySet()) {
-            returned[count] = new Pair<>(t, effects.get(t));
+            returned[count] = effects.get(t);
             count++;
         }
         return returned;

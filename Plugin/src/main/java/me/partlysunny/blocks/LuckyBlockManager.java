@@ -44,7 +44,7 @@ public class LuckyBlockManager {
     public static void updateBlocks() {
         for (LuckyBlock b : getBlocks()) {
             Block block = b.b();
-            Util.setToLuckyBlockType(block, b.type().id());
+            Util.setToLuckyBlockType(block, LuckyBlockType.getIdOfType(b.type()));
         }
     }
 

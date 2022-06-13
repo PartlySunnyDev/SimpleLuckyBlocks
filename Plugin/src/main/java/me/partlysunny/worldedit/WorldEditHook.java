@@ -106,7 +106,7 @@ public class WorldEditHook {
                 }
                 bukkitWorld.setBlockData(toSpawnLocation, t.blockType().createBlockData());
                 Block blockAt = bukkitWorld.getBlockAt(toSpawnLocation);
-                Util.setToLuckyBlockType(blockAt, t.id());
+                Util.setToLuckyBlockType(blockAt, LuckyBlockType.getIdOfType(t));
                 LuckyBlockManager.loadAsLuckyBlock(blockAt, t);
                 placed++;
             }
