@@ -1,7 +1,6 @@
 package me.partlysunny.util.classes;
 
 import de.tr7zw.nbtapi.NBTItem;
-import me.partlysunny.ConsoleLogger;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
