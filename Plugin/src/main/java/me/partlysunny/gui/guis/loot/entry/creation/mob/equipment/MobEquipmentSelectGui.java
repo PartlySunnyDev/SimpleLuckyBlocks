@@ -26,7 +26,7 @@ public class MobEquipmentSelectGui extends SelectGui<EquipmentWrapper> {
     public Gui getGui(HumanEntity p) {
         if (!(p instanceof Player player)) return new ChestGui(3, "");
         UUID pId = player.getUniqueId();
-        ItemStack createdItem = (ItemStack) SelectGuiManager.getValueGui("itemMaker").getValue(pId);
+        ItemStack createdItem = (ItemStack) SelectGuiManager.getSelectGui("itemMaker").getValue(pId);
         EquipmentWrapper eqInfo;
         MobSlot slotFor = MobEntryCreateGui.getSlotFor(pId);
         Material validMat = slotFor.getValidMaterial();
@@ -39,14 +39,14 @@ public class MobEquipmentSelectGui extends SelectGui<EquipmentWrapper> {
             }
             if (createdItem != null) {
                 values.get(p.getUniqueId()).setItem(createdItem);
-                SelectGuiManager.getValueGui("itemMaker").resetValue(player.getUniqueId());
+                SelectGuiManager.getSelectGui("itemMaker").resetValue(player.getUniqueId());
             }
             eqInfo = values.get(p.getUniqueId());
         } else {
             EquipmentWrapper value = new EquipmentWrapper(slotFor, new ItemStack(validMat), 1);
             if (createdItem != null) {
                 value.setItem(createdItem);
-                SelectGuiManager.getValueGui("itemMaker").resetValue(player.getUniqueId());
+                SelectGuiManager.getSelectGui("itemMaker").resetValue(player.getUniqueId());
             }
             values.put(player.getUniqueId(), value);
             eqInfo = value;
@@ -58,10 +58,10 @@ public class MobEquipmentSelectGui extends SelectGui<EquipmentWrapper> {
         Util.addEditable(item);
         EquipmentWrapper finalEqInfo = eqInfo;
         mainPane.addItem(new GuiItem(item, x -> {
-            SelectGuiManager.getValueGui("itemMaker").setReturnTo(p.getUniqueId(), "mobEquipmentSelect");
+            SelectGuiManager.getSelectGui("itemMaker").setReturnTo(p.getUniqueId(), "mobEquipmentSelect");
             MaterialSelectGui.setFilters(pId, "meta", slotFor.toString().toLowerCase(), "item");
             p.closeInventory();
-            ((SelectGui<ItemStack>) SelectGuiManager.getValueGui("itemMaker")).openWithValue(player, finalEqInfo.item(), "itemMakerSelect");
+            ((SelectGui<ItemStack>) SelectGuiManager.getSelectGui("itemMaker")).openWithValue(player, finalEqInfo.item(), "itemMakerSelect");
         }), 2, 1);
         ItemStack minItem = ItemBuilder.builder(Material.PAPER).setName(ChatColor.BLUE + "Drop Chance").setLore(ChatColor.GRAY + "" + eqInfo.dropChance()).build();
         Util.addTextInputLink(mainPane, player, "mobEquipmentSelect", ChatColor.RED + "Enter new drop chance or \"cancel\" to cancel", minItem, 4, 1, pl -> {

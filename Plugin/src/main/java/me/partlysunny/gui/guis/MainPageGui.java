@@ -21,7 +21,7 @@ public class MainPageGui implements GuiInstance {
                 ChatColor.AQUA + "Simple" + ChatColor.YELLOW + "Lucky" + ChatColor.GREEN + "Blocks",
                 player,
                 new Pair<>("lootMenu", ItemBuilder.builder(Material.GOLD_INGOT).setName(ChatColor.GOLD + "Loot").setLore(ChatColor.GRAY + "Configure loot!").build()),
-                new Pair<>("luckyBlockMenu", ItemBuilder.builder(Util.convert(Util.HeadType.BASE64, "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjM4YzBkMmYxZWMyNjc1NGRjYTNjN2NkYWUzMWYxZjE2NDg4M2Q0NTNlNjg4NjQzZGEwNDc1NjhlN2ZhNWNjOSJ9fX0")).setName(ChatColor.AQUA + "Blocks").setLore(ChatColor.GRAY + "Create new blocks!").build()),
+                new Pair<>("blockManagement", ItemBuilder.builder(Util.convert(Util.HeadType.BASE64, "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjM4YzBkMmYxZWMyNjc1NGRjYTNjN2NkYWUzMWYxZjE2NDg4M2Q0NTNlNjg4NjQzZGEwNDc1NjhlN2ZhNWNjOSJ9fX0")).setName(ChatColor.AQUA + "Blocks").setLore(ChatColor.GRAY + "Create new blocks!").build()),
                 new Pair<>("triggersMenu", ItemBuilder.builder(Material.TRIPWIRE_HOOK).setName(ChatColor.RED + "Triggers").setLore(ChatColor.GRAY + "Manage your triggers!").build()),
                 new Pair<>("wandsMenu", ItemBuilder.builder(Material.STICK).setName(ChatColor.LIGHT_PURPLE + "Wands").setLore(ChatColor.GRAY + "Manage wands!").build())
         );

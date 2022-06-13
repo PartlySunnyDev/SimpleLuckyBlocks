@@ -44,18 +44,12 @@ public class PotionEntryCreateGui extends EntryCreateGui<PotionEntry> {
     @Override
     public Gui getGui(HumanEntity p) {
         if (!(p instanceof Player player)) return new ChestGui(3, "");
-        EntrySaveWrapper<PotionEntry> potionEntry;
-        if (saves.containsKey(p.getUniqueId())) {
-            potionEntry = saves.get(p.getUniqueId());
-        } else {
-            EntrySaveWrapper<PotionEntry> value = new EntrySaveWrapper<>(null, new PotionEntry(List.of()));
-            saves.put(player.getUniqueId(), value);
-            potionEntry = value;
-        }
+        EntrySaveWrapper<PotionEntry> potionEntry = saves.getOrDefault(player.getUniqueId(), new EntrySaveWrapper<>(null, new PotionEntry(List.of())));
         ChestGui gui = new ChestGui(5, ChatColor.DARK_AQUA + "Potion Entry Creator");
         Util.setClickSoundTo(Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_OFF, gui);
         PaginatedPane pane = new PaginatedPane(0, 0, 9, 5);
         int displaySize = 21;
+        // TODO Migrate pairs to wrapper class
         Pair<PotionEffectType, Pair<Integer, Integer>>[] a = potionEntry.entry().getEffects();
         int numPages = (int) Math.ceil(a.length / (displaySize * 1f));
         if (numPages == 0) {
@@ -68,7 +62,7 @@ public class PotionEntryCreateGui extends EntryCreateGui<PotionEntry> {
             Util.addPageNav(pane, numPages, i, border, gui);
             border.addItem(new GuiItem(ItemBuilder.builder(Material.GREEN_CONCRETE).setName(ChatColor.GREEN + "Add new").build(), item -> GuiManager.openInventory(player, "potionEntrySectionSelect")), 1, 0);
             border.addItem(new GuiItem(ItemBuilder.builder(Material.YELLOW_CONCRETE).setName(ChatColor.GOLD + "Reload").build(), item -> GuiManager.openInventory(player, "potionEntryCreate")), 2, 0);
-            Util.addRenameButton(border, player, saves, new PotionEntry(new ArrayList<>(List.of())), "potionEntryCreate", 3, 0);
+            Util.addRenameButton(border, player, saves, new EntrySaveWrapper<>(null, new PotionEntry(new ArrayList<>(List.of()))), "potionEntryCreate", 3, 0);
             border.addItem(new GuiItem(ItemBuilder.builder(Material.BLUE_CONCRETE).setName(ChatColor.BLUE + "Create Effect").build(), item -> {
                 EntrySaveWrapper<PotionEntry> save = saves.get(player.getUniqueId());
                 if (Util.saveInfo(player, save == null, save.name(), save.entry().getSave(), "lootEntries") || save.entry().getEffects().length < 1)
@@ -93,7 +87,7 @@ public class PotionEntryCreateGui extends EntryCreateGui<PotionEntry> {
                         GuiManager.openInventory(player, "potionEntryCreate");
                     }
                     if (item.isLeftClick()) {
-                        ((SelectGui<Pair<PotionEffectType, Pair<Integer, Integer>>>) (SelectGuiManager.getValueGui("potionEntrySection"))).openWithValue(player, potionInfo, "potionEntrySectionSelect");
+                        ((SelectGui<Pair<PotionEffectType, Pair<Integer, Integer>>>) (SelectGuiManager.getSelectGui("potionEntrySection"))).openWithValue(player, potionInfo, "potionEntrySectionSelect");
                     }
                 }), (j - count) % 7, (j - count) / 7);
             }

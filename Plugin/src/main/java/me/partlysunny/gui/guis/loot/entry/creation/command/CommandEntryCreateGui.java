@@ -41,14 +41,7 @@ public class CommandEntryCreateGui extends EntryCreateGui<CommandEntry> {
     @Override
     public Gui getGui(HumanEntity p) {
         if (!(p instanceof Player player)) return new ChestGui(3, "");
-        EntrySaveWrapper<CommandEntry> commandEntry;
-        if (saves.containsKey(p.getUniqueId())) {
-            commandEntry = saves.get(p.getUniqueId());
-        } else {
-            EntrySaveWrapper<CommandEntry> value = new EntrySaveWrapper<>(null, new CommandEntry(new ArrayList<>()));
-            saves.put(player.getUniqueId(), value);
-            commandEntry = value;
-        }
+        EntrySaveWrapper<CommandEntry> commandEntry = saves.getOrDefault(player.getUniqueId(), new EntrySaveWrapper<>(null, new CommandEntry(new ArrayList<>())));
         ChestGui gui = new ChestGui(5, ChatColor.RED + "Command Entry Creator");
         Util.setClickSoundTo(Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_OFF, gui);
         PaginatedPane pane = new PaginatedPane(0, 0, 9, 5);
@@ -65,7 +58,7 @@ public class CommandEntryCreateGui extends EntryCreateGui<CommandEntry> {
             border.fillWith(new ItemStack(Material.BLACK_STAINED_GLASS_PANE));
             Util.addTextInputLink(border, player, "commandEntryCreate", ChatColor.RED + "Enter command", ItemBuilder.builder(Material.GREEN_CONCRETE).setName(ChatColor.GREEN + "Add new command").build(), 1, 0, this::addNewCommandFromInput);
             border.addItem(new GuiItem(ItemBuilder.builder(Material.YELLOW_CONCRETE).setName(ChatColor.GOLD + "Reload").build(), item -> GuiManager.openInventory(player, "commandEntryCreate")), 2, 0);
-            Util.addRenameButton(border, player, saves, new CommandEntry(new ArrayList<>(List.of())), "commandEntryCreate", 3, 0);
+            Util.addRenameButton(border, player, saves, new EntrySaveWrapper<>(null, new CommandEntry(new ArrayList<>(List.of()))), "commandEntryCreate", 3, 0);
             border.addItem(new GuiItem(ItemBuilder.builder(Material.BLUE_CONCRETE).setName(ChatColor.BLUE + "Create Entry").build(), item -> {
                 EntrySaveWrapper<CommandEntry> save = saves.get(player.getUniqueId());
                 if (Util.saveInfo(player, save == null || save.entry().commands().size() < 1, save.name(), save.entry().getSave(), "lootEntries"))

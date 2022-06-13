@@ -6,7 +6,6 @@ import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import me.partlysunny.blocks.loot.entry.wand.WandEntry;
 import me.partlysunny.gui.GuiManager;
-import me.partlysunny.gui.SelectGuiManager;
 import me.partlysunny.gui.guis.loot.entry.creation.EntryCreateGui;
 import me.partlysunny.gui.guis.loot.entry.creation.EntrySaveWrapper;
 import me.partlysunny.gui.textInput.ChatListener;
@@ -23,28 +22,11 @@ public class WandEntryCreateGui extends EntryCreateGui<WandEntry> {
     @Override
     public Gui getGui(HumanEntity p) {
         if (!(p instanceof Player player)) return new ChestGui(3, "");
-        boolean a = saves.containsKey(player.getUniqueId());
-        String b = (String) SelectGuiManager.getValueGui("wand").getValue(player.getUniqueId());
-        if (b != null) {
-            if (a) {
-                EntrySaveWrapper<WandEntry> plValue = saves.get(player.getUniqueId());
-                plValue.entry().setWandType(b);
-            } else {
-                WandEntry wandEntry = new WandEntry();
-                wandEntry.setWandType(b);
-                saves.put(player.getUniqueId(), new EntrySaveWrapper<>(null, wandEntry));
-            }
-            SelectGuiManager.getValueGui("wand").resetValue(player.getUniqueId());
-        }
+        Util.handleSelectInput("wand", player, saves, new EntrySaveWrapper<>(null, new WandEntry()), String.class, (entry, string) -> entry.entry().setWandType(string));
         ChestGui gui = new ChestGui(3, ChatColor.GRAY + "Wand Entry Creator");
         StaticPane mainPane = new StaticPane(0, 0, 9, 3);
         mainPane.fillWith(new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
-        EntrySaveWrapper<WandEntry> wandInfo;
-        if (a) {
-            wandInfo = saves.get(player.getUniqueId());
-        } else {
-            wandInfo = new EntrySaveWrapper<>(null, new WandEntry());
-        }
+        EntrySaveWrapper<WandEntry> wandInfo = saves.getOrDefault(player.getUniqueId(), new EntrySaveWrapper<>(null, new WandEntry()));
         Util.addTextInputLink(mainPane, player, "wandEntryCreate", ChatColor.RED + "Input new item name:", ItemBuilder.builder(Material.PAPER).setName(ChatColor.GRAY + "Change Name").setLore(ChatColor.GRAY + "Current Name: " + wandInfo.entry().displayName()).build(), 1, 1, pl -> {
             boolean hasValue = saves.containsKey(pl.getUniqueId());
             String input = Util.processText(ChatListener.getCurrentInput(pl));
@@ -107,7 +89,7 @@ public class WandEntryCreateGui extends EntryCreateGui<WandEntry> {
             saves.remove(player.getUniqueId());
             GuiManager.openInventory(player, "entryManagement");
         }), 8, 1);
-        Util.addRenameButton(mainPane, player, saves, new WandEntry(), "wandEntryCreate", 6, 1);
+        Util.addRenameButton(mainPane, player, saves, new EntrySaveWrapper<>(null, new WandEntry()), "wandEntryCreate", 6, 1);
         Util.addReturnButton(mainPane, player, "entryCreation", 0, 2);
         gui.addPane(mainPane);
         Util.setClickSoundTo(Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_OFF, gui);

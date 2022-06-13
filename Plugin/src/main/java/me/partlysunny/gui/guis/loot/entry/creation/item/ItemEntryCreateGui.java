@@ -31,32 +31,17 @@ public class ItemEntryCreateGui extends EntryCreateGui<ItemEntry> {
         UUID pId = player.getUniqueId();
         ChestGui gui = new ChestGui(3, ChatColor.RED + "Item Entry Creator");
         Util.setClickSoundTo(Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_OFF, gui);
-        EntrySaveWrapper<ItemEntry> itemInfo;
-        ItemStack createdItem = (ItemStack) SelectGuiManager.getValueGui("itemMaker").getValue(pId);
-        if (saves.containsKey(p.getUniqueId())) {
-            if (createdItem != null) {
-                saves.get(p.getUniqueId()).entry().setItemToDrop(createdItem);
-                SelectGuiManager.getValueGui("itemMaker").resetValue(player.getUniqueId());
-            }
-            itemInfo = saves.get(p.getUniqueId());
-        } else {
-            EntrySaveWrapper<ItemEntry> value = new EntrySaveWrapper<>(null, new ItemEntry(new ItemStack(Material.WOODEN_AXE), 0, 0));
-            if (createdItem != null) {
-                value.entry().setItemToDrop(createdItem);
-                SelectGuiManager.getValueGui("itemMaker").resetValue(player.getUniqueId());
-            }
-            saves.put(player.getUniqueId(), value);
-            itemInfo = value;
-        }
+        Util.handleSelectInput("itemMaker", player, saves, new EntrySaveWrapper<>(null, new ItemEntry(new ItemStack(Material.WOODEN_AXE), 0, 0)), ItemStack.class, (entry, item) -> entry.entry().setItemToDrop(item));
+        EntrySaveWrapper<ItemEntry> itemInfo = saves.getOrDefault(player.getUniqueId(), new EntrySaveWrapper<>(null, new ItemEntry(new ItemStack(Material.WOODEN_AXE), 0, 0)));
         StaticPane mainPane = new StaticPane(0, 0, 9, 3);
         mainPane.fillWith(new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
         ItemStack item = itemInfo.entry().itemToDrop().clone();
         Util.addEditable(item);
         mainPane.addItem(new GuiItem(item, x -> {
-            SelectGuiManager.getValueGui("itemMaker").setReturnTo(p.getUniqueId(), "itemEntryCreate");
+            SelectGuiManager.getSelectGui("itemMaker").setReturnTo(p.getUniqueId(), "itemEntryCreate");
             MaterialSelectGui.setFilters(player.getUniqueId(), "meta");
             p.closeInventory();
-            ((SelectGui<ItemStack>) SelectGuiManager.getValueGui("itemMaker")).openWithValue(player, itemInfo.entry().itemToDrop(), "itemMakerSelect");
+            ((SelectGui<ItemStack>) SelectGuiManager.getSelectGui("itemMaker")).openWithValue(player, itemInfo.entry().itemToDrop(), "itemMakerSelect");
         }), 1, 1);
         ItemStack minItem = ItemBuilder.builder(Material.PAPER).setName(ChatColor.BLUE + "Minimum amount").setLore(ChatColor.GRAY + "" + itemInfo.entry().min()).build();
         Util.addTextInputLink(mainPane, player, "itemEntryCreate", ChatColor.RED + "Enter minimum value or \"cancel\" to cancel", minItem, 2, 1, pl -> {
@@ -87,7 +72,7 @@ public class ItemEntryCreateGui extends EntryCreateGui<ItemEntry> {
                 saves.put(pl.getUniqueId(), new EntrySaveWrapper<>(null, new ItemEntry(new ItemStack(Material.WOODEN_AXE), 0, currentInput)));
             }
         });
-        Util.addRenameButton(mainPane, player, saves, new ItemEntry(new ItemStack(Material.WOODEN_AXE), 0, 0), "itemEntryCreate", 4, 1);
+        Util.addRenameButton(mainPane, player, saves, new EntrySaveWrapper<>(null, new ItemEntry(new ItemStack(Material.WOODEN_AXE), 0, 0)), "itemEntryCreate", 4, 1);
         mainPane.addItem(new GuiItem(ItemBuilder.builder(Material.BLUE_CONCRETE).setName(ChatColor.BLUE + "Create Item Entry").build(), event -> {
             EntrySaveWrapper<ItemEntry> save = saves.get(player.getUniqueId());
             if (Util.saveInfo(player, save == null, save.name(), save.entry().getSave(), "lootEntries")) return;

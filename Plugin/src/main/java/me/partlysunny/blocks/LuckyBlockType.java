@@ -3,6 +3,7 @@ package me.partlysunny.blocks;
 import de.tr7zw.nbtapi.NBTItem;
 import me.partlysunny.ConsoleLogger;
 import me.partlysunny.SimpleLuckyBlocksCore;
+import me.partlysunny.gui.SaveInfo;
 import me.partlysunny.particle.BlockParticleEffect;
 import me.partlysunny.particle.EffectType;
 import me.partlysunny.util.Util;
@@ -27,22 +28,24 @@ import java.util.Objects;
 
 import static me.partlysunny.util.Util.processText;
 
-public final class LuckyBlockType {
+public class LuckyBlockType implements SaveInfo {
 
     private static final Map<String, LuckyBlockType> types = new HashMap<>();
-    private final String id;
-    private final String displayName;
-    private final Material blockType;
+    private String displayName;
+    private Material blockType;
     @Nullable
-    private final ItemStack innerItem;
-    private final String lootTable;
-    private final BlockParticleEffect e;
+    private ItemStack innerItem;
+    private String lootTable;
+    private BlockParticleEffect e;
     @Nullable
-    private final ShapedRecipe r;
+    private ShapedRecipe r;
 
-    public LuckyBlockType(String id, String displayName, Material blockType, @Nullable ItemStack innerItem, String lootTable,
+    public LuckyBlockType() {
+        this("", Material.GLASS, null, "", null, null);
+    }
+
+    public LuckyBlockType(String displayName, Material blockType, @Nullable ItemStack innerItem, String lootTable,
                           BlockParticleEffect e, @Nullable ShapedRecipe r) {
-        this.id = id;
         this.displayName = displayName;
         this.blockType = blockType;
         this.innerItem = innerItem;
@@ -51,12 +54,11 @@ public final class LuckyBlockType {
         this.r = r;
     }
 
-    public static void registerType(LuckyBlockType type) {
-        types.put(type.id, type);
+    public static void registerType(String id, LuckyBlockType type) {
+        types.put(id, type);
         Server server = JavaPlugin.getPlugin(SimpleLuckyBlocksCore.class).getServer();
         server.removeRecipe(type.r.getKey());
         server.addRecipe(type.r);
-
     }
 
     public static void unregisterType(String id) {
@@ -88,12 +90,7 @@ public final class LuckyBlockType {
         BlockParticleEffect e = null;
         ShapedRecipe sr = null;
         if (name.contains("innerItem")) {
-            ConfigurationSection itemInfo = name.getConfigurationSection("innerItem");
-            String type = itemInfo.getString("type");
-            switch (type) {
-                case "block" -> innerItem = new ItemStack(Material.getMaterial(itemInfo.getString("material")));
-                case "skull" -> innerItem = Util.convert(Util.HeadType.BASE64, itemInfo.getString("value"));
-            }
+            innerItem = Util.convert(Util.HeadType.BASE64, Util.getOrError(name, "innerItem"));
         }
         if (name.contains("blockParticleEffect")) {
             ConfigurationSection effectInfo = name.getConfigurationSection("blockParticleEffect");
@@ -130,11 +127,46 @@ public final class LuckyBlockType {
             }
             sr = r;
         }
-        registerType(new LuckyBlockType(substring, displayName, mat, innerItem, lootTable, e, sr));
+        registerType(substring, new LuckyBlockType(displayName, mat, innerItem, lootTable, e, sr));
     }
 
-    public String id() {
-        return id;
+    public static String[] getEntryKeys() {
+        return types.keySet().toArray(new String[0]);
+    }
+
+    public static String getIdOfType(LuckyBlockType type) {
+        for (String s : getEntryKeys()) {
+            LuckyBlockType t = types.get(s);
+            if (t.equals(type)) {
+                return s;
+            }
+        }
+        ConsoleLogger.error("Type of lucky block not found! Type: " + type);
+        return "";
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public void setBlockType(Material blockType) {
+        this.blockType = blockType;
+    }
+
+    public void setInnerItem(@Nullable ItemStack innerItem) {
+        this.innerItem = innerItem;
+    }
+
+    public void setLootTable(String lootTable) {
+        this.lootTable = lootTable;
+    }
+
+    public void setE(BlockParticleEffect e) {
+        this.e = e;
+    }
+
+    public void setR(@Nullable ShapedRecipe r) {
+        this.r = r;
     }
 
     public String displayName() {
@@ -168,8 +200,7 @@ public final class LuckyBlockType {
         if (obj == this) return true;
         if (obj == null || obj.getClass() != this.getClass()) return false;
         var that = (LuckyBlockType) obj;
-        return Objects.equals(this.id, that.id) &&
-                Objects.equals(this.displayName, that.displayName) &&
+        return Objects.equals(this.displayName, that.displayName) &&
                 Objects.equals(this.blockType, that.blockType) &&
                 Objects.equals(this.innerItem, that.innerItem) &&
                 Objects.equals(this.lootTable, that.lootTable) &&
@@ -179,13 +210,12 @@ public final class LuckyBlockType {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, displayName, blockType, innerItem, lootTable, e, r);
+        return Objects.hash(displayName, blockType, innerItem, lootTable, e, r);
     }
 
     @Override
     public String toString() {
         return "LuckyBlockType[" +
-                "id=" + id + ", " +
                 "displayName=" + displayName + ", " +
                 "blockType=" + blockType + ", " +
                 "innerItem=" + innerItem + ", " +
@@ -195,4 +225,9 @@ public final class LuckyBlockType {
     }
 
 
+    @Override
+    public YamlConfiguration getSave() {
+        YamlConfiguration config = new YamlConfiguration();
+        return config;
+    }
 }

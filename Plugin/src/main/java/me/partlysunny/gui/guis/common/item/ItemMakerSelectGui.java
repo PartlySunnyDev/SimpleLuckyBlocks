@@ -32,17 +32,17 @@ public class ItemMakerSelectGui extends SelectGui<ItemStack> {
         UUID pId = player.getUniqueId();
         boolean hasPlayer = this.values.containsKey(pId);
         ItemStack current = new ItemStack(Material.WOODEN_AXE);
-        Material materialValue = (Material) SelectGuiManager.getValueGui("material").getValue(pId);
+        Material materialValue = (Material) SelectGuiManager.getSelectGui("material").getValue(pId);
         if (hasPlayer) {
             if (materialValue != null) {
                 values.get(player.getUniqueId()).setType(materialValue);
-                SelectGuiManager.getValueGui("material").resetValue(pId);
+                SelectGuiManager.getSelectGui("material").resetValue(pId);
             }
             current = getValue(pId);
         } else {
             if (materialValue != null) {
                 values.put(pId, new ItemStack(materialValue));
-                SelectGuiManager.getValueGui("material").resetValue(pId);
+                SelectGuiManager.getSelectGui("material").resetValue(pId);
             }
         }
         Material mat = current.getType();
@@ -54,9 +54,9 @@ public class ItemMakerSelectGui extends SelectGui<ItemStack> {
         Util.addSelectionLink(mainPane, player, "itemMakerSelect", "materialSelect", ItemBuilder.builder(mat).setName(mat.name()).build(), 1, 1);
         ItemStack finalCurrent = current;
         mainPane.addItem(new GuiItem(ItemBuilder.builder(Material.ENCHANTED_BOOK).setName(ChatColor.LIGHT_PURPLE + "Modify Enchants").build(), x -> {
-            SelectGuiManager.getValueGui("enchantModifier").setReturnTo(p.getUniqueId(), "itemMakerSelect");
+            SelectGuiManager.getSelectGui("enchantModifier").setReturnTo(p.getUniqueId(), "itemMakerSelect");
             p.closeInventory();
-            ((SelectGui<ItemStack>) SelectGuiManager.getValueGui("enchantModifier")).openWithValue(player, finalCurrent, "enchantModifierSelect");
+            ((SelectGui<ItemStack>) SelectGuiManager.getSelectGui("enchantModifier")).openWithValue(player, finalCurrent, "enchantModifierSelect");
         }), 3, 1);
         Util.addTextInputLink(mainPane, player, "itemMakerSelect", ChatColor.RED + "Input new item name:", ItemBuilder.builder(Material.PAPER).setName(ChatColor.GRAY + "Change Name").setLore(ChatColor.GRAY + "Current Name: " + name).build(), 5, 1, pl -> {
             boolean hasValue = this.values.containsKey(pl.getUniqueId());

@@ -30,6 +30,7 @@ public class FilterManager {
         registerFilter("main_hand", new MainHandFilter());
         registerFilter("off_hand", new OffHandFilter());
         registerFilter("item", new ItemFilter());
+        registerFilter("block", new BlockFilter());
     }
 
 }

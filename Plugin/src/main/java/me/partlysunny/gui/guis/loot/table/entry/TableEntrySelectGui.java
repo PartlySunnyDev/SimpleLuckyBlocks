@@ -8,7 +8,6 @@ import me.partlysunny.blocks.loot.TableEntryWrapper;
 import me.partlysunny.blocks.loot.entry.LootEntryManager;
 import me.partlysunny.gui.GuiManager;
 import me.partlysunny.gui.SelectGui;
-import me.partlysunny.gui.SelectGuiManager;
 import me.partlysunny.gui.textInput.ChatListener;
 import me.partlysunny.util.Util;
 import me.partlysunny.util.classes.ItemBuilder;
@@ -23,28 +22,11 @@ public class TableEntrySelectGui extends SelectGui<TableEntryWrapper> {
     @Override
     public Gui getGui(HumanEntity p) {
         if (!(p instanceof Player player)) return new ChestGui(3, "");
-        boolean a = values.containsKey(player.getUniqueId());
-        String b = (String) SelectGuiManager.getValueGui("entryType").getValue(player.getUniqueId());
-        if (b != null) {
-            if (a) {
-                TableEntryWrapper plValue = values.get(player.getUniqueId());
-                plValue.setEntry(b);
-            } else {
-                TableEntryWrapper structure = new TableEntryWrapper();
-                structure.setEntry(b);
-                values.put(player.getUniqueId(), structure);
-            }
-            SelectGuiManager.getValueGui("entryType").resetValue(player.getUniqueId());
-        }
+        Util.handleSelectInput("entryType", player, values, new TableEntryWrapper(), String.class, TableEntryWrapper::setEntry);
         ChestGui gui = new ChestGui(3, ChatColor.GRAY + "Loot Table Entry Creator");
         StaticPane mainPane = new StaticPane(0, 0, 9, 3);
         mainPane.fillWith(new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
-        TableEntryWrapper entryWrapper;
-        if (a) {
-            entryWrapper = values.get(player.getUniqueId());
-        } else {
-            entryWrapper = new TableEntryWrapper();
-        }
+        TableEntryWrapper entryWrapper = values.getOrDefault(player.getUniqueId(), new TableEntryWrapper());
         ItemStack entryItem = Util.getInfoItem("Entry Type", entryWrapper.entry());
         ItemStack messageItem = Util.getInfoItem("Message", entryWrapper.message());
         ItemStack weightItem = Util.getInfoItem("Weight", String.valueOf(entryWrapper.weight()));

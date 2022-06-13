@@ -23,7 +23,7 @@ public class EnchantCreationSelectGui extends SelectGui<EnchantContainer> {
     public Gui getGui(HumanEntity p) {
         if (!(p instanceof Player player)) return new ChestGui(3, "");
         ChestGui gui = new ChestGui(3, ChatColor.AQUA + "Enchant Creator");
-        Enchantment b = (Enchantment) SelectGuiManager.getValueGui("enchantment").getValue(player.getUniqueId());
+        Enchantment b = (Enchantment) SelectGuiManager.getSelectGui("enchantment").getValue(player.getUniqueId());
         boolean a = values.containsKey(player.getUniqueId());
         if (b != null) {
             if (a) {
@@ -32,7 +32,7 @@ public class EnchantCreationSelectGui extends SelectGui<EnchantContainer> {
             } else {
                 this.values.put(player.getUniqueId(), new EnchantContainer(b, 0));
             }
-            SelectGuiManager.getValueGui("potionEffectType").resetValue(player.getUniqueId());
+            SelectGuiManager.getSelectGui("potionEffectType").resetValue(player.getUniqueId());
         }
         EnchantContainer c = a ? values.get(player.getUniqueId()) : new EnchantContainer(Enchantment.ARROW_DAMAGE, 0);
         values.put(player.getUniqueId(), c);
@@ -58,7 +58,7 @@ public class EnchantCreationSelectGui extends SelectGui<EnchantContainer> {
         }), 0, 2);
         mainPane.addItem(new GuiItem(ItemBuilder.builder(Material.GREEN_CONCRETE).setName(ChatColor.GREEN + "Confirm").build(), item -> {
             player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
-            ((EnchantModifierSelectGui) SelectGuiManager.getValueGui("enchantModifier")).addEnchantTo(player.getUniqueId(), getValue(player.getUniqueId()));
+            ((EnchantModifierSelectGui) SelectGuiManager.getSelectGui("enchantModifier")).addEnchantTo(player.getUniqueId(), getValue(player.getUniqueId()));
             GuiManager.openInventory(player, getReturnTo(player));
         }), 8, 1);
         gui.addPane(mainPane);

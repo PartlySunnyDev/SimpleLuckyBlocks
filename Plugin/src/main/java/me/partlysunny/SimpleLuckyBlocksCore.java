@@ -9,6 +9,8 @@ import me.partlysunny.commands.subcommands.*;
 import me.partlysunny.gui.GuiManager;
 import me.partlysunny.gui.SelectGuiManager;
 import me.partlysunny.gui.guis.MainPageGui;
+import me.partlysunny.gui.guis.block.BlockManagementGui;
+import me.partlysunny.gui.guis.block.creation.BlockCreationGui;
 import me.partlysunny.gui.guis.common.material.filters.FilterManager;
 import me.partlysunny.gui.guis.loot.LootMenuGui;
 import me.partlysunny.gui.guis.loot.entry.EntryCreationGui;
@@ -121,6 +123,8 @@ public final class SimpleLuckyBlocksCore extends JavaPlugin {
         GuiManager.registerGui("entryManagement", new EntryManagementGui());
         GuiManager.registerGui("tableCreation", new TableCreationGui());
         GuiManager.registerGui("tableManagement", new TableManagementGui());
+        GuiManager.registerGui("blockManagement", new BlockManagementGui());
+        GuiManager.registerGui("blockCreation", new BlockCreationGui());
         CreateGuiManager.init();
         SelectGuiManager.init();
     }

@@ -1,8 +1,9 @@
 package me.partlysunny.gui.guis.loot.table;
 
 import me.partlysunny.blocks.loot.CustomLootTable;
+import me.partlysunny.gui.guis.Renamable;
 
-public class TableSaveWrapper {
+public class TableSaveWrapper implements Renamable {
 
     private final CustomLootTable table;
     private String name;
@@ -12,10 +13,12 @@ public class TableSaveWrapper {
         this.table = table;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
 
+    @Override
     public String name() {
         return name;
     }

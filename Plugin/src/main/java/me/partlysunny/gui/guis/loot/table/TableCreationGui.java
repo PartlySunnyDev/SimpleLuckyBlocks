@@ -11,7 +11,6 @@ import me.partlysunny.gui.GuiInstance;
 import me.partlysunny.gui.GuiManager;
 import me.partlysunny.gui.SelectGui;
 import me.partlysunny.gui.SelectGuiManager;
-import me.partlysunny.gui.textInput.ChatListener;
 import me.partlysunny.util.Util;
 import me.partlysunny.util.classes.ItemBuilder;
 import me.partlysunny.util.classes.RandomList;
@@ -39,17 +38,7 @@ public class TableCreationGui implements GuiInstance {
     public Gui getGui(HumanEntity p) {
         if (!(p instanceof Player player)) return new ChestGui(3, "");
         UUID pId = player.getUniqueId();
-        boolean a = tableSaves.containsKey(pId);
-        TableEntryWrapper b = (TableEntryWrapper) SelectGuiManager.getValueGui("tableEntry").getValue(player.getUniqueId());
-        if (b != null) {
-            if (a) {
-                TableSaveWrapper plValue = tableSaves.get(player.getUniqueId());
-                plValue.table().getEntries().add(b, b.weight());
-            } else {
-                tableSaves.put(player.getUniqueId(), new TableSaveWrapper(null, new CustomLootTable(0, new ArrayList<>(List.of(b)))));
-            }
-            SelectGuiManager.getValueGui("tableEntry").resetValue(player.getUniqueId());
-        }
+        Util.handleSelectInput("tableEntry", player, tableSaves, new TableSaveWrapper(null, new CustomLootTable(0, new ArrayList<>())), TableEntryWrapper.class, (table, entry) -> table.table().entries().add(entry, entry.weight()));
         TableSaveWrapper tableInfo = tableSaves.getOrDefault(pId, new TableSaveWrapper(null, new CustomLootTable(0, new ArrayList<>(List.of()))));
         RandomList<TableEntryWrapper> values = tableInfo.table().getEntries();
         ChestGui gui = new ChestGui(5, "Create Loot Table");
@@ -65,24 +54,7 @@ public class TableCreationGui implements GuiInstance {
             addPageNav(pane, numPages, i, border, gui);
             border.addItem(new GuiItem(ItemBuilder.builder(Material.GREEN_CONCRETE).setName(ChatColor.GREEN + "Add new").build(), item -> GuiManager.openInventory(player, "tableEntrySelect")), 1, 0);
             border.addItem(new GuiItem(ItemBuilder.builder(Material.YELLOW_CONCRETE).setName(ChatColor.GOLD + "Reload").build(), item -> GuiManager.openInventory(player, "tableCreation")), 2, 0);
-            border.addItem(new GuiItem(ItemBuilder.builder(Material.ACACIA_SIGN).setName(ChatColor.RED + "Rename").setLore(ChatColor.GRAY + "Current name: " + tableInfo.name()).build(), event -> {
-                ChatListener.startChatListen(player, "tableCreation", ChatColor.RED + "Enter new name!", pl -> {
-                    String input = ChatListener.getCurrentInput(pl);
-                    if (input.length() < 2 || input.length() > 30) {
-                        Util.invalid("Characters must be at least 2 and at most 29!", pl);
-                        return;
-                    }
-                    if (Util.isInvalidFilePath(input)) {
-                        Util.invalid("Invalid File Name!", pl);
-                        return;
-                    }
-                    if (!tableSaves.containsKey(pl.getUniqueId())) {
-                        tableSaves.put(pl.getUniqueId(), new TableSaveWrapper(null, new CustomLootTable(0, new ArrayList<>())));
-                    }
-                    tableSaves.get(pl.getUniqueId()).setName(input);
-                });
-                player.closeInventory();
-            }), 3, 0);
+            Util.addRenameButton(border, player, tableSaves, new TableSaveWrapper(null, new CustomLootTable(0, new ArrayList<>())), "tableCreation", 3, 0);
             Util.addTextInputLink(border, player, "tableCreation", ChatColor.RED + "Enter rolls amount or \"cancel\" to cancel", Util.getInfoItem("Rolls", String.valueOf(tableInfo.table().rolls())), 4, 0, pl -> {
                 boolean hasValue = tableSaves.containsKey(pl.getUniqueId());
                 Integer currentInput = Util.getTextInputAsInt(pl);
@@ -108,7 +80,7 @@ public class TableCreationGui implements GuiInstance {
                 Util.addLoreLine(build, ChatColor.RED + "Right click to delete!");
                 items.addItem(new GuiItem(build, event -> {
                     if (event.isLeftClick()) {
-                        SelectGui<TableEntryWrapper> tableEntry = (SelectGui<TableEntryWrapper>) SelectGuiManager.getValueGui("tableEntry");
+                        SelectGui<TableEntryWrapper> tableEntry = (SelectGui<TableEntryWrapper>) SelectGuiManager.getSelectGui("tableEntry");
                         tableEntry.setReturnTo(pId, "tableCreation");
                         tableEntry.openWithValue(player, entry, "tableEntrySelect");
                     } else if (event.isRightClick()) {

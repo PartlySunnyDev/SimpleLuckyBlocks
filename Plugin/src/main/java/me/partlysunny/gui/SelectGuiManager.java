@@ -1,5 +1,6 @@
 package me.partlysunny.gui;
 
+import me.partlysunny.gui.guis.block.creation.recipe.RecipeSelectGui;
 import me.partlysunny.gui.guis.common.*;
 import me.partlysunny.gui.guis.common.item.ItemMakerSelectGui;
 import me.partlysunny.gui.guis.common.item.enchant.EnchantCreationSelectGui;
@@ -14,37 +15,39 @@ import java.util.Map;
 
 public class SelectGuiManager {
 
-    private static final Map<String, SelectGui<?>> valueGuis = new HashMap<>();
+    private static final Map<String, SelectGui<?>> selectGuis = new HashMap<>();
 
-    public static void registerValueGui(String id, SelectGui<?> valueGui) {
-        valueGuis.put(id, valueGui);
-        GuiManager.registerGui(id + "Select", valueGui);
+    public static void registerSelectGui(String id, SelectGui<?> selectGui) {
+        selectGuis.put(id, selectGui);
+        GuiManager.registerGui(id + "Select", selectGui);
     }
 
-    public static SelectGui<?> getValueGui(String id) {
-        return valueGuis.get(id);
+    public static SelectGui<?> getSelectGui(String id) {
+        return selectGuis.get(id);
     }
 
-    public static void unregisterValueGui(String id) {
-        valueGuis.remove(id);
+    public static void unregisterSelectGui(String id) {
+        selectGuis.remove(id);
     }
 
     public static void init() {
-        registerValueGui("enchantment", new EnchantmentSelectGui());
-        registerValueGui("material", new MaterialSelectGui());
-        registerValueGui("entityType", new EntityTypeSelectGui());
-        registerValueGui("potionEffectType", new PotionEffectTypeSelectGui());
-        registerValueGui("potionEntrySection", new PotionEntrySectionSelectGui());
-        registerValueGui("itemMaker", new ItemMakerSelectGui());
-        registerValueGui("enchantModifier", new EnchantModifierSelectGui());
-        registerValueGui("enchantCreation", new EnchantCreationSelectGui());
-        registerValueGui("mobEquipment", new MobEquipmentSelectGui());
-        registerValueGui("spawnEffect", new SpawnEffectSelectGui());
-        registerValueGui("wandType", new WandTypeSelectGui());
-        registerValueGui("wand", new WandSelectGui());
-        registerValueGui("structure", new StructureSelectGui());
-        registerValueGui("tableEntry", new TableEntrySelectGui());
-        registerValueGui("entryType", new EntryTypeSelectGui());
+        registerSelectGui("enchantment", new EnchantmentSelectGui());
+        registerSelectGui("material", new MaterialSelectGui());
+        registerSelectGui("entityType", new EntityTypeSelectGui());
+        registerSelectGui("potionEffectType", new PotionEffectTypeSelectGui());
+        registerSelectGui("potionEntrySection", new PotionEntrySectionSelectGui());
+        registerSelectGui("itemMaker", new ItemMakerSelectGui());
+        registerSelectGui("enchantModifier", new EnchantModifierSelectGui());
+        registerSelectGui("enchantCreation", new EnchantCreationSelectGui());
+        registerSelectGui("mobEquipment", new MobEquipmentSelectGui());
+        registerSelectGui("spawnEffect", new SpawnEffectSelectGui());
+        registerSelectGui("wandType", new WandTypeSelectGui());
+        registerSelectGui("wand", new WandSelectGui());
+        registerSelectGui("structure", new StructureSelectGui());
+        registerSelectGui("tableEntry", new TableEntrySelectGui());
+        registerSelectGui("entryType", new EntryTypeSelectGui());
+        registerSelectGui("tableType", new TableTypeSelectGui());
+        registerSelectGui("recipe", new RecipeSelectGui());
     }
 
 }

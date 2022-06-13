@@ -42,41 +42,18 @@ public class MobEntryCreateGui extends EntryCreateGui<MobEntry> {
     @Override
     public Gui getGui(HumanEntity p) {
         if (!(p instanceof Player player)) return new ChestGui(3, "");
-        boolean a = saves.containsKey(player.getUniqueId());
-        EntityType b = (EntityType) SelectGuiManager.getValueGui("entityType").getValue(player.getUniqueId());
-        if (b != null) {
-            if (a) {
-                EntrySaveWrapper<MobEntry> plValue = saves.get(player.getUniqueId());
-                plValue.entry().setEntityType(b);
-            } else {
-                MobEntry mobEntry = new MobEntry();
-                mobEntry.setEntityType(b);
-                saves.put(player.getUniqueId(), new EntrySaveWrapper<>(null, mobEntry));
-            }
-            SelectGuiManager.getValueGui("entityType").resetValue(player.getUniqueId());
-        }
-        SpawnEffect se = (SpawnEffect) SelectGuiManager.getValueGui("spawnEffect").getValue(player.getUniqueId());
-        if (se != null) {
-            if (a) {
-                EntrySaveWrapper<MobEntry> plValue = saves.get(player.getUniqueId());
-                plValue.entry().setSpawnEffect(se);
-            } else {
-                MobEntry mobEntry = new MobEntry();
-                mobEntry.setSpawnEffect(se);
-                saves.put(player.getUniqueId(), new EntrySaveWrapper<>(null, mobEntry));
-            }
-            SelectGuiManager.getValueGui("spawnEffect").resetValue(player.getUniqueId());
-        }
+        Util.handleSelectInput("entityType", player, saves, new EntrySaveWrapper<>(null, new MobEntry()), EntityType.class, (save, entityType) -> save.entry().setEntityType(entityType));
+        Util.handleSelectInput("spawnEffect", player, saves, new EntrySaveWrapper<>(null, new MobEntry()), SpawnEffect.class, (save, spawnEffect) -> save.entry().setSpawnEffect(spawnEffect));
         UUID pId = player.getUniqueId();
         ChestGui gui = new ChestGui(6, ChatColor.GREEN + "Mob Entry Creator");
-        EquipmentWrapper createdItem = (EquipmentWrapper) SelectGuiManager.getValueGui("mobEquipment").getValue(pId);
+        EquipmentWrapper createdItem = (EquipmentWrapper) SelectGuiManager.getSelectGui("mobEquipment").getValue(pId);
         EntrySaveWrapper<MobEntry> mobInfo;
         if (saves.containsKey(p.getUniqueId())) {
             if (createdItem != null) {
                 MobEntry entry = saves.get(p.getUniqueId()).entry();
                 entry.setEquipment(createdItem.slot(), createdItem.item());
                 entry.setEquipmentDropChance(createdItem.slot(), createdItem.dropChance());
-                SelectGuiManager.getValueGui("mobEquipment").resetValue(player.getUniqueId());
+                SelectGuiManager.getSelectGui("mobEquipment").resetValue(player.getUniqueId());
             }
             mobInfo = saves.get(p.getUniqueId());
         } else {
@@ -84,7 +61,7 @@ public class MobEntryCreateGui extends EntryCreateGui<MobEntry> {
             if (createdItem != null) {
                 value.entry().setEquipment(createdItem.slot(), createdItem.item());
                 value.entry().setEquipmentDropChance(createdItem.slot(), createdItem.dropChance());
-                SelectGuiManager.getValueGui("mobEquipment").resetValue(player.getUniqueId());
+                SelectGuiManager.getSelectGui("mobEquipment").resetValue(player.getUniqueId());
             }
             saves.put(player.getUniqueId(), value);
             mobInfo = value;
@@ -163,19 +140,14 @@ public class MobEntryCreateGui extends EntryCreateGui<MobEntry> {
         });
         ItemStack speedMultiplier = ItemBuilder.builder(Material.PAPER).setName(ChatColor.BLUE + "Speed Multiplier").setLore(ChatColor.GRAY + "" + entry.speedMultiplier()).build();
         Util.addTextInputLink(mainPane, player, "mobEntryCreate", ChatColor.RED + "Enter new speed multiplier or \"cancel\" to cancel", speedMultiplier, 3, 3, pl -> {
-            boolean hasValue = saves.containsKey(pl.getUniqueId());
             Double currentInput = Util.getTextInputAsDouble(pl);
             if (currentInput == null) {
                 Util.invalid("Invalid value!", pl);
                 return;
             }
-            if (hasValue) {
-                entry.setSpeedMultiplier(currentInput);
-            } else {
-                MobEntry newEntry = new MobEntry();
-                newEntry.setSpeedMultiplier(currentInput);
-                saves.put(pl.getUniqueId(), new EntrySaveWrapper<>(null, newEntry));
-            }
+            EntrySaveWrapper<MobEntry> newEntry = saves.getOrDefault(pl.getUniqueId(), new EntrySaveWrapper<>(null, new MobEntry()));
+            newEntry.entry().setSpeedMultiplier(currentInput);
+            saves.put(pl.getUniqueId(), newEntry);
         });
         mainPane.addItem(new GuiItem(ItemBuilder.builder(Material.NAME_TAG).setName(ChatColor.RED + "Display Name").setLore(ChatColor.GRAY + "Current display name: " + mobInfo.entry().name()).build(), event -> {
             ChatListener.startChatListen(player, "mobEntryCreate", ChatColor.RED + "Enter new display name!", pl -> {
@@ -192,7 +164,7 @@ public class MobEntryCreateGui extends EntryCreateGui<MobEntry> {
             player.closeInventory();
         }), 4, 3);
 
-        Util.addRenameButton(mainPane, player, saves, new MobEntry(), "mobEntryCreate", 4, 2);
+        Util.addRenameButton(mainPane, player, saves, new EntrySaveWrapper<>(null, new MobEntry()), "mobEntryCreate", 4, 2);
         Util.addReturnButton(mainPane, player, "entryCreation", 0, 5);
         mainPane.addItem(new GuiItem(ItemBuilder.builder(Material.BLUE_CONCRETE).setName(ChatColor.BLUE + "Create Mob Entry").build(), item -> {
             EntrySaveWrapper<MobEntry> save = saves.get(player.getUniqueId());

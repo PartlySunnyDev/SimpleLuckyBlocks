@@ -20,6 +20,7 @@ import me.partlysunny.blocks.loot.entry.LootEntryManager;
 import me.partlysunny.gui.GuiManager;
 import me.partlysunny.gui.SelectGui;
 import me.partlysunny.gui.SelectGuiManager;
+import me.partlysunny.gui.guis.Renamable;
 import me.partlysunny.gui.guis.loot.entry.creation.CreateGuiManager;
 import me.partlysunny.gui.guis.loot.entry.creation.EntryCreateGui;
 import me.partlysunny.gui.guis.loot.entry.creation.EntrySaveWrapper;
@@ -52,6 +53,7 @@ import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
@@ -242,7 +244,7 @@ public final class Util {
             block.setItemMeta(itemMeta);
         }
         NBTItem nbti = new NBTItem(block);
-        nbti.setString("luckyType", type.id());
+        nbti.setString("luckyType", LuckyBlockType.getIdOfType(type));
         nbti.applyNBT(block);
         return block;
     }
@@ -470,7 +472,7 @@ public final class Util {
 
     public static void addSelectionLink(StaticPane pane, Player p, String currentGui, String selectionLink, ItemStack toShow, int x, int y) {
         pane.addItem(new GuiItem(toShow, item -> {
-            SelectGuiManager.getValueGui(selectionLink.substring(0, selectionLink.length() - 6)).setReturnTo(p.getUniqueId(), currentGui);
+            SelectGuiManager.getSelectGui(selectionLink.substring(0, selectionLink.length() - 6)).setReturnTo(p.getUniqueId(), currentGui);
             p.closeInventory();
             GuiManager.openInventory(p, selectionLink);
         }), x, y);
@@ -487,9 +489,9 @@ public final class Util {
         if (currentItem.getType() != Material.AIR && toShow.getType() != Material.AIR) {
             pane.addItem(new GuiItem(toShow, item -> {
                 MobEntryCreateGui.setSlot(p.getUniqueId(), slot);
-                SelectGuiManager.getValueGui("mobEquipment").setReturnTo(p.getUniqueId(), currentGui);
+                SelectGuiManager.getSelectGui("mobEquipment").setReturnTo(p.getUniqueId(), currentGui);
                 p.closeInventory();
-                ((SelectGui<EquipmentWrapper>) SelectGuiManager.getValueGui("mobEquipment")).openWithValue(p, new EquipmentWrapper(slot, currentItem, dropChance), "mobEquipmentSelect");
+                ((SelectGui<EquipmentWrapper>) SelectGuiManager.getSelectGui("mobEquipment")).openWithValue(p, new EquipmentWrapper(slot, currentItem, dropChance), "mobEquipmentSelect");
             }), x, y);
         }
     }
@@ -663,8 +665,8 @@ public final class Util {
         return returned;
     }
 
-    public static <T extends IEntry> void addRenameButton(StaticPane mainPane, Player player, Map<UUID, EntrySaveWrapper<T>> toChange, T def, String currentUi, int x, int y) {
-        mainPane.addItem(new GuiItem(ItemBuilder.builder(Material.ACACIA_SIGN).setName(ChatColor.RED + "Rename").setLore(ChatColor.GRAY + "Current name: " + toChange.getOrDefault(player.getUniqueId(), new EntrySaveWrapper<>("None", null)).name()).build(), event -> {
+    public static <T extends Renamable> void addRenameButton(StaticPane mainPane, Player player, Map<UUID, T> toChange, T def, String currentUi, int x, int y) {
+        mainPane.addItem(new GuiItem(ItemBuilder.builder(Material.ACACIA_SIGN).setName(ChatColor.RED + "Rename").setLore(ChatColor.GRAY + "Current name: " + toChange.getOrDefault(player.getUniqueId(), def).name()).build(), event -> {
             ChatListener.startChatListen(player, currentUi, ChatColor.RED + "Enter new name!", pl -> {
                 String input = ChatListener.getCurrentInput(pl);
                 if (input.length() < 2 || input.length() > 30) {
@@ -676,7 +678,7 @@ public final class Util {
                     return;
                 }
                 if (!toChange.containsKey(pl.getUniqueId())) {
-                    toChange.put(pl.getUniqueId(), new EntrySaveWrapper<>(null, def));
+                    toChange.put(pl.getUniqueId(), def);
                 }
                 toChange.get(pl.getUniqueId()).setName(input);
             });
@@ -684,7 +686,7 @@ public final class Util {
         }), x, y);
     }
 
-    public static void addEditable(ItemStack i) {
+    public static ItemStack addEditable(ItemStack i) {
         if (i.hasItemMeta()) {
             if (!(i.getItemMeta().getLore() == null)) {
                 if (!i.getItemMeta().getLore().get(i.getItemMeta().getLore().size() - 1).equals(ChatColor.GREEN + "Click to edit!")) {
@@ -693,6 +695,19 @@ public final class Util {
             } else {
                 addLoreLine(i, ChatColor.GREEN + "Click to edit");
             }
+        }
+        return i;
+    }
+
+    public static <T, U> void handleSelectInput(String selectInput, Player player, Map<UUID, T> values, T def, Class<U> clazz, BiConsumer<T, U> handler) {
+        UUID pId = player.getUniqueId();
+        U b = (U) SelectGuiManager.getSelectGui(selectInput).getValue(pId);
+        if (b != null) {
+            if (!values.containsKey(pId)) {
+                values.put(pId, def);
+            }
+            handler.accept(values.get(pId), b);
+            SelectGuiManager.getSelectGui(selectInput).resetValue(pId);
         }
     }
 

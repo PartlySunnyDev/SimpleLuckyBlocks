@@ -47,7 +47,7 @@ public class EnchantModifierSelectGui extends SelectGui<ItemStack> {
             StaticPane items = new StaticPane(1, 1, 7, 3);
             Util.addPageNav(pane, numPages, i, border, gui);
             border.addItem(new GuiItem(ItemBuilder.builder(Material.GREEN_CONCRETE).setName(ChatColor.GREEN + "Add new").build(), item -> {
-                SelectGui<EnchantContainer> enchantCreation = (SelectGui<EnchantContainer>) (SelectGuiManager.getValueGui("enchantCreation"));
+                SelectGui<EnchantContainer> enchantCreation = (SelectGui<EnchantContainer>) (SelectGuiManager.getSelectGui("enchantCreation"));
                 enchantCreation.setReturnTo(player.getUniqueId(), "enchantModifierSelect");
                 GuiManager.openInventory(player, "enchantCreationSelect");
             }), 1, 0);
@@ -72,7 +72,7 @@ public class EnchantModifierSelectGui extends SelectGui<ItemStack> {
                         GuiManager.openInventory(player, "enchantModifierSelect");
                     }
                     if (item.isLeftClick()) {
-                        SelectGui<EnchantContainer> enchantCreation = (SelectGui<EnchantContainer>) (SelectGuiManager.getValueGui("enchantCreation"));
+                        SelectGui<EnchantContainer> enchantCreation = (SelectGui<EnchantContainer>) (SelectGuiManager.getSelectGui("enchantCreation"));
                         enchantCreation.setReturnTo(player.getUniqueId(), "enchantModifierSelect");
                         enchantCreation.openWithValue(player, container, "enchantCreationSelect");
                     }

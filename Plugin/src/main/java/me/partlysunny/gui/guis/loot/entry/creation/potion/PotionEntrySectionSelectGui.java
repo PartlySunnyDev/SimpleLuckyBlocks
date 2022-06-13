@@ -6,7 +6,6 @@ import com.github.stefvanschie.inventoryframework.gui.type.util.Gui;
 import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import me.partlysunny.gui.GuiManager;
 import me.partlysunny.gui.SelectGui;
-import me.partlysunny.gui.SelectGuiManager;
 import me.partlysunny.util.Util;
 import me.partlysunny.util.classes.ItemBuilder;
 import me.partlysunny.util.classes.Pair;
@@ -25,17 +24,7 @@ public class PotionEntrySectionSelectGui extends SelectGui<Pair<PotionEffectType
     @Override
     public Gui getGui(HumanEntity p) {
         if (!(p instanceof Player player)) return new ChestGui(3, "");
-        boolean a = this.values.containsKey(player.getUniqueId());
-        PotionEffectType b = (PotionEffectType) SelectGuiManager.getValueGui("potionEffectType").getValue(player.getUniqueId());
-        if (b != null) {
-            if (a) {
-                Pair<PotionEffectType, Pair<Integer, Integer>> plValue = this.values.get(player.getUniqueId());
-                plValue.setA(b);
-            } else {
-                this.values.put(player.getUniqueId(), new Pair<>(b, new Pair<>(0, 0)));
-            }
-            SelectGuiManager.getValueGui("potionEffectType").resetValue(player.getUniqueId());
-        }
+        Util.handleSelectInput("potionEffectType", player, values, new Pair<>(PotionEffectType.ABSORPTION, new Pair<>(0, 0)), PotionEffectType.class, Pair::setA);
         ChestGui gui = new ChestGui(3, ChatColor.GRAY + "Potion Effect Creator");
         Util.setClickSoundTo(Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_OFF, gui);
         StaticPane mainPane = new StaticPane(0, 0, 9, 3);
@@ -50,7 +39,7 @@ public class PotionEntrySectionSelectGui extends SelectGui<Pair<PotionEffectType
         }
         ItemStack potionItem = PotionBuilder.builder(PotionBuilder.PotionFormat.POTION).setPotionData(Util.asType(current.a()), null).setName(ChatColor.DARK_AQUA + current.a().getName()).setLore().build();
         Util.addSelectionLink(mainPane, player, "potionEntrySectionSelect", "potionEffectTypeSelect", potionItem, 1, 1);
-        ItemStack durationItem = ItemBuilder.builder(Material.PAPER).setName(ChatColor.BLUE + "Duration").setLore(ChatColor.GRAY + (current.b().a() == null ? "0" : current.b().a().toString())).build();
+        ItemStack durationItem = Util.getInfoItem("Duration", ChatColor.GRAY + (current.b().a() == null ? "0" : current.b().a().toString()));
         Util.addTextInputLink(mainPane, player, "potionEntrySectionSelect", ChatColor.RED + "Enter duration or \"cancel\" to cancel", durationItem, 3, 1, pl -> {
             boolean hasValue = this.values.containsKey(pl.getUniqueId());
             Integer currentInput = Util.getTextInputAsInt(pl);
