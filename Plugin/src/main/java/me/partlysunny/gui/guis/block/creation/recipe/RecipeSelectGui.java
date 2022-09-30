@@ -11,16 +11,17 @@ import me.partlysunny.gui.SelectGuiManager;
 import me.partlysunny.util.Util;
 import me.partlysunny.util.classes.ItemBuilder;
 import me.partlysunny.util.classes.Pair;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ShapedRecipe;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class RecipeSelectGui extends SelectGui<ShapedRecipe> {
+public class RecipeSelectGui extends SelectGui<ShapedRecipeWrapper> {
 
     private static final Map<UUID, Pair<Integer, Integer>> slots = new HashMap<>();
 
@@ -51,23 +52,30 @@ public class RecipeSelectGui extends SelectGui<ShapedRecipe> {
     public Gui getGui(HumanEntity p) {
         if (!(p instanceof Player player)) return new ChestGui(3, "");
         UUID pId = player.getUniqueId();
-        boolean a = values.containsKey(pId);
-        Material b = (Material) SelectGuiManager.getSelectGui("material").getValue(player.getUniqueId());
-        if (b != null) {
-            int x = slots.get(pId).a();
-            int y = slots.get(pId).b();
-            if (a) {
-
-            } else {
-
+        Util.handleSelectInput("material", player, values, new ShapedRecipeWrapper(), Material.class, (wrapper, material) -> {
+            int x = slots.get(player.getUniqueId()).a();
+            int y = slots.get(player.getUniqueId()).b();
+            wrapper.setSlot(x, y, material);
+        });
+        ShapedRecipeWrapper recipeInfo = values.getOrDefault(player.getUniqueId(), new ShapedRecipeWrapper());
+        ChestGui gui = new ChestGui(5, ChatColor.BLUE + "Create Recipe");
+        StaticPane mainPane = new StaticPane(0, 0, 9, 5);
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                addRecipeSlot(mainPane, player, i, j, 3, 1, recipeInfo.getSlot(i, j));
             }
-            SelectGuiManager.getSelectGui("material").resetValue(player.getUniqueId());
         }
+        mainPane.addItem(new GuiItem(ItemBuilder.builder(Material.GREEN_CONCRETE).setName(ChatColor.BLUE + "Submit").build(), event -> {
+
+        }), 7, 2);
+        Util.addReturnButton(mainPane, player, getReturnTo(player), 0, 4);
+        gui.addPane(mainPane);
+        Util.setClickSoundTo(Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_OFF, gui);
         return null;
     }
 
     @Override
-    protected ShapedRecipe getValueFromString(String s) {
+    protected ShapedRecipeWrapper getValueFromString(String s) {
         return null;
     }
 }

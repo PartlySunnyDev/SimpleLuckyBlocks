@@ -163,7 +163,7 @@ public final class Util {
             return -getRandomBetween(-b, -a);
         }
         if (a < 0) {
-            return getRandomBetween(0, -a + b) - a;
+            return getRandomBetween(0, -a + b) + a;
         }
         return RAND.nextInt(b - a) + a;
     }
@@ -697,6 +697,7 @@ public final class Util {
         return i;
     }
 
+    @SuppressWarnings("unchecked")
     public static <T, U> void handleSelectInput(String selectInput, Player player, Map<UUID, T> values, T def, Class<U> clazz, BiConsumer<T, U> handler) {
         UUID pId = player.getUniqueId();
         U b = (U) SelectGuiManager.getSelectGui(selectInput).getValue(pId);

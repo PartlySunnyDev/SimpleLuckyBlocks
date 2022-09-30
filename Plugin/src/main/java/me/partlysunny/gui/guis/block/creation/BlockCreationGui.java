@@ -7,7 +7,9 @@ import com.github.stefvanschie.inventoryframework.pane.StaticPane;
 import me.partlysunny.blocks.LuckyBlockType;
 import me.partlysunny.gui.GuiInstance;
 import me.partlysunny.gui.GuiManager;
+import me.partlysunny.gui.SelectGui;
 import me.partlysunny.gui.SelectGuiManager;
+import me.partlysunny.gui.guis.block.creation.recipe.ShapedRecipeWrapper;
 import me.partlysunny.gui.guis.common.material.MaterialSelectGui;
 import me.partlysunny.gui.textInput.ChatListener;
 import me.partlysunny.util.Util;
@@ -77,6 +79,12 @@ public class BlockCreationGui implements GuiInstance {
                 blockSaves.put(pl.getUniqueId(), value);
             }
         });
+        mainPane.addItem(new GuiItem(ItemBuilder.builder(Material.BOOK).setName(ChatColor.BLUE + "Change Recipe!").build(), x -> {
+            SelectGuiManager.getSelectGui("recipe").setReturnTo(p.getUniqueId(), "blockCreation");
+            p.closeInventory();
+            ((SelectGui<ShapedRecipeWrapper>) SelectGuiManager.getSelectGui("recipe")).openWithValue(player, new ShapedRecipeWrapper(blockInfo.name()), "recipeSelect");
+            GuiManager.openInventory(player, "materialSelect");
+        }), 1, 2);
         Util.addSelectionLink(mainPane, player, "blockCreation", "entryTypeSelect", Util.getInfoItem("Loot Table", blockInfo.type().lootTable()), 3, 2);
         Util.addReturnButton(mainPane, player, "blockManagement", 0, 3);
         gui.addPane(mainPane);
